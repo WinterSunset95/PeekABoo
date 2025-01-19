@@ -35,13 +35,16 @@ export interface PeekABoo<T> {
 export type AnimeTypeOptions = "ad" | "adfree" 
 export type AnimeSourceOptions = "gogo" | "nineanime" | "animepahe" | "zoro" | "animefox" | "animedrive" | "anify" | "crunchyroll" | "bilibili" | "marin" | "animesaturn" | "animeunity" | "monoschinos";
 export type MovieSourceoptions = "dramacool" | "flixhq" | "fmovies" | "goku" | "kissasian" | "moviehdwatch" | "smashystream" | "turkish" | "viewasian" | "tmdb";
+export type ServerOptions = "http://localhost:3000" | "http://65.1.92.65";
 
 export interface Settings {
 	AnimeType: "ad" | "adfree",
 	AnimeSource: "gogo" | "nineanime" | "animepahe" | "zoro" | "animefox" | "animedrive" | "anify" | "crunchyroll" | "bilibili" | "marin" | "animesaturn" | "animeunity" | "monoschinos",
 	MovieSource: "dramacool" | "flixhq" | "fmovies" | "goku" | "kissasian" | "moviehdwatch" | "smashystream" | "turkish" | "viewasian" | "tmdb",
+	Server: "http://localhost:3000" | "http://65.1.92.65"
 }
 
 export const SettingsAnimeTypes: AnimeTypeOptions[] = ["ad", "adfree"]
 export const SettingsAnimeSources: AnimeSourceOptions[] = ["gogo" , "nineanime" , "animepahe" , "zoro" , "animefox" , "animedrive" , "anify" , "crunchyroll" , "bilibili" , "marin" , "animesaturn" , "animeunity" , "monoschinos"]
 export const SettingsMovieSources: MovieSourceoptions[] = [ "dramacool" , "flixhq" , "fmovies" , "goku" , "kissasian" , "moviehdwatch" , "smashystream" , "turkish" , "viewasian", "tmdb"]
+export const SettingsServers: ServerOptions[] = [ "http://localhost:3000", "http://65.1.92.65" ]

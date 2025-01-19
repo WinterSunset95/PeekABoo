@@ -1,5 +1,18 @@
 import { ANIME, IAnimeInfo, IEpisodeServer, ISource } from "@consumet/extensions";
-import { MovieSearchResult, PeekABoo, MovieInfo, AnimeInfo } from "./types";
+import { MovieSearchResult, PeekABoo, MovieInfo, AnimeInfo, Settings } from "./types";
+
+const settingsStr = localStorage.getItem("PeekABooSettings")
+if (settingsStr == null) {
+	const settings: Settings = {
+		AnimeType: "adfree",
+		AnimeSource: "gogo",
+		MovieSource: "tmdb",
+		Server: "http://localhost:3000"
+	}
+	localStorage.setItem("PeekABooSettings", JSON.stringify(settings))
+	window.location.reload()
+}
+const settings = JSON.parse(settingsStr as string) as Settings
 
 const anime = new ANIME.Gogoanime();
 
@@ -48,7 +61,7 @@ export const getEpisodeSources = async (id: string): Promise<PeekABoo<ISource | 
 	}
 
 	try {
-		const res = await fetch("http://localhost:3000/anime/episode/" + id);
+		const res = await fetch(`${settings.Server}/anime/episode/` + id);
 		let data = await res.json() as PeekABoo<ISource>;
 		return {
 			peek: true,

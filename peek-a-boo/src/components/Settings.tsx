@@ -16,7 +16,7 @@ import {
 import "./Settings.css"
 import { useContext, useEffect, useState } from "react"
 import { AppSettings } from "../AppContext"
-import { Settings, SettingsAnimeSources, SettingsAnimeTypes, SettingsMovieSources } from "../lib/types"
+import { Settings, SettingsAnimeSources, SettingsAnimeTypes, SettingsMovieSources, SettingsServers } from "../lib/types"
 
 const SettingsPage: React.FC = () => {
 	const globalSettingsString = localStorage.getItem("PeekABooSettings") as string
@@ -25,12 +25,14 @@ const SettingsPage: React.FC = () => {
 	const [type, setType] = useState(globalSettings.AnimeType)
 	const [aniSource, setAniSource] = useState(globalSettings.AnimeSource)
 	const [movSource, setMovSource] = useState(globalSettings.MovieSource)
+	const [server, setServer] = useState(globalSettings.Server)
 
 	const changeSettings = () => {
 		const newSettings: Settings = {
 			AnimeType: type,
 			AnimeSource: aniSource,
-			MovieSource: movSource
+			MovieSource: movSource,
+			Server: server
 		}
 		localStorage.setItem("PeekABooSettings", JSON.stringify(newSettings))
 	}
@@ -80,6 +82,19 @@ const SettingsPage: React.FC = () => {
 					{SettingsMovieSources.map((item, index) => (
 						<option value={item} key={index}
 						onClick={() => setMovSource(item)}>{item}</option>
+					))}
+					</select>
+				</div>
+				<div className="setting">
+					<span>
+						Server:
+					</span>
+					<select name="server" id="server" value={server}
+						onChange={(e) => changeSettings()}
+					>
+					{SettingsServers.map((item, index) => (
+						<option value={item} key={index}
+						onClick={() => setServer(item)}>{item}</option>
 					))}
 					</select>
 				</div>

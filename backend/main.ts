@@ -5,10 +5,14 @@ import type { RouterContext } from "@oak/oak/router";
 import { getEpisodeInfo, getTrendingAnime } from "./anime.ts";
 import { streamM3u8 } from "./player.ts";
 import { PeekABoo } from "./types.ts";
+import "jsr:@std/dotenv/load";
 
 const router = new Router()
 
-const SERVER = "http://localhost:3000"
+//const SERVER = "http://localhost:3000"
+//const SERVER = "http://65.1.92.65"
+const SERVER = Deno.env.get("SERVER")
+console.log(SERVER)
 
 router.get("/", (ctx) => {
 	ctx.response.body = "Hello World!"
