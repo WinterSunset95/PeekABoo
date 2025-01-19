@@ -1,0 +1,7 @@
+.setting {
+	display: flex;
+	gap: 1rem;
+	padding: 0.5rem;
+	justify-content: flex-start;
+	align-items: center;
+}

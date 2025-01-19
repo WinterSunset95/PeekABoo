@@ -7,6 +7,7 @@ import {
   IonTabBar,
   IonTabButton,
   IonTabs,
+  IonNav,
   setupIonicReact
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
@@ -44,44 +45,59 @@ import '@ionic/react/css/palettes/dark.system.css';
 
 /* Theme variables */
 import './theme/variables.css';
+import { createContext, useEffect, useMemo, useState } from 'react';
+import { Settings } from './lib/types';
+import { AppSettings } from './AppContext';
 
 setupIonicReact();
 
-const App: React.FC = () => (
-  <IonApp>
-    <IonReactRouter>
-      <IonTabs>
-        <IonRouterOutlet>
-          <Route exact path="/tab1">
-            <Home />
-          </Route>
-          <Route exact path="/tab2">
-            <Tab2 />
-          </Route>
-          <Route path="/tab3">
-            <Tab3 />
-          </Route>
-          <Route exact path="/">
-            <Redirect to="/tab1" />
-          </Route>
-        </IonRouterOutlet>
-        <IonTabBar slot="bottom">
-          <IonTabButton tab="tab1" href="/tab1">
-            <IonIcon aria-hidden="true" icon={home} />
-            <IonLabel>Home</IonLabel>
-          </IonTabButton>
-          <IonTabButton tab="tab2" href="/tab2">
-            <IonIcon aria-hidden="true" icon={search} />
-            <IonLabel>Search</IonLabel>
-          </IonTabButton>
-          <IonTabButton tab="tab3" href="/tab3">
-            <IonIcon aria-hidden="true" icon={person} />
-            <IonLabel>You</IonLabel>
-          </IonTabButton>
-        </IonTabBar>
-      </IonTabs>
-    </IonReactRouter>
-  </IonApp>
-);
+const App: React.FC = () => {
+	const [settings, setSettings] = useState<Settings>({
+		AnimeType: "adfree",
+		AnimeSource: "gogo",
+		MovieSource: "tmdb"
+	})
+
+	const contextValue = useMemo(() => ({ settings, setSettings }), [settings])
+
+	useEffect(() => {
+		const currSettings = localStorage.getItem("PeekABooSettings")
+		if (currSettings) {
+			const toSet = JSON.parse(currSettings) as Settings
+			setSettings(toSet)
+			return
+		}
+
+		const globalSettings: Settings = {
+			AnimeType: "adfree",
+			AnimeSource: "gogo",
+			MovieSource: "tmdb"
+		}
+		localStorage.setItem("PeekABooSettings", JSON.stringify(globalSettings))
+		setSettings(globalSettings)
+
+	}, [])
+
+	return (
+		<AppSettings.Provider value={contextValue}>
+		  <IonApp>
+			<IonReactRouter>
+				<IonRouterOutlet>
+				  <Route exact path="/">
+					<IonNav root={() => <Home />}>
+					</IonNav>
+				  </Route>
+				  <Route exact path="/signin">
+					<Tab2 />
+				  </Route>
+				  <Route path="/signup">
+					<Tab3 />
+				  </Route>
+				</IonRouterOutlet>
+			</IonReactRouter>
+		  </IonApp>
+		</AppSettings.Provider>
+	)
+}
 
 export default App;
