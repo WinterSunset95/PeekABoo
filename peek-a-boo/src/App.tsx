@@ -56,7 +56,7 @@ const App: React.FC = () => {
 		AnimeType: "adfree",
 		AnimeSource: "gogo",
 		MovieSource: "tmdb",
-		Server: "http://localhost:3000"
+		Server: "http://65.1.92.65"
 	})
 
 	const contextValue = useMemo(() => ({ settings, setSettings }), [settings])
@@ -69,14 +69,8 @@ const App: React.FC = () => {
 			return
 		}
 
-		const globalSettings: Settings = {
-			AnimeType: "adfree",
-			AnimeSource: "gogo",
-			MovieSource: "tmdb",
-			Server: "http://localhost:3000"
-		}
-		localStorage.setItem("PeekABooSettings", JSON.stringify(globalSettings))
-		setSettings(globalSettings)
+		localStorage.setItem("PeekABooSettings", JSON.stringify(settings))
+		setSettings(settings)
 
 	}, [])
 

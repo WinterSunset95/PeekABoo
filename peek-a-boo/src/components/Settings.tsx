@@ -11,6 +11,10 @@ import {
 	IonTitle,
     IonButton,
 	IonPage,
+    IonList,
+    IonItem,
+    IonSelect,
+    IonSelectOption,
 } from "@ionic/react"
 
 import "./Settings.css"
@@ -46,58 +50,76 @@ const SettingsPage: React.FC = () => {
 				<IonTitle>Settings</IonTitle>
 			</IonHeader>
 			<IonContent className="ion-padding">
-				<div className="setting">
-					<span>
-						Player Type: 
-					</span>
-					<select name="type" id="type" value={type}
-						onChange={(e) => changeSettings()}
-					>
-					{SettingsAnimeTypes.map((item, index) => (
-						<option value={item} key={index}
-						onClick={() => setType(item)}>{item}</option>
-					))}
-					</select>
-				</div>
-				<div className="setting">
-					<span>
-						Anime Source:
-					</span>
-					<select name="anisource" id="anisource" value={aniSource}
-						onChange={(e) => changeSettings()}
-					>
-					{SettingsAnimeSources.map((item, index) => (
-						<option value={item} key={index}
-						onClick={() => setAniSource(item)}>{item}</option>
-					))}
-					</select>
-				</div>
-				<div className="setting">
-					<span>
-						Movie Source:
-					</span>
-					<select name="movsource" id="movsource" value={movSource}
-						onChange={(e) => changeSettings()}
-					>
-					{SettingsMovieSources.map((item, index) => (
-						<option value={item} key={index}
-						onClick={() => setMovSource(item)}>{item}</option>
-					))}
-					</select>
-				</div>
-				<div className="setting">
-					<span>
-						Server:
-					</span>
-					<select name="server" id="server" value={server}
-						onChange={(e) => changeSettings()}
-					>
-					{SettingsServers.map((item, index) => (
-						<option value={item} key={index}
-						onClick={() => setServer(item)}>{item}</option>
-					))}
-					</select>
-				</div>
+				<IonList>
+					<IonItem>
+						<IonSelect
+							label="Advertisements"
+							value={type}
+							onChange={(e) => changeSettings()}
+						>
+							{SettingsAnimeTypes.map((item, index) => (
+								<IonSelectOption
+									value={item}
+									key={index}
+									onClick={() => setType(item)}
+								>
+									{item}
+								</IonSelectOption>
+							))}
+						</IonSelect>
+					</IonItem>
+					<IonItem>
+						<IonSelect
+							label="Anime Source"
+							value={aniSource}
+							onChange={(e) => changeSettings()}
+						>
+							{SettingsAnimeSources.map((item, index) => (
+								<IonSelectOption
+									value={item}
+									key={index}
+									onClick={() => setAniSource(item)}
+								>
+									{item}
+								</IonSelectOption>
+							))}
+						</IonSelect>
+					</IonItem>
+					<IonItem>
+						<IonSelect
+							label="Movie Source"
+							value={movSource}
+							onChange={(e) => changeSettings()}
+						>
+							{SettingsMovieSources.map((item, index) => (
+								<IonSelectOption
+									value={item}
+									key={index}
+									onClick={() => setMovSource(item)}
+								>
+									{item}
+								</IonSelectOption>
+							))}
+						</IonSelect>
+					</IonItem>
+					<IonItem>
+						<IonSelect
+							label="Backend Server"
+							value={server}
+							onChange={(e) => changeSettings()}
+						>
+							{SettingsServers.map((item, index) => (
+								<IonSelectOption
+									value={item}
+									key={index}
+									onClick={() => setServer(item)}
+								>
+									{item}
+								</IonSelectOption>
+							))}
+						</IonSelect>
+					</IonItem>
+				</IonList>
 				<IonButton onClick={() => changeSettings()}>Save</IonButton>
 			</IonContent>
 		</IonPage>

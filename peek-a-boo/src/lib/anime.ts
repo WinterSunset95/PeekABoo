@@ -7,7 +7,7 @@ if (settingsStr == null) {
 		AnimeType: "adfree",
 		AnimeSource: "gogo",
 		MovieSource: "tmdb",
-		Server: "http://localhost:3000"
+		Server: "http://65.1.92.65"
 	}
 	localStorage.setItem("PeekABooSettings", JSON.stringify(settings))
 	window.location.reload()
