@@ -46,36 +46,35 @@ import '@ionic/react/css/palettes/dark.system.css';
 /* Theme variables */
 import './theme/variables.css';
 import { createContext, useEffect, useMemo, useState } from 'react';
-import { Settings } from './lib/types';
-import { AppSettings } from './AppContext';
+import { getSettings, resetSettings, setSettings } from './lib/storage';
 
 setupIonicReact();
 
 const App: React.FC = () => {
-	const [settings, setSettings] = useState<Settings>({
-		AnimeType: "adfree",
-		AnimeSource: "gogo",
-		MovieSource: "tmdb",
-		Server: "http://65.1.92.65"
-	})
 
-	const contextValue = useMemo(() => ({ settings, setSettings }), [settings])
+	const initialLoad = async () => {
+		console.log("Setting up app!!")
+		const appSettings = await getSettings()
+		if (appSettings.peek == true) {
+			console.log(appSettings.boo);
+			return
+		} else {
+			const res = await resetSettings()
+			if (res.peek == false) {
+				alert("Something horrible happened in the background, immediately report this to the admin")
+				return
+			} else {
+				alert("Application Setup successful")
+				return
+			}
+		}
+	}
 
 	useEffect(() => {
-		const currSettings = localStorage.getItem("PeekABooSettings")
-		if (currSettings) {
-			const toSet = JSON.parse(currSettings) as Settings
-			setSettings(toSet)
-			return
-		}
-
-		localStorage.setItem("PeekABooSettings", JSON.stringify(settings))
-		setSettings(settings)
-
+		initialLoad()
 	}, [])
 
 	return (
-		<AppSettings.Provider value={contextValue}>
 		  <IonApp>
 			<IonReactRouter>
 				<IonRouterOutlet>
@@ -92,7 +91,6 @@ const App: React.FC = () => {
 				</IonRouterOutlet>
 			</IonReactRouter>
 		  </IonApp>
-		</AppSettings.Provider>
 	)
 }
 

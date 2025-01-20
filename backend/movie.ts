@@ -2,7 +2,8 @@ import { MovieSearchResult, PeekABoo } from "./types.ts";
 
 const tmdbApiKey = Deno.env.get("TMDB_API_KEY");
 
-const appProxy = "https://api.allorigins.win/get?url=";
+//const appProxy = "https://api.allorigins.win/get?url=";
+const appProxy = "http://65.1.92.65/proxy?url="
 
 const movieTrending = `${appProxy}https://api.themoviedb.org/3/trending/movie/day?api_key=${tmdbApiKey}`
 const moviePopular = `${appProxy}https://api.themoviedb.org/3/movie/popular?api_key=${tmdbApiKey}`
@@ -24,7 +25,22 @@ export const getTrendingMovies = async (): Promise<PeekABoo<MovieSearchResult[]>
 
 	const response = await fetch(movieTrending);
 	const data = await response.json();
-	if (!data) return defaultResult;
+	let array: MovieSearchResult[] = []
 
-	return defaultResult
+	if (data == undefined) return defaultResult;
+
+	data.results.forEach((item: any) => {
+		const arrItem: MovieSearchResult = {
+			Id: item.id,
+			Title: item.original_title as string,
+			Poster: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
+			Type: "movie"
+		}
+		array.push(arrItem)
+	})
+
+	return {
+		peek: true,
+		boo: array
+	}
 }

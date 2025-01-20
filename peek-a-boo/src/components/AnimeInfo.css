@@ -25,3 +25,31 @@
 	background-color: red;
 	color: white;
 }
+
+.loading-component {
+	aspect-ratio: 4/3;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+@keyframes spin {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(180deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+.spinner {
+	width: 7rem;
+	height: 7rem;
+	border-top: 2px solid white;
+	border-left: 2px solid white;
+	border-radius: 100rem;
+	animation: spin 3s infinite linear;
+}

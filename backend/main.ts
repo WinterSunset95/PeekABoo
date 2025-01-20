@@ -6,12 +6,17 @@ import { getEpisodeInfo, getTrendingAnime } from "./anime.ts";
 import { streamM3u8 } from "./player.ts";
 import { PeekABoo } from "./types.ts";
 import "jsr:@std/dotenv/load";
+import { getTrendingMovies } from "./movie.ts";
 
 const router = new Router()
 
 //const SERVER = "http://localhost:3000"
 //const SERVER = "http://65.1.92.65"
 const SERVER = Deno.env.get("SERVER")
+let port = Deno.env.get("PORT")!
+if (!port) {
+	port = "80"
+}
 console.log(SERVER)
 
 router.get("/", (ctx) => {
@@ -130,10 +135,15 @@ router.get("/anime/episode/:id", async (ctx: RouterContext<"/anime/episode/:id">
 	ctx.response.body = result
 })
 
+router.get("/movie/trending", async (ctx) => {
+	const res = await getTrendingMovies()
+	ctx.response.body = res
+})
+
 const app = new Application()
 app.use(oakCors({
 	origin: "*"
 }))
 app.use(router.routes())
 app.use(router.allowedMethods())
-app.listen({ port: 3000, })
+app.listen({ port: parseInt(port), })

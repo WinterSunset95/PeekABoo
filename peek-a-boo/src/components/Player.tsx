@@ -17,7 +17,6 @@ const PlayerComponent: React.FC<PlayerOptions> = (options) => {
 		videoRef.current!.appendChild(videoElement)
 
 		const player = playerRef.current = videojs(videoElement, options, () => console.log("Player initialized"))
-		console.log(player)
 	}
 
 	const resetPlayer = () => {

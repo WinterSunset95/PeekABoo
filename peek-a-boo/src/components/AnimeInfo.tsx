@@ -10,6 +10,7 @@ import {
 	IonBackButton,
 	IonTitle,
     IonButton,
+    IonPage,
 } from "@ionic/react"
 
 import './AnimeInfo.css'
@@ -26,24 +27,23 @@ import 'swiper/css/pagination'
 import { IAnimeEpisode, IEpisodeServer, ISource } from "@consumet/extensions"
 import PlayerComponent from "./Player"
 import { proxyThisLink } from "../lib/backendconnection"
-import { AppSettings } from "../AppContext"
+import { getSettings, resetSettings } from "../lib/storage"
+import { play } from "ionicons/icons"
 
 interface InfoProps {
 	id: string
 }
 
 const AnimeInfoPage: React.FC<InfoProps> = ({ id }) => {
-
 	const [info, setInfo] = useState<AnimeInfo>();
 	const [episode, setEpisode] = useState<IAnimeEpisode>();
 	const [episodeSources, setEpisodeSources] = useState<ISource>();
 	const [episodeServers, setEpisodeServers] = useState<IEpisodeServer[]>([]);
 	const [server, setServer] = useState<IEpisodeServer>();
 	const [playeroptions, setPlayeroptions] = useState<PlayerOptions>();
+	const [loading, setLoading] = useState(false)
 
-	const globalSettingsString = localStorage.getItem("PeekABooSettings") as string
-	const globalSettings = JSON.parse(globalSettingsString) as Settings
-	const [settings, setSettings] = useState<Settings>(globalSettings)
+	const [settings, setSettings] = useState<Settings>()
 	
 	const loadInfo = async () => {
 		const res = await getAnimeInfo(id)
@@ -54,11 +54,21 @@ const AnimeInfoPage: React.FC<InfoProps> = ({ id }) => {
 		setInfo(res.boo)
 	}
 
+	const loadSettings = async () => {
+		const res = await getSettings()
+		if (res.peek == false) {
+			alert("An error occured while loading settings")
+			await resetSettings()
+			return
+		}
+		setSettings(res.boo as Settings)
+	}
+
 	const loadEpisodeSources = async () => {
 		if (!episode) return;
 		const res = await getEpisodeSources(episode.id)
 		if (res.peek == false) {
-			alert("Failed to load episode sources")
+			alert("Failed to load episode sources. Either change the Server or switch to ads mode (Settings)")
 			return
 		}
 		setEpisodeSources(res.boo)
@@ -77,14 +87,13 @@ const AnimeInfoPage: React.FC<InfoProps> = ({ id }) => {
 			sources: sources
 		}
 		setPlayeroptions(options)
-		console.log(options)
 	}
 
 	const loadEpisodeServers = async () => {
 		if (!episode) return;
 		const res = await getEpisodeServers(episode.id)
 		if (res.peek == false) {
-			alert("failed to load episode servers")
+			alert("Failed to load episode servers")
 			return
 		}
 		setEpisodeServers(res.boo)
@@ -92,9 +101,7 @@ const AnimeInfoPage: React.FC<InfoProps> = ({ id }) => {
 	}
 
 	const loadEpisodeInfo = async () => {
-		if (!episode) return;
-		console.log(episode)
-		console.log(settings)
+		if (!episode || !settings) return;
 		if (settings.AnimeType == "ad") {
 			await loadEpisodeServers()
 			console.log("Loading embed sources")
@@ -106,27 +113,32 @@ const AnimeInfoPage: React.FC<InfoProps> = ({ id }) => {
 
 	useEffect(() => {
 		loadInfo()
-		const newSettingsString = localStorage.getItem("PeekABooSettings") as string
-		const newSettings = JSON.parse(newSettingsString) as Settings
-		setSettings(newSettings)
-		console.log(settings)
-		console.log(settings)
+		loadSettings()
 	}, [])
 
 	useEffect(() => {
 		loadEpisodeInfo()
-		const newSettingsString = localStorage.getItem("PeekABooSettings") as string
-		const newSettings = JSON.parse(newSettingsString) as Settings
-		setSettings(newSettings)
-		console.log(settings)
+		loadSettings()
 	}, [episode])
 
-	const Image = () => {
+	if (!settings) {
+		return (
+			<IonPage>
+				<IonContent>
+					<h1>Loading settings . . .</h1>
+				</IonContent>
+			</IonPage>
+		)
+	}
+
+	const BannerAndPlayer = () => {
 		if (!info) return "Loading . . .";
 
 		if (episode && playeroptions && episodeSources) {
 			return (
-				<PlayerComponent {...playeroptions} />
+				<div>
+					<PlayerComponent {...playeroptions} />
+				</div>
 			)
 		}
 
@@ -154,7 +166,9 @@ const AnimeInfoPage: React.FC<InfoProps> = ({ id }) => {
 							<IonButton
 								className={`episode-button`}
 								color={server?.name == item.name ? "warning" : "primary"}
-								onClick={() => setServer(item)}
+								onClick={() => {
+									setServer(item)
+								}}
 							>
 								{item.name}
 							</IonButton>
@@ -165,15 +179,24 @@ const AnimeInfoPage: React.FC<InfoProps> = ({ id }) => {
 			)
 		}
 
+		if (!episode) {
+			return (
+				<div className="info-img-container">
+					<IonImg
+						className="info-img"
+						src={info.Poster}
+					>
+					</IonImg>
+				</div>
+			)
+		}
+
 		return (
-			<div className="info-img-container">
-				<IonImg
-					className="info-img"
-					src={info.Poster}
-				>
-				</IonImg>
+			<div className="loading-component">
+				<div className="spinner"></div>
 			</div>
 		)
+
 	}
 
 	const Body = () => {
@@ -181,7 +204,8 @@ const AnimeInfoPage: React.FC<InfoProps> = ({ id }) => {
 
 		return (
 			<div className="ion-padding">
-				<Image />
+				<BannerAndPlayer />
+
 				<h4>{info.Episodes.length} Episodes</h4>
 				<Swiper
 					modules={[Pagination]}
@@ -195,7 +219,10 @@ const AnimeInfoPage: React.FC<InfoProps> = ({ id }) => {
 							<IonButton
 								className={`episode-button`}
 								color={episode?.number == index+1 ? "warning" : "primary"}
-								onClick={() => setEpisode(item)}
+								onClick={() => {
+									setLoading(true)
+									setEpisode(item)
+								}}
 							>
 								{item.number}
 							</IonButton>

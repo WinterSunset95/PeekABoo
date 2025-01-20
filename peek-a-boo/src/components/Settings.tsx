@@ -20,25 +20,56 @@ import {
 import "./Settings.css"
 import { useContext, useEffect, useState } from "react"
 import { AppSettings } from "../AppContext"
-import { Settings, SettingsAnimeSources, SettingsAnimeTypes, SettingsMovieSources, SettingsServers } from "../lib/types"
+import { AnimeSourceOptions, AnimeTypeOptions, MovieSourceoptions, Settings, SettingsAnimeSources, SettingsAnimeTypes, SettingsMovieSources, SettingsServers, ServerOptions } from "../lib/types"
+import { getSettings, setSettings } from "../lib/storage"
 
 const SettingsPage: React.FC = () => {
-	const globalSettingsString = localStorage.getItem("PeekABooSettings") as string
-	const globalSettings = JSON.parse(globalSettingsString) as Settings
-	const { settings, setSettings } = useContext(AppSettings)
-	const [type, setType] = useState(globalSettings.AnimeType)
-	const [aniSource, setAniSource] = useState(globalSettings.AnimeSource)
-	const [movSource, setMovSource] = useState(globalSettings.MovieSource)
-	const [server, setServer] = useState(globalSettings.Server)
+	const [type, setType] = useState<AnimeTypeOptions>()
+	const [aniSource, setAniSource] = useState<AnimeSourceOptions>()
+	const [movSource, setMovSource] = useState<MovieSourceoptions>()
+	const [server, setServer] = useState<ServerOptions>()
 
-	const changeSettings = () => {
+	const changeSettings = async () => {
+		if (!type || !aniSource || !movSource || !server) return;
 		const newSettings: Settings = {
 			AnimeType: type,
 			AnimeSource: aniSource,
 			MovieSource: movSource,
 			Server: server
 		}
-		localStorage.setItem("PeekABooSettings", JSON.stringify(newSettings))
+		const res = await setSettings(newSettings)
+		if (res.peek == false) {
+			alert(res.boo)
+			return
+		}
+		alert("New Settings: " + JSON.stringify(newSettings))
+	}
+
+	const loadSettings = async () => {
+		const settings = await getSettings()
+		if (settings.peek == false) {
+			alert("Failed to load settings. This is not supposed to happen")
+		}
+		const appSettings = settings.boo as Settings
+		setType(appSettings.AnimeType)
+		setAniSource(appSettings.AnimeSource)
+		setMovSource(appSettings.MovieSource)
+		setServer(appSettings.Server)
+		console.log(appSettings)
+	}
+
+	useEffect(() => {
+		loadSettings()
+	}, [])
+
+	if (!type) {
+		return (
+			<IonPage>
+				<IonContent>
+					<h1>Loading . . </h1>
+				</IonContent>
+			</IonPage>
+		)
 	}
 
 	return (
@@ -55,13 +86,12 @@ const SettingsPage: React.FC = () => {
 						<IonSelect
 							label="Advertisements"
 							value={type}
-							onChange={(e) => changeSettings()}
+							onIonChange={(e) => setType(e.target.value)}
 						>
 							{SettingsAnimeTypes.map((item, index) => (
 								<IonSelectOption
 									value={item}
 									key={index}
-									onClick={() => setType(item)}
 								>
 									{item}
 								</IonSelectOption>
@@ -72,13 +102,12 @@ const SettingsPage: React.FC = () => {
 						<IonSelect
 							label="Anime Source"
 							value={aniSource}
-							onChange={(e) => changeSettings()}
+							onIonChange={(e) => setAniSource(e.target.value)}
 						>
 							{SettingsAnimeSources.map((item, index) => (
 								<IonSelectOption
 									value={item}
 									key={index}
-									onClick={() => setAniSource(item)}
 								>
 									{item}
 								</IonSelectOption>
@@ -89,13 +118,12 @@ const SettingsPage: React.FC = () => {
 						<IonSelect
 							label="Movie Source"
 							value={movSource}
-							onChange={(e) => changeSettings()}
+							onIonChange={(e) => setMovSource(e.target.value)}
 						>
 							{SettingsMovieSources.map((item, index) => (
 								<IonSelectOption
 									value={item}
 									key={index}
-									onClick={() => setMovSource(item)}
 								>
 									{item}
 								</IonSelectOption>
@@ -106,13 +134,12 @@ const SettingsPage: React.FC = () => {
 						<IonSelect
 							label="Backend Server"
 							value={server}
-							onChange={(e) => changeSettings()}
+							onIonChange={(e) => setServer(e.target.value)}
 						>
 							{SettingsServers.map((item, index) => (
 								<IonSelectOption
 									value={item}
 									key={index}
-									onClick={() => setServer(item)}
 								>
 									{item}
 								</IonSelectOption>
