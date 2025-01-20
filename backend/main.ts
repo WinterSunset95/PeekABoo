@@ -153,6 +153,14 @@ router.get("/anime/:provider/episode/:epid/sources", async (ctx: RouterContext<"
 	ctx.response.body = result
 })
 
+// Legacy, for backward compatibility
+router.get("/anime/episode/:epid", async (ctx: RouterContext<"/anime/episode/:epid">) => {
+	const id = ctx.params.epid
+	const animeProvider = getProvider("gogo")
+	const result = await animeProvider?.getEpisodeSources(id)
+	ctx.response.body = result
+})
+
 router.get("/anime/:provider/episode/:epid/servers", async (ctx: RouterContext<"/anime/:provider/episode/:epid/servers">) => {
 	const id = ctx.params.epid
 	const provider = ctx.params.provider
