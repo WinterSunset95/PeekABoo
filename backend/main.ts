@@ -2,11 +2,11 @@
 import { oakCors } from "https://deno.land/x/cors/mod.ts";
 import { Application, Router } from "@oak/oak"
 import type { RouterContext } from "@oak/oak/router";
-import { getEpisodeInfo, getTrendingAnime } from "./anime.ts";
-import { streamM3u8 } from "./player.ts";
+import { ProviderKey, providers } from "./anime/anime.ts";
 import { PeekABoo } from "./types.ts";
 import "jsr:@std/dotenv/load";
-import { getTrendingMovies } from "./movie.ts";
+import { getTrendingMovies } from "./movies/movie.ts";
+import { Gogo } from "./anime/gogo.ts";
 
 const router = new Router()
 
@@ -23,10 +23,12 @@ router.get("/", (ctx) => {
 	ctx.response.body = "Hello World!"
 })
 
-router.get("/anime/trending", async (ctx) => {
-	const result = await getTrendingAnime()
-	ctx.response.body = result
-})
+function getProvider(provider: string): Gogo | null {
+	if (provider in providers) {
+		return providers[provider as ProviderKey]
+	}
+	return null;
+}
 
 router.get("/helpers/sanitize-iframe", (ctx) => {
 	const params = ctx.request.url.searchParams
@@ -34,6 +36,7 @@ router.get("/helpers/sanitize-iframe", (ctx) => {
 	ctx.response.body = videoUrl
 })
 
+// DO NOT CHANGE ANYTHING IN THE NEXT THREE BLOCKS!!
 router.get("/proxy", async (ctx) => {
 	const url = ctx.request.url.searchParams.get("url") as string
 	if (!url) {
@@ -129,15 +132,63 @@ router.get("/helpers/segment", async (ctx) => {
 	}
 })
 
-router.get("/anime/episode/:id", async (ctx: RouterContext<"/anime/episode/:id">) => {
-	const id = ctx.params.id
-	const result = await getEpisodeInfo(id)
-	ctx.response.body = result
-})
-
 router.get("/movie/trending", async (ctx) => {
 	const res = await getTrendingMovies()
 	ctx.response.body = res
+})
+
+// Anime section
+router.get("/anime/:provider/trending", async (ctx: RouterContext<"/anime/:provider/trending">) => {
+	const provider = ctx.params.provider
+	const animeProvider = getProvider(provider)
+	const result = await animeProvider?.getTrending()
+	ctx.response.body = result
+})
+
+router.get("/anime/:provider/episode/:epid/sources", async (ctx: RouterContext<"/anime/:provider/episode/:epid/sources">) => {
+	const id = ctx.params.epid
+	const provider = ctx.params.provider
+	const animeProvider = getProvider(provider)
+	const result = await animeProvider?.getEpisodeSources(id)
+	ctx.response.body = result
+})
+
+router.get("/anime/:provider/episode/:epid/servers", async (ctx: RouterContext<"/anime/:provider/episode/:epid/servers">) => {
+	const id = ctx.params.epid
+	const provider = ctx.params.provider
+	const animeProvider = getProvider(provider)
+	const result = await animeProvider?.getEpisodeServers(id)
+	ctx.response.body = result
+})
+
+router.get("/anime/:provider/:animeid/info", async (ctx: RouterContext<"/anime/:provider/:animeid/info">) => {
+	const provider = ctx.params.provider
+	const animeid = ctx.params.animeid
+	const animeProvider = getProvider(provider)
+	const result = await animeProvider?.getAnimeInfo(animeid)
+	ctx.response.body = result
+})
+
+router.get("/anime/:provider/topairing", async (ctx: RouterContext<"/anime/:provider/topairing">) => {
+	const provider = ctx.params.provider
+	const animeProvider = getProvider(provider)
+	const result = await animeProvider?.getTopAiring()
+	ctx.response.body = result
+})
+
+router.get("/anime/:provider/search/:query", async (ctx: RouterContext<"/anime/:provider/search/:query">) => {
+	const provider = ctx.params.provider
+	const query = ctx.params.query
+	const animeProvider = getProvider(provider)
+	const result = await animeProvider?.searchAnime(query)
+	ctx.response.body = result
+})
+
+router.get("/anime/:provider/search", async (ctx: RouterContext<"/anime/:provider/search">) => {
+	const provider = ctx.params.provider
+	const animeProvider = getProvider(provider)
+	const result = await animeProvider?.searchAnime("")
+	ctx.response.body = result
 })
 
 const app = new Application()
@@ -146,4 +197,4 @@ app.use(oakCors({
 }))
 app.use(router.routes())
 app.use(router.allowedMethods())
-app.listen({ port: parseInt(port), })
+app.listen({ hostname: "0.0.0.0", port: parseInt(port), })

@@ -1,4 +1,4 @@
-import { MovieSearchResult, PeekABoo } from "./types.ts";
+import { MovieSearchResult, PeekABoo } from "../types.ts";
 
 const tmdbApiKey = Deno.env.get("TMDB_API_KEY");
 

@@ -19,7 +19,7 @@ export const resetSettings = async (): Promise<PeekABoo<Settings>> => {
 		AnimeType: "adfree",
 		AnimeSource: "gogo",
 		MovieSource: "tmdb",
-		Server: "http://localhost:3000"
+		Server: "http://65.1.92.65"
 	};
 	await Preferences.set({
 		key: "base_settings",
