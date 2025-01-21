@@ -116,7 +116,7 @@ export class TMDB {
 		data.results.forEach((item: any) => {
 			const arrItem: MovieSearchResult = {
 				Id: item.id,
-				Title: item.original_title,
+				Title: item.original_name,
 				Poster: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
 				Type: "tv"
 			}

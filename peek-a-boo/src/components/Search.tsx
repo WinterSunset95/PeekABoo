@@ -11,7 +11,7 @@ import { useEffect, useState } from 'react'
 import { searchAnime } from '../lib/anime'
 import { MovieSearchResult } from '../lib/types'
 import List from './List'
-import { searchMovie } from '../lib/movies'
+import { searchMovie, searchTv } from '../lib/movies'
 
 const Search: React.FC = () => {
 
@@ -38,9 +38,16 @@ const Search: React.FC = () => {
 		setMovie(res.boo)
 	}
 
+	const loadTv = async () => {
+		const res = await searchTv(search)
+		if (res.peek == false) return;
+		setTv(res.boo)
+	}
+
 	useEffect(() => {
 		loadAnime()
 		loadMovie()
+		loadTv()
 	}, [search])
 
 	return (
@@ -64,6 +71,8 @@ const Search: React.FC = () => {
 				<List {...anime} />
 				<h1>Movies</h1>
 				<List {...movie} />
+				<h1>Tv</h1>
+				<List {...tv} />
 			</IonContent>
 		</IonPage>
 	)
