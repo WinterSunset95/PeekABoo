@@ -8,6 +8,10 @@
 	overflow: hidden;
 }
 
+.featured-card-ion-container {
+	max-width: 700px;
+}
+
 .featured-card-img {
 	width: 100%;
 	height: 100%;

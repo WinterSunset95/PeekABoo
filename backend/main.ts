@@ -10,6 +10,7 @@ import { AnimePahe } from "./anime/animepahe.ts";
 import { Zoro } from "./anime/zoro.ts";
 import { TMDB } from "./movies/tmdb.ts";
 import { MovieProviderKey, MovieProviders } from "./movies/movie.ts";
+import { FlixHq } from "./movies/flixhq.ts";
 
 const router = new Router()
 
@@ -41,7 +42,7 @@ function getAnimeProvider(provider: string): Gogo | AnimePahe | Zoro | null {
 	return null;
 }
 
-function getMovieProvider(provier: string): TMDB | null {
+function getMovieProvider(provier: string): TMDB | FlixHq | null {
 	if (provier in MovieProviders) {
 		return MovieProviders[provier as MovieProviderKey]
 	}

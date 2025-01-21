@@ -16,7 +16,7 @@ const Featured: React.FC<MovieInfo> = (item) => {
 			routerDirection="forward"
 			component={() => <AnimeInfoPage id={item.Id} />}
 		>
-			<IonCard>
+			<IonCard className="featured-card-ion-container">
 				<div className="featured-card">
 					<IonImg
 						className="featured-card-img"

@@ -200,6 +200,5 @@ export class TMDB {
 			}
 		}
 	}
-	
 
 }
