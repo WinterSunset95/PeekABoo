@@ -159,7 +159,9 @@ router.get("/helpers/segment", async (ctx) => {
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Movie section
+///////////////////
+// Movie section //
+///////////////////
 router.get("/movie/trending", async (ctx) => {
 	const movieProvider = getMovieProvider("tmdb")
 	const res = await movieProvider?.getTrendingMovies()
@@ -177,18 +179,61 @@ router.get("/movie/:provider/search/:query", async (ctx: RouterContext<"/movie/:
 	const provider = ctx.params.provider
 	const query = ctx.params.query
 	const movieProvider = getMovieProvider(provider)
-	const result = await movieProvider?.search(query)
+	const result = await movieProvider?.searchMovie(query)
+	ctx.response.body = result
+})
+
+router.get("/movie/:provider/:movieid/info", async (ctx: RouterContext<"/movie/:provider/:movieid/info">) => {
+	const provider = ctx.params.provider
+	const movieid = ctx.params.movieid
+	const movieProvider = getMovieProvider(provider)
+	const result = await movieProvider?.getMovieInfo(movieid)
 	ctx.response.body = result
 })
 
 router.get("/movie/:provider/search", async (ctx: RouterContext<"/movie/:provider/search">) => {
 	const provider = ctx.params.provider
 	const movieProvider = getMovieProvider(provider)
-	const result = await movieProvider?.search("")
+	const result = await movieProvider?.searchMovie("a")
 	ctx.response.body = result
 })
 
-// Anime section
+////////////////
+// TV section //
+////////////////
+router.get("/tv/:provider/trending", async (ctx: RouterContext<"/tv/:provider/trending">) => {
+	const provider = ctx.params.provider
+	const movieProvider = getMovieProvider(provider)
+	const result = await movieProvider?.getTrendingTv()
+	ctx.response.body = result
+})
+
+router.get("/tv/:provider/search/:query", async (ctx: RouterContext<"/tv/:provider/search/:query">) => {
+	const provider = ctx.params.provider
+	const query = ctx.params.query
+	const movieProvider = getMovieProvider(provider)
+	const result = await movieProvider?.searchTv(query)
+	ctx.response.body = result
+})
+
+router.get("/tv/:provider/:movieid/info", async (ctx: RouterContext<"/tv/:provider/:movieid/info">) => {
+	const provider = ctx.params.provider
+	const movieid = ctx.params.movieid
+	const movieProvider = getMovieProvider(provider)
+	const result = await movieProvider?.getTvInfo(movieid)
+	ctx.response.body = result
+})
+
+router.get("/tv/:provider/search", async (ctx: RouterContext<"/tv/:provider/search">) => {
+	const provider = ctx.params.provider
+	const movieProvider = getMovieProvider(provider)
+	const result = await movieProvider?.searchTv("a")
+	ctx.response.body = result
+})
+
+///////////////////
+// Anime section //
+///////////////////
 router.get("/anime/:provider/trending", async (ctx: RouterContext<"/anime/:provider/trending">) => {
 	const provider = ctx.params.provider
 	const animeProvider = getAnimeProvider(provider)

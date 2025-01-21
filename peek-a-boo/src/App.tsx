@@ -50,48 +50,23 @@ import { getSettings, resetSettings, setSettings } from './lib/storage';
 
 setupIonicReact();
 
-const App: React.FC = () => {
-
-	const initialLoad = async () => {
-		console.log("Setting up app!!")
-		const appSettings = await getSettings()
-		if (appSettings.peek == true) {
-			console.log(appSettings.boo);
-			return
-		} else {
-			const res = await resetSettings()
-			if (res.peek == false) {
-				alert("Something horrible happened in the background, immediately report this to the admin")
-				return
-			} else {
-				alert("Application Setup successful")
-				return
-			}
-		}
-	}
-
-	useEffect(() => {
-		initialLoad()
-	}, [])
-
-	return (
-		  <IonApp>
-			<IonReactRouter>
-				<IonRouterOutlet>
-				  <Route exact path="/">
-					<IonNav root={() => <Home />}>
-					</IonNav>
-				  </Route>
-				  <Route exact path="/signin">
-					<Tab2 />
-				  </Route>
-				  <Route path="/signup">
-					<Tab3 />
-				  </Route>
-				</IonRouterOutlet>
-			</IonReactRouter>
-		  </IonApp>
-	)
-}
+const App: React.FC = () => (
+	  <IonApp>
+		<IonReactRouter>
+			<IonRouterOutlet>
+			  <Route exact path="/">
+				<IonNav root={() => <Home />}>
+				</IonNav>
+			  </Route>
+			  <Route exact path="/signin">
+				<Tab2 />
+			  </Route>
+			  <Route path="/signup">
+				<Tab3 />
+			  </Route>
+			</IonRouterOutlet>
+		</IonReactRouter>
+	  </IonApp>
+)
 
 export default App;

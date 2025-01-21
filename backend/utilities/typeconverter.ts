@@ -1,5 +1,5 @@
 import { IAnimeInfo, IAnimeResult, ISearch } from "@consumet/extensions";
-import { AnimeInfo, MovieSearchResult } from "../types.ts";
+import { AnimeInfo, MovieSearchResult, TvInfo } from "../types.ts";
 
 ////////////////////////////////////////////////////////////
 // Convert ISearch<IAnimeResult> into MovieSearchResult[] //
@@ -45,4 +45,17 @@ export const defaultAnimeInfo: AnimeInfo = {
 	Languages: [],
 	Type: "unknown",
 	Episodes: []
+}
+
+export const defaultTvInfo: TvInfo = {
+	Id: "unknown",
+	Title: "Not Found",
+	Poster: "Not Found",
+	Overview: "none",
+	Year: "none",
+	Duration: "none",
+	Genres: [],
+	Languages: [],
+	Type: "unknown",
+	Season: []
 }

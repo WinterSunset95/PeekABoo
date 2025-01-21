@@ -8,13 +8,23 @@ import { MovieSearchResult } from "../lib/types"
 
 import AnimeInfoPage from './AnimeInfo'
 import './Card.css'
+import MovieInfoPage from "./MovieInfo"
+import TvInfoPage from "./TvInfo"
 
 const Card: React.FC<MovieSearchResult> = (item) => {
 	return (
 		<IonNavLink 
 			className="item-card"
 			routerDirection="forward"
-			component={() => <AnimeInfoPage id={item.Id} />}
+			component={() => {
+				if (item.Type == "anime") {
+					return <AnimeInfoPage id={item.Id} />
+				} else if (item.Type == "movie") {
+					return <MovieInfoPage id={item.Id} />
+				} else {
+					return <TvInfoPage id={item.Id} />
+				}
+			}}
 		>
 			<IonCard>
 				<div className="item-card-img-container">

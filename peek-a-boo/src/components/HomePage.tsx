@@ -12,11 +12,12 @@ import { getTrending, getTopAiring } from '../lib/anime';
 import List from './List';
 import Featured from './Featured'
 import './HomePage.css'
-import { getTrendingMovies } from '../lib/movies';
+import { getTrendingMovies, getTrendingTv } from '../lib/movies';
 
 const HomePage: React.FC = () => {
 	const [trending, setTrending] = useState<MovieSearchResult[]>([])
 	const [trendingMovies, setTrendingMovies] = useState<MovieSearchResult[]>([])
+	const [trendingTv, setTrendingTv] = useState<MovieSearchResult[]>([])
 	const [featured, setFeatured] = useState<MovieInfo>()
 
 	const loadTrending = async () => {
@@ -38,6 +39,16 @@ const HomePage: React.FC = () => {
 		setTrendingMovies(res.boo)
 	}
 
+	const loadTrendingTv = async () => {
+		const res = await getTrendingTv()
+		if (res.peek == false) {
+			alert("Error loading trending movies")
+			return
+
+		}
+		setTrendingTv(res.boo)
+	}
+
 	const loadFeatured = async () => {
 		const response = await getTopAiring();
 		if (response.peek == false) {
@@ -50,6 +61,7 @@ const HomePage: React.FC = () => {
 	useEffect(() => {
 		loadTrending()
 		loadTrendingMovies()
+		loadTrendingTv()
 		loadFeatured()
 	}, [])
 
@@ -71,6 +83,8 @@ const HomePage: React.FC = () => {
 				<List {...trending} />
 				<h1>Trending Movies</h1>
 				<List {...trendingMovies} />
+				<h1>Trending Shows</h1>
+				<List {...trendingTv} />
 
 			</IonContent>
 		</IonPage>

@@ -19,6 +19,20 @@ export interface AnimeInfo extends MovieInfo {
 	Episodes: IAnimeEpisode[]
 }
 
+export interface TvSeason {
+	AirDate: string,
+	EpisodeCount: number,
+	Id: number,
+	Name: string,
+	Poster: string,
+	Overview: string
+	SeasonNumber: number
+}
+
+export interface TvInfo extends MovieInfo {
+	Season: TvSeason[]
+}
+
 export interface PlayerOptions {
 	autoplay: boolean,
 	controls: boolean,
