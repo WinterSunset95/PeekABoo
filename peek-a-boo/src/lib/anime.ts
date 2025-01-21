@@ -2,16 +2,13 @@
  *TODO:
 	1. Error handling
 	2. Document the functions
-	3. Migrate everything
+	3. Migrate everything (Done)
  */
 
 import { ANIME, IAnimeInfo, IEpisodeServer, ISource } from "@consumet/extensions";
 import { MovieSearchResult, PeekABoo, MovieInfo, AnimeInfo, Settings } from "./types";
 import { getSettings, resetSettings } from "./storage";
 
-const anime = new ANIME.Gogoanime();
-
-// Migrated
 export const getEpisodeSources = async (id: string): Promise<PeekABoo<ISource | undefined>> => {
 	const { boo } = await getSettings()
 	const settings = boo
@@ -52,7 +49,6 @@ export const getTrending = async (): Promise<PeekABoo<MovieSearchResult[]>> => {
 	return data
 }
 
-// To Migrate
 export const searchAnime = async (query: string): Promise<PeekABoo<MovieSearchResult[]>> => {
 	const { boo } = await getSettings()
 	const settings = boo

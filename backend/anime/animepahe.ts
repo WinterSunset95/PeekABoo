@@ -1,26 +1,26 @@
-import { ANIME, IAnimeInfo, IEpisodeServer, ISource } from "@consumet/extensions";
+import { ANIME, IAnimeInfo, IAnimeResult, IEpisodeServer, ISearch, ISource } from "@consumet/extensions";
 import { AnimeInfo, MovieSearchResult, PeekABoo } from "../types.ts";
 import { animeSearchResult_to_MovieSearchResult, defaultAnimeInfo, iAnimeInfo_to_AnimeInfo } from "../utilities/typeconverter.ts";
 
-const anime = new ANIME.Gogoanime();
+const anime = new ANIME.AnimePahe()
 
-export class Gogo {
+export class AnimePahe {
 
-	async getTrending (): Promise<PeekABoo<MovieSearchResult[]>> {
-		const defaultResult: PeekABoo<MovieSearchResult[]> = {
+	async getTrending(): Promise<PeekABoo<MovieSearchResult[]>> {
+		const defaultRes: PeekABoo<MovieSearchResult[]> = {
 			peek: false,
 			boo: []
 		}
 
-		const result = await anime.fetchPopular();
-		if (!result || result.totalPages == 0) return defaultResult;
+		const res: ISearch<IAnimeResult> = await anime.search("");
+		if (!res || res.totalPages == 0) return defaultRes;
 
-		const list: MovieSearchResult[] = animeSearchResult_to_MovieSearchResult(result)
+		const list = animeSearchResult_to_MovieSearchResult(res)
 
 		return {
 			peek: true,
 			boo: list
-		};
+		}
 	}
 
 	async getEpisodeSources(id: string): Promise<PeekABoo<ISource | undefined>> {
@@ -75,7 +75,7 @@ export class Gogo {
 			boo: defaultAnimeInfo
 		}
 
-		const result = await anime.fetchTopAiring()
+		const result = await anime.search("")
 		if (!result || result.totalPages == 0) return defaultResult;
 		const top = result.results[0]
 		const topInfo = await anime.fetchAnimeInfo(top.id)
@@ -106,4 +106,3 @@ export class Gogo {
 	}
 
 }
-

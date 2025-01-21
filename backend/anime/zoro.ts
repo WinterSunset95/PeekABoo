@@ -2,9 +2,9 @@ import { ANIME, IAnimeInfo, IEpisodeServer, ISource } from "@consumet/extensions
 import { AnimeInfo, MovieSearchResult, PeekABoo } from "../types.ts";
 import { animeSearchResult_to_MovieSearchResult, defaultAnimeInfo, iAnimeInfo_to_AnimeInfo } from "../utilities/typeconverter.ts";
 
-const anime = new ANIME.Gogoanime();
+const anime = new ANIME.Zoro();
 
-export class Gogo {
+export class Zoro {
 
 	async getTrending (): Promise<PeekABoo<MovieSearchResult[]>> {
 		const defaultResult: PeekABoo<MovieSearchResult[]> = {
@@ -12,7 +12,7 @@ export class Gogo {
 			boo: []
 		}
 
-		const result = await anime.fetchPopular();
+		const result = await anime.fetchRecentlyAdded();
 		if (!result || result.totalPages == 0) return defaultResult;
 
 		const list: MovieSearchResult[] = animeSearchResult_to_MovieSearchResult(result)
@@ -29,6 +29,7 @@ export class Gogo {
 			boo: undefined
 		}
 		const res: ISource = await anime.fetchEpisodeSources(id)
+		console.log(id, res)
 		if (!res || res.sources.length == 0) return defaultRes;
 
 		return {

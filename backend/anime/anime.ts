@@ -1,8 +1,12 @@
+import { AnimePahe } from "./animepahe.ts";
 import { Gogo } from "./gogo.ts";
+import { Zoro } from "./zoro.ts";
 
-export const providers = {
-	gogo: new Gogo
+export const AnimeProviders = {
+	gogo: new Gogo,
+	animepahe: new AnimePahe,
+	zoro: new Zoro
 }
 
-export type ProviderKey = keyof typeof providers;
+export type AnimeProviderKey = keyof typeof AnimeProviders;
 

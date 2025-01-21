@@ -14,7 +14,9 @@ const List: React.FC<MovieSearchResult[]> = (list) => {
 	return (
 		<Swiper
 			spaceBetween={5}
-			slidesPerView={2}
+			slidesPerView={2.5}
+			autoplay={true}
+			centeredSlides={true}
 		>
 			{Object.keys(list).map((item, index) => (
 				<SwiperSlide key={index}>

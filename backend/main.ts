@@ -1,12 +1,15 @@
 // @deno-types="@oak/oak"
-import { oakCors } from "https://deno.land/x/cors/mod.ts";
+import { oakCors, Route } from "https://deno.land/x/cors/mod.ts";
 import { Application, Router } from "@oak/oak"
 import type { RouterContext } from "@oak/oak/router";
-import { ProviderKey, providers } from "./anime/anime.ts";
+import { AnimeProviderKey, AnimeProviders } from "./anime/anime.ts";
 import { PeekABoo } from "./types.ts";
 import "jsr:@std/dotenv/load";
-import { getTrendingMovies } from "./movies/movie.ts";
 import { Gogo } from "./anime/gogo.ts";
+import { AnimePahe } from "./anime/animepahe.ts";
+import { Zoro } from "./anime/zoro.ts";
+import { TMDB } from "./movies/tmdb.ts";
+import { MovieProviderKey, MovieProviders } from "./movies/movie.ts";
 
 const router = new Router()
 
@@ -19,36 +22,58 @@ if (!port) {
 }
 console.log(SERVER)
 
+//////////////////
+// Sanity check //
+//////////////////
 router.get("/", (ctx) => {
 	ctx.response.body = "Hello World!"
 })
+//////////////////
+//////////////////
 
-function getProvider(provider: string): Gogo | null {
-	if (provider in providers) {
-		return providers[provider as ProviderKey]
+///////////////////////////////////////////////////////
+// Get anime provider object from the providers list //
+///////////////////////////////////////////////////////
+function getAnimeProvider(provider: string): Gogo | AnimePahe | Zoro | null {
+	if (provider in AnimeProviders) {
+		return AnimeProviders[provider as AnimeProviderKey]
 	}
 	return null;
 }
 
-router.get("/helpers/sanitize-iframe", (ctx) => {
-	const params = ctx.request.url.searchParams
-	const videoUrl = params.get("url")
-	ctx.response.body = videoUrl
-})
+function getMovieProvider(provier: string): TMDB | null {
+	if (provier in MovieProviders) {
+		return MovieProviders[provier as MovieProviderKey]
+	}
+	return null
+}
+///////////////////////////////////////////////////////
+///////////////////////////////////////////////////////
 
-// DO NOT CHANGE ANYTHING IN THE NEXT THREE BLOCKS!!
+//////////////////////////////////////////////////////////////////////////////////////////////////
+// DO NOT CHANGE ANYTHING IN THE NEXT THREE BLOCKS!! /////////////////////////////////////////////
+// They are responsible for all the proxying work, in order to be able to stream the m3u8 files //
+//////////////////////////////////////////////////////////////////////////////////////////////////
 router.get("/proxy", async (ctx) => {
 	const url = ctx.request.url.searchParams.get("url") as string
-	if (!url) {
+	const originalQueryParams = new URLSearchParams(ctx.request.url.searchParams)
+	originalQueryParams.delete("url")
+	const finalUrl = new URL(url)
+	originalQueryParams.forEach((value, key) => {
+		finalUrl.searchParams.append(key, value)
+	})
+
+	if (!finalUrl) {
 		const errorRes: PeekABoo<string> = {
 			peek: false,
 			boo: "no url detected"
 		}
 		ctx.response.body = errorRes
 	}
+	console.log("Proxying: " + finalUrl)
 
 	try {
-		const response = await fetch(url)
+		const response = await fetch(finalUrl)
 		if (!response.ok) {
 			throw new Error("failed to fetch " + response.statusText)
 		}
@@ -131,16 +156,42 @@ router.get("/helpers/segment", async (ctx) => {
 		ctx.response.body = e as string
 	}
 })
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
 
+// Movie section
 router.get("/movie/trending", async (ctx) => {
-	const res = await getTrendingMovies()
+	const movieProvider = getMovieProvider("tmdb")
+	const res = await movieProvider?.getTrendingMovies()
 	ctx.response.body = res
+})
+
+router.get("/movie/:provider/trending", async (ctx: RouterContext<"/movie/:provider/trending">) => {
+	const provider = ctx.params.provider
+	const movieProvider = getMovieProvider(provider)
+	const result = await movieProvider?.getTrendingMovies()
+	ctx.response.body = result
+})
+
+router.get("/movie/:provider/search/:query", async (ctx: RouterContext<"/movie/:provider/search/:query">) => {
+	const provider = ctx.params.provider
+	const query = ctx.params.query
+	const movieProvider = getMovieProvider(provider)
+	const result = await movieProvider?.search(query)
+	ctx.response.body = result
+})
+
+router.get("/movie/:provider/search", async (ctx: RouterContext<"/movie/:provider/search">) => {
+	const provider = ctx.params.provider
+	const movieProvider = getMovieProvider(provider)
+	const result = await movieProvider?.search("")
+	ctx.response.body = result
 })
 
 // Anime section
 router.get("/anime/:provider/trending", async (ctx: RouterContext<"/anime/:provider/trending">) => {
 	const provider = ctx.params.provider
-	const animeProvider = getProvider(provider)
+	const animeProvider = getAnimeProvider(provider)
 	const result = await animeProvider?.getTrending()
 	ctx.response.body = result
 })
@@ -148,23 +199,26 @@ router.get("/anime/:provider/trending", async (ctx: RouterContext<"/anime/:provi
 router.get("/anime/:provider/episode/:epid/sources", async (ctx: RouterContext<"/anime/:provider/episode/:epid/sources">) => {
 	const id = ctx.params.epid
 	const provider = ctx.params.provider
-	const animeProvider = getProvider(provider)
+	const animeProvider = getAnimeProvider(provider)
 	const result = await animeProvider?.getEpisodeSources(id)
 	ctx.response.body = result
 })
 
-// Legacy, for backward compatibility
+////////////////////////////////////////
+// Legacy, for backward compatibility //
+////////////////////////////////////////
 router.get("/anime/episode/:epid", async (ctx: RouterContext<"/anime/episode/:epid">) => {
 	const id = ctx.params.epid
-	const animeProvider = getProvider("gogo")
+	const animeProvider = getAnimeProvider("gogo")
 	const result = await animeProvider?.getEpisodeSources(id)
 	ctx.response.body = result
 })
+////////////////////////////////////////
 
 router.get("/anime/:provider/episode/:epid/servers", async (ctx: RouterContext<"/anime/:provider/episode/:epid/servers">) => {
 	const id = ctx.params.epid
 	const provider = ctx.params.provider
-	const animeProvider = getProvider(provider)
+	const animeProvider = getAnimeProvider(provider)
 	const result = await animeProvider?.getEpisodeServers(id)
 	ctx.response.body = result
 })
@@ -172,14 +226,14 @@ router.get("/anime/:provider/episode/:epid/servers", async (ctx: RouterContext<"
 router.get("/anime/:provider/:animeid/info", async (ctx: RouterContext<"/anime/:provider/:animeid/info">) => {
 	const provider = ctx.params.provider
 	const animeid = ctx.params.animeid
-	const animeProvider = getProvider(provider)
+	const animeProvider = getAnimeProvider(provider)
 	const result = await animeProvider?.getAnimeInfo(animeid)
 	ctx.response.body = result
 })
 
 router.get("/anime/:provider/topairing", async (ctx: RouterContext<"/anime/:provider/topairing">) => {
 	const provider = ctx.params.provider
-	const animeProvider = getProvider(provider)
+	const animeProvider = getAnimeProvider(provider)
 	const result = await animeProvider?.getTopAiring()
 	ctx.response.body = result
 })
@@ -187,14 +241,14 @@ router.get("/anime/:provider/topairing", async (ctx: RouterContext<"/anime/:prov
 router.get("/anime/:provider/search/:query", async (ctx: RouterContext<"/anime/:provider/search/:query">) => {
 	const provider = ctx.params.provider
 	const query = ctx.params.query
-	const animeProvider = getProvider(provider)
+	const animeProvider = getAnimeProvider(provider)
 	const result = await animeProvider?.searchAnime(query)
 	ctx.response.body = result
 })
 
 router.get("/anime/:provider/search", async (ctx: RouterContext<"/anime/:provider/search">) => {
 	const provider = ctx.params.provider
-	const animeProvider = getProvider(provider)
+	const animeProvider = getAnimeProvider(provider)
 	const result = await animeProvider?.searchAnime("")
 	ctx.response.body = result
 })
