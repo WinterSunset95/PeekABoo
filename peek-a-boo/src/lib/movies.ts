@@ -1,4 +1,5 @@
 import { MOVIES } from "@consumet/extensions";
+
 import { 
 	PeekABoo, 
 	MovieSearchResult, 
@@ -7,6 +8,7 @@ import {
 } from './types'
 import { getSettings } from "./storage";
 
+// getTrendingMovies() returns an array of objects of type MovieSearchResult wrapped by a PeekABoo object
 export const getTrendingMovies = async (): Promise<PeekABoo<MovieSearchResult[]>> => {
 	const { boo } = await getSettings()
 	const settings = boo
@@ -59,6 +61,7 @@ export const movieSources = [ "vidsrc", "vidpro", "vidvip", "vidin", "superembed
 
 export type MovieSources = typeof movieSources[number]
 
+// Returns an embed link for a movie. Takes the tmdb id of the movie as argument
 export const movieEmbedLink = (source: MovieSources, id: string): string => {
 	switch (source) {
 		case "vidsrc":
@@ -76,6 +79,7 @@ export const movieEmbedLink = (source: MovieSources, id: string): string => {
 	}
 }
 
+// Returns an embed link for a tv episode. Takes the tmdb id, season number and episode number as arguments
 export const tvEmbedLink = (source: MovieSources, id: string, season: number, episode: number): string => {
 	switch (source) {
 		case "vidsrc":

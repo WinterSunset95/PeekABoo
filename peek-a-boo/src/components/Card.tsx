@@ -6,10 +6,10 @@ import {
 } from "@ionic/react"
 import { MovieSearchResult } from "../lib/types"
 
-import AnimeInfoPage from './AnimeInfo'
+import AnimeInfoPage from './Info/AnimeInfo'
 import './Card.css'
-import MovieInfoPage from "./MovieInfo"
-import TvInfoPage from "./TvInfo"
+import MovieInfoPage from "./Info/MovieInfo"
+import TvInfoPage from "./Info/TvInfo"
 
 const Card: React.FC<MovieSearchResult> = (item) => {
 	return (

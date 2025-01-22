@@ -15,8 +15,8 @@ import {
 
 import './AnimeInfo.css'
 import { useContext, useEffect, useState } from "react"
-import { AnimeInfo, PlayerOptions, Settings } from "../lib/types"
-import { getAnimeInfo, getEpisodeServers, getEpisodeSources } from "../lib/anime"
+import { AnimeInfo, PlayerOptions, Settings } from "../../lib/types"
+import { getAnimeInfo, getEpisodeServers, getEpisodeSources } from "../../lib/anime"
 import { Swiper, SwiperSlide } from "swiper/react"
 
 import {
@@ -25,9 +25,9 @@ import {
 import 'swiper/css'
 import 'swiper/css/pagination'
 import { IAnimeEpisode, IEpisodeServer, ISource } from "@consumet/extensions"
-import PlayerComponent from "./Player"
-import { proxyThisLink } from "../lib/backendconnection"
-import { getSettings, resetSettings } from "../lib/storage"
+import PlayerComponent from "../Player"
+import { proxyThisLink } from "../../lib/backendconnection"
+import { getSettings, resetSettings } from "../../lib/storage"
 import { play } from "ionicons/icons"
 
 interface InfoProps {

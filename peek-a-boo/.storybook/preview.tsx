@@ -1,9 +1,22 @@
+import type { Preview } from "@storybook/react";
+import React, { useState } from 'react'
+
 import {
   IonApp,
   IonNav,
+  IonItem,
+  IonImg,
+  IonButton,
+  IonButtons,
+  IonBackButton,
+  IonNavLink,
+  IonCard,
+  IonTitle,
+  IonCardTitle,
+  IonPage,
+  IonContent,
   setupIonicReact
 } from '@ionic/react';
-import Home from './pages/Home';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -33,15 +46,38 @@ import '@ionic/react/css/display.css';
 import '@ionic/react/css/palettes/dark.system.css';
 
 /* Theme variables */
-import './theme/variables.css';
+import '../src/theme/variables.css';
 
-setupIonicReact();
+/* Ionic framework configuration to enforce same look and feel across platforms */
+setupIonicReact()
 
-const App: React.FC = () => (
-	  <IonApp>
-		<IonNav root={() => <Home />}>
-		</IonNav>
-	  </IonApp>
-)
+const IonWrapper = ({ children }) => {
+  return (
+    <IonApp>
+      <IonPage style={{ margin: '20px' }}>
+        <IonContent>{children}</IonContent>
+      </IonPage>
+    </IonApp>
+  )
+}
 
-export default App;
+export const decorators = [
+  (Story) => (
+    <IonWrapper>
+      <Story />
+    </IonWrapper>
+  ),
+]
+
+const preview: Preview = {
+  parameters: {
+    controls: {
+      matchers: {
+        color: /(background|color)$/i,
+        date: /Date$/i,
+      },
+    },
+  },
+};
+
+export default preview;

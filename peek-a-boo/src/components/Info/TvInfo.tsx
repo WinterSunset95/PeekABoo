@@ -1,7 +1,7 @@
 import { IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonImg, IonTitle, IonToolbar } from "@ionic/react"
-import { getMovieInfo, getTvInfo, movieEmbedLink, movieSources, MovieSources, tvEmbedLink } from "../lib/movies"
+import { getMovieInfo, getTvInfo, movieEmbedLink, movieSources, MovieSources, tvEmbedLink } from "../../lib/movies"
 import { useEffect, useRef, useState } from "react"
-import { TvInfo, TvSeason } from "../lib/types"
+import { TvInfo, TvSeason } from "../../lib/types"
 import { Swiper, SwiperRef, SwiperSlide } from "swiper/react"
 import "./MovieInfo.css"
 

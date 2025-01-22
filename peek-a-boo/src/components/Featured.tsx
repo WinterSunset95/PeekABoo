@@ -7,7 +7,7 @@ import {
 import { MovieInfo, MovieSearchResult } from "../lib/types"
 
 import "./Featured.css"
-import AnimeInfoPage from './AnimeInfo'
+import AnimeInfoPage from './Info/AnimeInfo'
 
 const Featured: React.FC<MovieInfo> = (item) => {
 
