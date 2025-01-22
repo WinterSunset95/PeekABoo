@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { MovieInfo } from "../../lib/types"
 import { Swiper, SwiperSlide } from "swiper/react"
 import "./MovieInfo.css"
+import LoadingComponent from "../Loading"
 
 interface InfoProps {
 	id: string
@@ -22,7 +23,7 @@ const MovieInfoPage: React.FC<InfoProps> = ({ id }) => {
 	}
 
 	const PlayerAndImage = () => {
-		if (!movieInfo) return <h1>Loading . . .</h1>
+		if (!movieInfo) return <LoadingComponent choice="card_large" />
 
 		if (!source) {
 			return (
@@ -48,7 +49,7 @@ const MovieInfoPage: React.FC<InfoProps> = ({ id }) => {
 	}
 
 	const Details = () => {
-		if (!movieInfo) return <h1>Loading . . .</h1>
+		if (!movieInfo) return <LoadingComponent choice="card_large" />
 		return (
 			<div>
 				<p>{movieInfo.Overview}</p>

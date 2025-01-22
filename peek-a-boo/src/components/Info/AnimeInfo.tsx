@@ -14,7 +14,7 @@ import {
 } from "@ionic/react"
 
 import './AnimeInfo.css'
-import { useContext, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { AnimeInfo, PlayerOptions, Settings } from "../../lib/types"
 import { getAnimeInfo, getEpisodeServers, getEpisodeSources } from "../../lib/anime"
 import { Swiper, SwiperSlide } from "swiper/react"
@@ -28,7 +28,7 @@ import { IAnimeEpisode, IEpisodeServer, ISource } from "@consumet/extensions"
 import PlayerComponent from "../Player"
 import { proxyThisLink } from "../../lib/backendconnection"
 import { getSettings, resetSettings } from "../../lib/storage"
-import { play } from "ionicons/icons"
+import LoadingComponent from "../Loading"
 
 interface InfoProps {
 	id: string
@@ -200,7 +200,7 @@ const AnimeInfoPage: React.FC<InfoProps> = ({ id }) => {
 	}
 
 	const Body = () => {
-		if (!info) return "Loading . . ."
+		if (!info) return <LoadingComponent choice="card_large" />
 
 		return (
 			<div className="ion-padding">
@@ -235,7 +235,7 @@ const AnimeInfoPage: React.FC<InfoProps> = ({ id }) => {
 	}
 
 	const Details = () => {
-		if (!info) return "Loading . . ."
+		if (!info) return <LoadingComponent choice="card_large" />
 
 		return (
 			<div>

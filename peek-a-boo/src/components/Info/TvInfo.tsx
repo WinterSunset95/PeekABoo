@@ -146,8 +146,7 @@ const TvInfoPage: React.FC<InfoProps> = ({ id }) => {
 				<h4>{movieSources.length} Sources</h4>
 				<Swiper
 					spaceBetween={5}
-					slidesPerView={4}
-					centeredSlides={true}
+					slidesPerView={3}
 					ref={swiper}
 				>
 					{movieSources.map((item, index) => (

@@ -13,6 +13,7 @@ import List from './List';
 import Featured from './Featured'
 import './HomePage.css'
 import { getTrendingMovies, getTrendingTv } from '../lib/movies';
+import LoadingComponent from './Loading';
 
 const HomePage: React.FC = () => {
 	const [trending, setTrending] = useState<MovieSearchResult[]>([])
@@ -77,14 +78,27 @@ const HomePage: React.FC = () => {
 				{
 					featured ?
 					<Featured {...featured} />
-					: "Loading"
+					: <LoadingComponent choice='card_large' />
 				}
 				<h1>Trending Anime</h1>
-				<List {...trending} />
+				{
+					trending.length > 1 ? 
+					<List {...trending} />
+					: <LoadingComponent choice='list' />
+
+				}
 				<h1>Trending Movies</h1>
-				<List {...trendingMovies} />
+				{
+					trendingMovies.length > 1?
+					<List {...trendingMovies} />
+					: <LoadingComponent choice='list' />
+				}
 				<h1>Trending Shows</h1>
-				<List {...trendingTv} />
+				{
+					trendingTv.length > 1 ?
+					<List {...trendingTv} />
+					: <LoadingComponent choice='list' />
+				}
 
 			</IonContent>
 		</IonPage>
