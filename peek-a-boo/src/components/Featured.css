@@ -31,6 +31,10 @@
 	background: linear-gradient(0deg, rgba(10,10,10,0.7) 0%, rgba(10,10,10,0.5) 70%, rgba(10,10,10,0) 100%);
 }
 
+.featured-card-info > hr {
+	margin-right: 100%;
+}
+
 .featured-card-info > h1 {
 	color: rgb(230, 230, 230);
 }

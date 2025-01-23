@@ -25,7 +25,7 @@ const Featured: React.FC<MovieInfo> = (item) => {
 					</IonImg>
 					<div className="featured-card-info">
 						<h1>{item.Title}</h1>
-						<hr align="left" />
+						<hr />
 						<p>{item.Overview.length > 80 ? item.Overview.substring(0, 80) + "..." : item.Overview}</p>
 					</div>
 				</div>

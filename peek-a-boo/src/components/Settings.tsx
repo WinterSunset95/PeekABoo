@@ -17,6 +17,7 @@ import {
     IonSelectOption,
 } from "@ionic/react"
 
+import React from "react"
 import "./Settings.css"
 import { useContext, useEffect, useState } from "react"
 import { AnimeSourceOptions, AnimeTypeOptions, MovieSourceoptions, Settings, SettingsAnimeSources, SettingsAnimeTypes, SettingsMovieSources, SettingsServers, ServerOptions } from "../lib/types"
