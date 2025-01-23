@@ -19,7 +19,6 @@ import {
 
 import "./Settings.css"
 import { useContext, useEffect, useState } from "react"
-import { AppSettings } from "../AppContext"
 import { AnimeSourceOptions, AnimeTypeOptions, MovieSourceoptions, Settings, SettingsAnimeSources, SettingsAnimeTypes, SettingsMovieSources, SettingsServers, ServerOptions } from "../lib/types"
 import { getSettings, setSettings } from "../lib/storage"
 
