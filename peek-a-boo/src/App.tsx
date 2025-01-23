@@ -3,6 +3,7 @@ import {
   IonNav,
   setupIonicReact
 } from '@ionic/react';
+import React from 'react';
 import Home from './pages/Home';
 
 /* Core CSS required for Ionic components to work properly */

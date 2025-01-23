@@ -10,10 +10,9 @@ export default defineConfig({
     react(),
     legacy()
   ],
-  root: './dist',
   test: {
     globals: true,
-    environment: 'ts',
+    environment: 'jsdom',
     setupFiles: './src/setupTests.ts',
   }
 })

@@ -9,7 +9,7 @@ import Player from 'video.js/dist/types/player';
 const PlayerComponent: React.FC<PlayerOptions> = (options) => {
 
 	const videoRef = useRef<HTMLDivElement>(null);
-	const playerRef = useRef<Player>(new Player(document.createElement("video-js")));
+	const playerRef = useRef<Player>(null);
 
 	const setupPlayer = () => {
 		const videoElement = document.createElement("video-js")
