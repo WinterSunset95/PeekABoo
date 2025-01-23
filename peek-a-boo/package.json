@@ -37,6 +37,7 @@
     "videojs-hls-quality-selector": "^2.0.0"
   },
   "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "6.2.0",
     "@chromatic-com/storybook": "^3.2.4",
     "@storybook/addon-essentials": "^8.6.0-alpha.0",

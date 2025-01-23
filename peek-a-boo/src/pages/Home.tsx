@@ -18,8 +18,13 @@ import Search from '../components/Search'
 import { home, person, search, settings } from 'ionicons/icons';
 import AccountPage from '../components/Account';
 import SettingsPage from '../components/Settings';
+import { useEffect } from 'react';
 
 const Home: React.FC = () => {
+
+	useEffect(() => {
+		document.title = "PeekABoo"
+	}, [])
 
 	return (
 		<IonTabs>
