@@ -49,7 +49,7 @@ export interface PeekABoo<T> {
 export type AnimeTypeOptions = "ad" | "adfree" 
 export type AnimeSourceOptions = "gogo" | "nineanime" | "animepahe" | "zoro" | "animefox" | "animedrive" | "anify" | "crunchyroll" | "bilibili" | "marin" | "animesaturn" | "animeunity" | "monoschinos";
 export type MovieSourceoptions = "dramacool" | "flixhq" | "fmovies" | "goku" | "kissasian" | "moviehdwatch" | "smashystream" | "turkish" | "viewasian" | "tmdb";
-export type ServerOptions = "http://localhost:3000" | "http://65.1.92.65" | "http://192.168.101.62:3000" | "http://192.168.220.210:3000" | string;
+export type ServerOptions = "http://localhost:3000" | "http://65.1.92.65" | "http://192.168.101.62:3000" | "http://192.168.220.210:3000" | "" | string;
 
 export interface Settings {
 	AnimeType: AnimeTypeOptions,
@@ -61,4 +61,4 @@ export interface Settings {
 export const SettingsAnimeTypes: AnimeTypeOptions[] = ["ad", "adfree"]
 export const SettingsAnimeSources: AnimeSourceOptions[] = ["gogo" , "nineanime" , "animepahe" , "zoro" , "animefox" , "animedrive" , "anify" , "crunchyroll" , "bilibili" , "marin" , "animesaturn" , "animeunity" , "monoschinos"]
 export const SettingsMovieSources: MovieSourceoptions[] = [ "dramacool" , "flixhq" , "fmovies" , "goku" , "kissasian" , "moviehdwatch" , "smashystream" , "turkish" , "viewasian", "tmdb"]
-export let SettingsServers: ServerOptions[] = [ "http://localhost:3000", "http://65.1.92.65", "http://192.168.101.62:3000", "http://192.168.220.210:3000" ]
+export let SettingsServers: ServerOptions[] = [ "http://localhost:3000", "http://65.1.92.65", "http://192.168.101.62:3000", "http://192.168.220.210:3000", "" ]

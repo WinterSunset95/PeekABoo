@@ -12,6 +12,7 @@ import { TMDB } from "./movies/tmdb.ts";
 import { MovieProviderKey, MovieProviders } from "./movies/movie.ts";
 import { FlixHq } from "./movies/flixhq.ts";
 
+const app = new Application()
 const router = new Router()
 
 //const SERVER = "http://localhost:3000"
@@ -22,15 +23,6 @@ if (!port) {
 	port = "80"
 }
 console.log(SERVER)
-
-//////////////////
-// Sanity check //
-//////////////////
-router.get("/", (ctx) => {
-	ctx.response.body = "Hello World!"
-})
-//////////////////
-//////////////////
 
 ///////////////////////////////////////////////////////
 // Get anime provider object from the providers list //
@@ -50,6 +42,17 @@ function getMovieProvider(provier: string): TMDB | FlixHq | null {
 }
 ///////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////
+
+////////////////////
+// Error handling //
+////////////////////
+app.use(async (ctx, next) => {
+	try {
+		await next()
+	} catch (err) {
+		console.log(err)
+	}
+})
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // DO NOT CHANGE ANYTHING IN THE NEXT THREE BLOCKS!! /////////////////////////////////////////////
@@ -299,10 +302,19 @@ router.get("/anime/:provider/search", async (ctx: RouterContext<"/anime/:provide
 	ctx.response.body = result
 })
 
-const app = new Application()
 app.use(oakCors({
 	origin: "*"
 }))
 app.use(router.routes())
 app.use(router.allowedMethods())
+app.use(async (ctx, next) => {
+	const root = `${Deno.cwd()}/static`
+	try {
+		await ctx.send({ root })
+	} catch {
+		next()
+	}
+})
+
 app.listen({ hostname: "0.0.0.0", port: parseInt(port), })
+
