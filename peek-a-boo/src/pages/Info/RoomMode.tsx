@@ -6,6 +6,7 @@ import { getRoom } from "../../lib/rooms";
 import { socket } from "../../lib/socket";
 import { getAnimeInfo } from "../../lib/anime";
 import { useIonRouter } from "@ionic/react";
+import LoadingComponent from "../../components/Loading";
 
 interface RoomModeProps extends RouteComponentProps<{
     // RoomId 
@@ -41,7 +42,7 @@ const RoomMode: React.FC<RoomModeProps> = ({ match }) => {
         initialLoad()
     }, [])
 
-    if (!room || !info) return ""
+    if (!room || !info) return <LoadingComponent choice="full_page" />
 
     return <AnimeInfoPage openRoom={room} info={info} />
 }

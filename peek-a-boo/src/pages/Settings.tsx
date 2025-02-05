@@ -15,6 +15,7 @@ import {
     IonItem,
     IonSelect,
     IonSelectOption,
+	useIonAlert,
 } from "@ionic/react"
 
 import React from "react"
@@ -28,6 +29,7 @@ const SettingsPage: React.FC = () => {
 	const [aniSource, setAniSource] = useState<AnimeSourceOptions>()
 	const [movSource, setMovSource] = useState<MovieSourceoptions>()
 	const [server, setServer] = useState<ServerOptions>()
+	const [ openAlert, other ] = useIonAlert()
 
 	const changeSettings = async () => {
 		if (!type || !aniSource || !movSource || !server) return;
@@ -50,7 +52,7 @@ const SettingsPage: React.FC = () => {
 	const loadSettings = async () => {
 		const settings = await getSettings()
 		if (settings.peek == false) {
-			alert("Failed to load settings. This is not supposed to happen")
+			openAlert("Failed to load settings. This is not supposed to happen")
 		}
 		const appSettings = settings.boo as Settings
 		setType(appSettings.AnimeType)

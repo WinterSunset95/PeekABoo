@@ -76,22 +76,22 @@ const App: React.FC = () => {
 		}
 		socket.connect()
 	}
+
+	socket.on("connect", () => {
+		if (!socket.id) return
+		setSockId(socket.id)
+		console.log(`connected: ${socket.id}`)
+		socket.emit("addUser", {
+			UserId: socket.id,
+			UserName: name,
+			UserImage: "https://avatar.iran.liara.run/username?username=" + name
+		}, (user: User) => {
+			setUserData(user)
+		})
+	})
 	
 	useEffect(() => {
 		document.title = "PeekABoo"
-
-		socket.on("connect", () => {
-			if (!socket.id) return
-			setSockId(socket.id)
-			console.log(`connected: ${socket.id}`)
-			socket.emit("addUser", {
-				UserId: socket.id,
-				UserName: name,
-				UserImage: "https://avatar.iran.liara.run/username?username=" + name
-			}, (user: User) => {
-				setUserData(user)
-			})
-		})
 
 		return () => {
 			socket.off("connect")

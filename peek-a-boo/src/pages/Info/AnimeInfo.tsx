@@ -129,11 +129,17 @@ const AnimeInfoPage: React.FC<InfoProps> = ({ info, openRoom }) => {
 
 	const roomCreate = async () => {
 		if (!user || !info) return
+
+        let roomId = info.Id
+        roomId = roomId.toLowerCase()
+        const randomNum = Math.floor(100000 + Math.random() * 900000)
+        roomId = roomId + "-" + randomNum.toString()
+
 		const room: OpenRoom = {
 			...user,
 			Participants: [user],
-			RoomId: sockId,
-			OwnerId: sockId,
+			RoomId: roomId,
+			RoomName: info.Title,
 			CurrentMedia: {
 				Id: info.Id,
 				Title: info.Title,

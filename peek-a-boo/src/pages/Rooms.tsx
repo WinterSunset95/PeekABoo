@@ -1,4 +1,4 @@
-import { IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonInput, IonItem, IonList, IonPage, IonTitle, IonToolbar, useIonRouter } from "@ionic/react"
+import { IonAvatar, IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonInput, IonItem, IonList, IonPage, IonTitle, IonToolbar, useIonAlert, useIonRouter } from "@ionic/react"
 import { socket } from "../lib/socket"
 import { OpenRoom, PeekABoo, RoomCreate, RoomRequest, User } from "../lib/types"
 import { useContext, useEffect, useState } from "react"
@@ -10,54 +10,62 @@ import { getRoomsList } from "../lib/rooms"
 const Rooms: React.FC = () => {
     const [rooms, setRooms] = useState<OpenRoom[]>()
     const [sockId, setSockId] = useState(socket.id)
-    const [roomid, setRoomid] = useState("")
+    const [roomname, setRoomname] = useState("")
     const user = useContext(UserContext)
     const router = useIonRouter()
+    const [ showAlert, nothing ] = useIonAlert()
 
     const createRoom = () => {
         if (!user || !sockId) {
-            alert("Userdata does not exist for some reason, Please restart the app or contact the developer!")
+            showAlert("Userdata does not exist for some reason, Please restart the app or contact the developer!")
             return
         }
+
+        let roomId = roomname.replaceAll(/[^a-zA-Z]/g, "-")
+        roomId = roomId.toLowerCase()
+        const randomNum = Math.floor(100000 + Math.random() * 900000)
+        roomId = roomId + "-" + randomNum.toString()
+
         const newRoom: OpenRoom = {
-            RoomId: roomid,
-            OwnerId: sockId,
             ...user,
+            RoomId: roomId,
+            RoomName: roomname,
             Participants: [],
             Messages: []
         }
+        console.log("Creating room")
+        console.log(newRoom)
         socket.emit("addRoom", newRoom)
     }
 
     const joinRoom = (item?: OpenRoom) => {
         if (!sockId) return
         const request: RoomRequest = {
-            RoomId: item ? item.RoomId : roomid,
+            RoomId: item ? item.RoomId : roomname,
             RequesterId: sockId
         }
         socket.timeout(10000).emit("roomRequest", request, (err: any, room: OpenRoom | undefined) => {
             if (err) {
-                alert("Room owner did not respond!!")
+                showAlert("Room owner did not respond!!")
                 return
             }
             if (!room) {
-                alert("Either the room does not exist, or the owner declined your entry")
+                showAlert("Either the room does not exist, or the owner declined your entry")
                 return
             }
-            router.push(`${item ? item.CurrentMedia ? `/room/${item.RoomId}` : `/chat/${item.RoomId}` : `/room/${roomid}`}`, "forward", "push")
+            router.push(`${item ? item.CurrentMedia ? `/room/${item.RoomId}` : `/chat/${item.RoomId}` : `/room/${roomname}`}`, "forward", "push")
         })
     }
-
     
     socket.on("newRoomAdded", (data: PeekABoo<OpenRoom>) => {
         if (rooms) {
-            console.log(rooms)
             setRooms([...rooms, data.boo])
             console.log([...rooms, data.boo])
         } else {
             setRooms([data.boo])
         }
     })
+
     socket.on("roomRemoved", (data: PeekABoo<OpenRoom>) => {
         if (!rooms) return
         const roomsCopy = rooms
@@ -79,7 +87,7 @@ const Rooms: React.FC = () => {
 
         initialLoad()
         socket.on("socketError", (data: string) => {
-            alert(data)
+            showAlert(data)
         })
         socket.on("getRooms", (rooms: OpenRoom[]) => {
             setRooms(rooms)
@@ -108,26 +116,44 @@ const Rooms: React.FC = () => {
             <IonContent className="room-main ion-padding">
                 <div className="room-form">
                     <IonInput placeholder="Enter room id" labelPlacement="floating" label="Room ID" fill="outline" name="roomid" 
-                    value={roomid} onIonInput={(e) => setRoomid(e.target.value as string)}></IonInput>
+                    value={roomname} onIonInput={(e) => setRoomname(e.target.value as string)}></IonInput>
                     <div className="room-form-buttons">
                         <IonButton onClick={() => joinRoom()}>Join Room</IonButton>
                         <IonButton onClick={createRoom}>Create Room</IonButton>
                     </div>
                 </div>
-                <IonList>
+                <IonList className="main-list" lines="none">
                     {rooms?.map((item, index) => {
                         return (
                             <IonItem
-                                // routerLink={
-                                //     item.CurrentMedia ?
-                                //     `/room/${item.RoomId}`
-                                //     : `/chat/${item.RoomId}`
-                                // }
                                 key={index}
                                 onClick={() => joinRoom(item)}
+                                button={true}
                             >
-                                    {item.UserName}: {item.UserId} <br />
-                                    {item.CurrentMedia ? "Active" : "Null"}
+                                <div
+                                    className="list-item"
+                                >
+                                    <div className="avatar-and-name">
+                                        <IonAvatar slot="start">
+                                            <img src={item.UserImage} alt="" />
+                                        </IonAvatar>
+                                        <span>{item.UserName}</span>
+                                    </div>
+                                    <div className="room-and-owner">
+                                        <div>Room Name: {item.RoomName}</div>
+                                        <div>RoomID: {item.RoomId}</div>
+                                        <div>OwnerID: {item.UserId}</div>
+                                        {item.CurrentMedia ?
+                                        <div>
+                                            Watching: {item.CurrentMedia.Title}
+                                        </div>
+                                        :
+                                        <div>
+                                            Chat-only Room
+                                        </div>
+                                        }
+                                    </div>
+                                </div>
                             </IonItem>
                         )
                     })}

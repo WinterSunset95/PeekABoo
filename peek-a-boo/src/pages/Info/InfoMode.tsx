@@ -3,6 +3,7 @@ import AnimeInfoPage from "./AnimeInfo";
 import { useEffect, useState } from "react";
 import { AnimeInfo } from "../../lib/types";
 import { getAnimeInfo } from "../../lib/anime";
+import LoadingComponent from "../../components/Loading";
 
 interface InfoProps extends RouteComponentProps<{
     id: string
@@ -29,7 +30,7 @@ const InfoMode: React.FC<InfoProps> = ({ match }) => {
         loadInfo()
     }, [])
 
-    if (!info) return ""
+    if (!info) return <LoadingComponent choice="full_page" />
 
     return <AnimeInfoPage info={info} />
 }

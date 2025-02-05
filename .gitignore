@@ -56,6 +56,8 @@ yarn-error.log*
 */.eslintcache
 
 *.env*
+!*/android
 */android
+!*/android/app/build/outputs/apk
 
 *storybook.log

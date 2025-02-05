@@ -53,7 +53,7 @@ export interface RoomCreate extends User {
 
 export interface OpenRoom extends User {
 	RoomId: string,
-	OwnerId: string,
+	RoomName: string,
 	Participants: User[],
 	CurrentMedia?: MovieSearchResult,
 	Messages: ChatMessage[]

@@ -6,6 +6,7 @@ import { OpenRoom } from "../../lib/types";
 import { getRoom } from "../../lib/rooms";
 import { socket } from "../../lib/socket";
 import { IonContent, IonPage, IonText, IonTitle, IonToolbar, useIonRouter } from "@ionic/react";
+import LoadingComponent from "../../components/Loading";
 
 interface ChatProps extends RouteComponentProps<{
     id: string
@@ -31,17 +32,17 @@ const ChatMode: React.FC<ChatProps> = ({ match }) => {
         initialLoad()
     }, [])
 
-    if (!openRoom) return ""
+    if (!openRoom) return <LoadingComponent choice="full_page" />
 
     return (
         <IonPage>
             <IonToolbar>
-                <IonTitle slot="start">{openRoom.RoomId}</IonTitle>
+                <IonTitle slot="start">{openRoom.RoomName}</IonTitle>
                 <IonText slot="end"
                     style={{
                         paddingRight: "1rem"
                     }}
-                >ID: {openRoom.OwnerId}</IonText>
+                >ID: {openRoom.RoomId}</IonText>
             </IonToolbar>
             <IonContent>
                 <Room {...openRoom} />

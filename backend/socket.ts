@@ -34,7 +34,7 @@ io.on("connection", (socket) => {
 				rooms.splice(i,1)
 				console.log(`Room ${room.RoomId} removed`)
 				found = true
-			} else if (room.OwnerId == socket.id) {
+			} else if (room.UserId == socket.id) {
 				rooms.splice(i,1)
 				console.log(`Room ${room.RoomId} removed`)
 				found = true
@@ -54,13 +54,14 @@ io.on("connection", (socket) => {
 	})
 
     socket.on("addRoom", (room: OpenRoom) => {
-        console.log(`New room: ${room}`)
+		console.log("Creating new room")
+		console.log(room)
         const toReturn: PeekABoo<OpenRoom> = {
             peek: true,
             boo: room
         }
-		if (checkIfRoomExists({ RoomId: room.RoomId, RequesterId: room.OwnerId })) {
-			io.to(room.OwnerId).emit("socketError", `Room already exists: ${room.RoomId}`)
+		if (checkIfRoomExists({ RoomId: room.RoomId, RequesterId: room.UserId })) {
+			io.to(room.UserId).emit("socketError", `Room already exists: ${room.RoomId}`)
 		} else {
 			rooms.push(room)
 			socket.emit("newRoomAdded", toReturn)
@@ -119,6 +120,11 @@ io.on("connection", (socket) => {
 	socket.on("roomRequest", (data: RoomRequest, callback: (room: OpenRoom | undefined) => void ) => {
 		console.log("Room request from: " + data.RequesterId)
 		const room = checkIfRoomExists(data)
+		console.log(`${room?.UserId}: ${data.RequesterId}`)
+		if (data.RequesterId == room?.UserId) {
+			console.log("Requester is owner")
+			callback(room)
+		}
 		io.to(data.RoomId).timeout(10000).emit("roomRequest", data, (err: any, response: string) => {
 			if (err) {
 				console.log("Owner reply timed out")

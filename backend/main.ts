@@ -310,7 +310,7 @@ router.get("/anime/:provider/search", async (ctx: RouterContext<"/anime/:provide
 router.post("/rooms/create", async (ctx) => {
 	const reqBody = ctx.request.body
 	const data = await reqBody.json() as OpenRoom
-	const room = checkIfRoomExists({ RoomId: data.RoomId, RequesterId: data.OwnerId })
+	const room = checkIfRoomExists({ RoomId: data.RoomId, RequesterId: data.UserId })
 	if (!room) {
 		rooms.push(data)
 	}
@@ -344,6 +344,20 @@ router.get("/rooms/get/:roomid", (ctx: RouterContext<"/rooms/get/:roomid">) => {
 		boo: room
 	}
 	ctx.response.body = toReturn
+})
+
+//////////////////
+// New releases //
+//////////////////
+let release: any;
+router.post("/releases", async (ctx) => {
+	const reqBody = ctx.request.body
+	const data = await reqBody.json()
+	release = data
+	ctx.response.body = data
+})
+router.get("/releases", async (ctx) => {
+	ctx.response.body = release
 })
 
 app.use(oakCors({
