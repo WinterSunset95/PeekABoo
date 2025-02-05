@@ -1,7 +1,8 @@
 import { Preferences } from '@capacitor/preferences'
-import { PeekABoo, Settings } from './types'
+import { PeekABoo, Settings, User } from './types'
 
 export const getSettings = async (): Promise<PeekABoo<Settings>> => {
+
 	let { value } = await Preferences.get({ key : "base_settings" })
 	if (value == null) {
 		const res = await resetSettings()

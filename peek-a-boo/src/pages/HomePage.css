@@ -1,0 +1,42 @@
+.homepage-header {
+	padding: 1rem;
+}
+
+.homepage-main {
+	padding: 1rem;
+}
+
+.socket-id {
+	font-size: 0.75rem;
+}
+
+.main {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    gap: 1rem;
+}
+
+.main > h1 {
+    font-size: 0.8rem;
+    text-align: center;
+}
+
+.main > .form {
+    border: 1px solid white;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.main > .form > .form-button {
+    width: 100%;
+}

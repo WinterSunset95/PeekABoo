@@ -43,13 +43,32 @@ export class Gogo {
 			boo: defaultAnimeInfo
 		}
 
-		const result: IAnimeInfo = await anime.fetchAnimeInfo(id)
-		if (!result) return defaultResult;
-		result.id = id
+		try {
+			const result: IAnimeInfo = await anime.fetchAnimeInfo(id)
+			if (!result) return defaultResult;
+			result.id = id
 
-		return {
-			peek: true,
-			boo: iAnimeInfo_to_AnimeInfo(result)
+			return {
+				peek: true,
+				boo: iAnimeInfo_to_AnimeInfo(result)
+			}
+		} catch (err) {
+			console.error(err)
+			return {
+				peek: false,
+				boo: {
+					Id: "null",
+					Title: "Error",
+					Poster: "",
+					Type: "unknown",
+					Overview: "Failed to fetch Information: " + JSON.stringify(err),
+					Year: "",
+					Duration: "",
+					Genres: [],
+					Languages: [],
+					Episodes: [],
+				}
+			}
 		}
 	}
 

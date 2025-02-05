@@ -34,6 +34,7 @@
     "react-dom": "^19.0.0",
     "react-router": "^5.0.1",
     "react-router-dom": "^5.0.1",
+    "socket.io-client": "^4.8.1",
     "swiper": "^11.2.1",
     "videojs-hls-quality-selector": "^2.0.0"
   },

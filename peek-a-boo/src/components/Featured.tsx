@@ -7,15 +7,13 @@ import {
 import { MovieInfo, MovieSearchResult } from "../lib/types"
 
 import "./Featured.css"
-import AnimeInfoPage from './Info/AnimeInfo'
+import AnimeInfoPage from '../pages/Info/AnimeInfo'
+import { Link } from 'react-router-dom'
 
 const Featured: React.FC<MovieInfo> = (item) => {
 
 	return (
-		<IonNavLink
-			routerDirection="forward"
-			component={() => <AnimeInfoPage id={item.Id} />}
-		>
+		<Link to={`/anime/${item.Id}`}>
 			<IonCard className="featured-card-ion-container">
 				<div className="featured-card">
 					<IonImg
@@ -30,7 +28,7 @@ const Featured: React.FC<MovieInfo> = (item) => {
 					</div>
 				</div>
 			</IonCard>
-		</IonNavLink>
+		</Link>
 	)
 }
 

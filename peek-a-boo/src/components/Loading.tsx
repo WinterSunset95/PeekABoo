@@ -21,7 +21,7 @@ const LoadingComponent: React.FC<{ choice: "card" | "card_large" | "list" | unde
                 direction="horizontal"
             >
                 {Array.from({ length: 5}, (_, index) => (
-                    <SwiperSlide>
+                    <SwiperSlide key={index}>
                         <div className="loading-component-list loading-component">
                             <div className="spinner"></div>
                         </div>

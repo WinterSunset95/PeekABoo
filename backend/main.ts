@@ -1,9 +1,10 @@
 // @deno-types="@oak/oak"
 import { oakCors, Route } from "https://deno.land/x/cors/mod.ts";
+import { serve } from "https://deno.land/std@0.166.0/http/server.ts";
 import { Application, Router } from "@oak/oak"
 import type { RouterContext } from "@oak/oak/router";
 import { AnimeProviderKey, AnimeProviders } from "./anime/anime.ts";
-import { PeekABoo } from "./types.ts";
+import { OpenRoom, PeekABoo } from "./types.ts";
 import "jsr:@std/dotenv/load";
 import { Gogo } from "./anime/gogo.ts";
 import { AnimePahe } from "./anime/animepahe.ts";
@@ -11,6 +12,7 @@ import { Zoro } from "./anime/zoro.ts";
 import { TMDB } from "./movies/tmdb.ts";
 import { MovieProviderKey, MovieProviders } from "./movies/movie.ts";
 import { FlixHq } from "./movies/flixhq.ts";
+import { checkIfRoomExists, io, rooms } from "./socket.ts";
 
 const app = new Application()
 const router = new Router()
@@ -302,6 +304,48 @@ router.get("/anime/:provider/search", async (ctx: RouterContext<"/anime/:provide
 	ctx.response.body = result
 })
 
+///////////
+// Rooms //
+///////////
+router.post("/rooms/create", async (ctx) => {
+	const reqBody = ctx.request.body
+	const data = await reqBody.json() as OpenRoom
+	const room = checkIfRoomExists({ RoomId: data.RoomId, RequesterId: data.OwnerId })
+	if (!room) {
+		rooms.push(data)
+	}
+	const toReturn: PeekABoo<OpenRoom> = {
+		// If room does not already exist, return true
+		peek: room ? false : true,
+		boo: data
+	}
+	console.log(rooms)
+	io.emit("getRooms", rooms)
+	ctx.response.body = toReturn
+})
+
+router.get("/rooms/list", (ctx) => {
+	const res: PeekABoo<OpenRoom[]> = {
+		peek: true,
+		boo: rooms
+	}
+	console.log(rooms)
+	io.emit("getRooms", rooms)
+	ctx.response.body = res
+})
+
+router.get("/rooms/get/:roomid", (ctx: RouterContext<"/rooms/get/:roomid">) => {
+	const roomid = ctx.params.roomid
+	const requester = ctx.request.url.searchParams.get("requester") as string
+	const room = checkIfRoomExists({ RoomId: roomid, RequesterId: requester })
+	const toReturn: PeekABoo<OpenRoom | undefined> = {
+		// If room exists, return true
+		peek: room ? true : false,
+		boo: room
+	}
+	ctx.response.body = toReturn
+})
+
 app.use(oakCors({
 	origin: "*"
 }))
@@ -316,5 +360,11 @@ app.use(async (ctx, next) => {
 	}
 })
 
-app.listen({ hostname: "0.0.0.0", port: parseInt(port), })
+const handler = io.handler(async (req) => {
+	return await app.handle(req) || new Response(null, { status: 404 })
+})
 
+await serve(handler, {
+	hostname:  "0.0.0.0",
+	port: parseInt(port),
+})
