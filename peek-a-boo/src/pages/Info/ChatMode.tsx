@@ -1,12 +1,13 @@
 import { RouteComponentProps } from "react-router";
 import AnimeInfoPage from "./AnimeInfo";
 import Room from "../../components/Room";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { OpenRoom } from "../../lib/types";
 import { getRoom } from "../../lib/rooms";
 import { socket } from "../../lib/socket";
-import { IonContent, IonPage, IonText, IonTitle, IonToolbar, useIonRouter } from "@ionic/react";
+import { IonAvatar, IonContent, IonHeader, IonLabel, IonPage, IonText, IonTitle, IonToolbar, useIonRouter } from "@ionic/react";
 import LoadingComponent from "../../components/Loading";
+import { UserContext } from "../../App";
 
 interface ChatProps extends RouteComponentProps<{
     id: string
@@ -15,6 +16,7 @@ interface ChatProps extends RouteComponentProps<{
 const ChatMode: React.FC<ChatProps> = ({ match }) => {
     const [openRoom, setOpenRoom] = useState<OpenRoom>()
     const router = useIonRouter()
+    const user = useContext(UserContext)
 
     const initialLoad = async () => {
         const res = await getRoom({ RoomId: match.params.id, RequesterId: socket.id as string })
@@ -36,14 +38,27 @@ const ChatMode: React.FC<ChatProps> = ({ match }) => {
 
     return (
         <IonPage>
-            <IonToolbar>
-                <IonTitle slot="start">{openRoom.RoomName}</IonTitle>
-                <IonText slot="end"
-                    style={{
-                        paddingRight: "1rem"
-                    }}
-                >ID: {openRoom.RoomId}</IonText>
-            </IonToolbar>
+            <IonHeader>
+                <IonToolbar>
+                    <IonAvatar slot="start"
+                        style={{
+                            width: "2.5rem",
+                            height: "2.5rem",
+                            margin: "0.5rem"
+                        }}
+                    >
+                        <img src={openRoom.UserImage} alt="" />
+                    </IonAvatar>
+                    <IonLabel>
+                        {openRoom.RoomName} <br />
+                        <span style={{
+                            fontSize: "0.7rem"
+                        }}>
+                            ID: {user ? user.UserId : openRoom.RoomId}
+                        </span>
+                    </IonLabel>
+                </IonToolbar>
+            </IonHeader>
             <IonContent>
                 <Room {...openRoom} />
             </IonContent>

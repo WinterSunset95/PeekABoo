@@ -17,6 +17,7 @@
 	flex-grow: 1;
 	overflow: scroll;
 	border-radius: 0.5rem;
+	scrollbar-width: none;
 }
 
 .chat-list-item {

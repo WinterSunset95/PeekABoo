@@ -12,7 +12,7 @@ export const rooms: OpenRoom[] = []
 export const checkIfRoomExists = (room: RoomRequest): OpenRoom | undefined => {
 	for (let i=0; i<rooms.length; i++) {
 		const curr = rooms[i]
-		if (curr.RoomId == room.RoomId) {
+		if (curr.RoomId.slice(0,-6) == room.RoomId.slice(0,-6)) {
 			return curr
 		}
 	}
@@ -53,19 +53,21 @@ io.on("connection", (socket) => {
 		callback(user)
 	})
 
-    socket.on("addRoom", (room: OpenRoom) => {
+    socket.on("addRoom", (room: OpenRoom, callback: (result: string) => void) => {
 		console.log("Creating new room")
 		console.log(room)
         const toReturn: PeekABoo<OpenRoom> = {
             peek: true,
             boo: room
         }
-		if (checkIfRoomExists({ RoomId: room.RoomId, RequesterId: room.UserId })) {
-			io.to(room.UserId).emit("socketError", `Room already exists: ${room.RoomId}`)
+		const existingRoom = checkIfRoomExists({ RoomId: room.RoomId, RequesterId: room.UserId })
+		if (existingRoom) {
+			callback(`Similarly named room exists: ${existingRoom.RoomName}. Use a different name`)
 		} else {
 			rooms.push(room)
 			socket.emit("newRoomAdded", toReturn)
 			socket.broadcast.emit("newRoomAdded", toReturn)
+			callback("ok")
 		}
     })
 
@@ -120,12 +122,17 @@ io.on("connection", (socket) => {
 	socket.on("roomRequest", (data: RoomRequest, callback: (room: OpenRoom | undefined) => void ) => {
 		console.log("Room request from: " + data.RequesterId)
 		const room = checkIfRoomExists(data)
-		console.log(`${room?.UserId}: ${data.RequesterId}`)
+		if (!room) {
+			callback(undefined)
+			return
+		}
+		console.log(`Owner - ${room.UserId}: Requester - ${data.RequesterId}`)
 		if (data.RequesterId == room?.UserId) {
 			console.log("Requester is owner")
 			callback(room)
+			return
 		}
-		io.to(data.RoomId).timeout(10000).emit("roomRequest", data, (err: any, response: string) => {
+		io.to(room.UserId).timeout(10000).emit("roomRequest", data, (err: any, response: string) => {
 			if (err) {
 				console.log("Owner reply timed out")
 				callback(undefined)

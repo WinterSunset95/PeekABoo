@@ -8,9 +8,10 @@ import { UserContext } from "../App"
 import { getRoomsList } from "../lib/rooms"
 
 const Rooms: React.FC = () => {
-    const [rooms, setRooms] = useState<OpenRoom[]>()
+    const [rooms, setRooms] = useState<OpenRoom[]>([])
     const [sockId, setSockId] = useState(socket.id)
     const [roomname, setRoomname] = useState("")
+    const [disabled, setDisabled] = useState(false)
     const user = useContext(UserContext)
     const router = useIonRouter()
     const [ showAlert, nothing ] = useIonAlert()
@@ -21,6 +22,7 @@ const Rooms: React.FC = () => {
             return
         }
 
+        setDisabled(true)
         let roomId = roomname.replaceAll(/[^a-zA-Z]/g, "-")
         roomId = roomId.toLowerCase()
         const randomNum = Math.floor(100000 + Math.random() * 900000)
@@ -35,11 +37,25 @@ const Rooms: React.FC = () => {
         }
         console.log("Creating room")
         console.log(newRoom)
-        socket.emit("addRoom", newRoom)
+        socket.timeout(5000).emit("addRoom", newRoom, (err: any, result: string) => {
+            if (err) {
+                showAlert("Failed to create room")
+                setDisabled(false)
+                return
+            }
+            if (result == "ok") {
+                setDisabled(false)
+                return
+            } else {
+                showAlert(result)
+                setDisabled(false)
+            }
+        })
     }
 
     const joinRoom = (item?: OpenRoom) => {
         if (!sockId) return
+        setDisabled(true)
         const request: RoomRequest = {
             RoomId: item ? item.RoomId : roomname,
             RequesterId: sockId
@@ -47,36 +63,19 @@ const Rooms: React.FC = () => {
         socket.timeout(10000).emit("roomRequest", request, (err: any, room: OpenRoom | undefined) => {
             if (err) {
                 showAlert("Room owner did not respond!!")
+                setDisabled(false)
                 return
             }
             if (!room) {
                 showAlert("Either the room does not exist, or the owner declined your entry")
+                setDisabled(false)
                 return
             }
+            setDisabled(false)
             router.push(`${item ? item.CurrentMedia ? `/room/${item.RoomId}` : `/chat/${item.RoomId}` : `/room/${roomname}`}`, "forward", "push")
         })
     }
     
-    socket.on("newRoomAdded", (data: PeekABoo<OpenRoom>) => {
-        if (rooms) {
-            setRooms([...rooms, data.boo])
-            console.log([...rooms, data.boo])
-        } else {
-            setRooms([data.boo])
-        }
-    })
-
-    socket.on("roomRemoved", (data: PeekABoo<OpenRoom>) => {
-        if (!rooms) return
-        const roomsCopy = rooms
-        for (let i=roomsCopy.length-1; i>=0; --i) {
-            if (roomsCopy[i].UserId == data.boo.UserId) {
-                roomsCopy.splice(i,1)
-            }
-        }
-        setRooms(roomsCopy)
-    })
-
     const initialLoad = async () => {
         const res = await getRoomsList()
         setRooms(res.boo)
@@ -97,6 +96,23 @@ const Rooms: React.FC = () => {
             console.log(`Connected: ${socket.id}`)
         })
 
+        socket.on("newRoomAdded", (data: PeekABoo<OpenRoom>) => {
+            setRooms((prev) => [...prev, data.boo])
+        })
+
+        socket.on("roomRemoved", (data: PeekABoo<OpenRoom>) => {
+            setRooms((prev) => {
+                const roomsCopy = prev
+                for (let i=roomsCopy.length-1; i>=0; --i) {
+                    if (roomsCopy[i].UserId == data.boo.UserId) {
+                        roomsCopy.splice(i,1)
+                    }
+                }
+                return roomsCopy
+            })
+        })
+
+
         return () => {
             socket.off("socketError")
             socket.off("getRooms")
@@ -113,36 +129,34 @@ const Rooms: React.FC = () => {
                 <IonTitle slot="start">Room</IonTitle>
                 <IonTitle slot="end" className="socket-id">ID: {sockId}</IonTitle>
             </IonToolbar>
-            <IonContent className="room-main ion-padding">
-                <div className="room-form">
-                    <IonInput placeholder="Enter room id" labelPlacement="floating" label="Room ID" fill="outline" name="roomid" 
-                    value={roomname} onIonInput={(e) => setRoomname(e.target.value as string)}></IonInput>
-                    <div className="room-form-buttons">
-                        <IonButton onClick={() => joinRoom()}>Join Room</IonButton>
-                        <IonButton onClick={createRoom}>Create Room</IonButton>
-                    </div>
+            <IonContent className="ion-padding">
+                <section className="room-main">
+
+                <IonInput placeholder="Enter room id" labelPlacement="floating" label="Room ID" fill="outline" name="roomid" 
+                value={roomname} onIonInput={(e) => setRoomname(e.target.value as string)}></IonInput>
+                <div className="room-form-buttons">
+                    <IonButton onClick={() => joinRoom()} disabled={disabled}>Join Room</IonButton>
+                    <IonButton onClick={createRoom} disabled={disabled}>Create Room</IonButton>
                 </div>
-                <IonList className="main-list" lines="none">
+                <ul className="main-list">
                     {rooms?.map((item, index) => {
                         return (
                             <IonItem
                                 key={index}
                                 onClick={() => joinRoom(item)}
                                 button={true}
+                                disabled={disabled}
                             >
                                 <div
                                     className="list-item"
                                 >
-                                    <div className="avatar-and-name">
-                                        <IonAvatar slot="start">
-                                            <img src={item.UserImage} alt="" />
-                                        </IonAvatar>
-                                        <span>{item.UserName}</span>
-                                    </div>
+                                    <IonAvatar slot="start" className="user-avatar">
+                                        <img src={item.UserImage} alt=""/>
+                                    </IonAvatar>
                                     <div className="room-and-owner">
-                                        <div>Room Name: {item.RoomName}</div>
-                                        <div>RoomID: {item.RoomId}</div>
-                                        <div>OwnerID: {item.UserId}</div>
+                                        <h1>
+                                        {item.RoomName}
+                                        </h1>
                                         {item.CurrentMedia ?
                                         <div>
                                             Watching: {item.CurrentMedia.Title}
@@ -157,7 +171,9 @@ const Rooms: React.FC = () => {
                             </IonItem>
                         )
                     })}
-                </IonList>
+                </ul>
+
+                </section>
             </IonContent>
         </IonPage>
     )

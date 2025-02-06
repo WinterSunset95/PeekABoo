@@ -1,7 +1,6 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/peek-a-boo-bak
 /node_modules
 /.pnp
 .pnp.js
@@ -61,3 +60,6 @@ yarn-error.log*
 !*/android/app/build/outputs/apk
 
 *storybook.log
+
+/peekaboo
+/vue

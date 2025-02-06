@@ -10,15 +10,8 @@ import './Room.css'
 const Room: React.FC<OpenRoom> = (room) => {
     const [messages, setMessages] = useState<ChatMessage[]>(room.Messages)
     const [text, setText] = useState("")
-    const [incomingRequest, setIncomingRequest] = useState<RoomRequest>()
     const user = useContext(UserContext)
-    let reply = false
     const [ showToast, hideToast ] = useIonToast()
-
-    socket.on("chatMessage", (data: RoomMessage<ChatMessage>) => {
-        console.log("New message: " + data.Payload.Message)
-        setMessages([data.Payload, ...messages])
-    })
 
     const sendMessage = () => {
         if (!user) return
@@ -31,6 +24,8 @@ const Room: React.FC<OpenRoom> = (room) => {
                 Message: text
             }
         }
+        console.log("Sending: ")
+        console.log(message)
         socket.emit("chatMessage", message)
         setText("")
     }
@@ -63,10 +58,17 @@ const Room: React.FC<OpenRoom> = (room) => {
             })
         })
 
+        socket.on("chatMessage", (data: RoomMessage<ChatMessage>) => {
+            console.log("New message: " + data.Payload.Message)
+            setMessages((prev) => [data.Payload, ...prev])
+        })
+
+
 
         return () => {
             socket.emit("leaveRoom", room.RoomId)
             socket.off("roomRequest")
+            socket.off("chatMessage")
         }
     }, [])
 

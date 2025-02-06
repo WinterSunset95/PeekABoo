@@ -13,7 +13,7 @@ import {
   IonTabs,
   setupIonicReact
 } from '@ionic/react';
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useEffect, useRef, useState } from 'react';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -65,7 +65,7 @@ setupIonicReact();
 export const UserContext = createContext<User | undefined>(undefined)
 
 const App: React.FC = () => {
-	const [name, setName] = useState<string>()
+	const name = useRef<string>()
 	const [sockId, setSockId] = useState(socket.id)
 	const [userData, setUserData] = useState<User>()
 
@@ -77,21 +77,23 @@ const App: React.FC = () => {
 		socket.connect()
 	}
 
-	socket.on("connect", () => {
-		if (!socket.id) return
-		setSockId(socket.id)
-		console.log(`connected: ${socket.id}`)
-		socket.emit("addUser", {
-			UserId: socket.id,
-			UserName: name,
-			UserImage: "https://avatar.iran.liara.run/username?username=" + name
-		}, (user: User) => {
-			setUserData(user)
-		})
-	})
+
 	
 	useEffect(() => {
 		document.title = "PeekABoo"
+
+		socket.on("connect", () => {
+			if (!socket.id) return
+			setSockId(socket.id)
+			console.log(`connected: ${socket.id}`)
+			socket.emit("addUser", {
+				UserId: socket.id,
+				UserName: name.current,
+				UserImage: "https://avatar.iran.liara.run/username?username=" + name.current
+			}, (user: User) => {
+				setUserData(user)
+			})
+		})
 
 		return () => {
 			socket.off("connect")
@@ -116,8 +118,8 @@ const App: React.FC = () => {
 								label='Username'
 								fill='outline'
 								labelPlacement='floating'
-								value={name}
-								onIonInput={(e) => setName(e.target.value as string)}
+								value={name.current}
+								onIonInput={(e) => name.current = e.target.value as string}
 								></IonInput>
 								<IonButton type='submit' expand='block' className='form-button'>Submit</IonButton>
 							</form>
