@@ -25,6 +25,10 @@ import {
 	IonAvatar,
 	IonText,
 	useIonRouter,
+	useIonAlert,
+	IonChip,
+	IonLabel,
+	useIonToast,
 } from "@ionic/react"
 
 import './AnimeInfo.css'
@@ -64,11 +68,12 @@ const AnimeInfoPage: React.FC<InfoProps> = ({ info, openRoom }) => {
 	const [episodeServers, setEpisodeServers] = useState<IEpisodeServer[]>([]);
 	const [server, setServer] = useState<IEpisodeServer>();
 	const [playeroptions, setPlayeroptions] = useState<PlayerOptions>();
-	const [sockId, setSockId] = useState("Not Connected")
 	const [settings, setSettings] = useState<Settings>()
 	const [topH, setTopH] = useState(50)
-	const user = useContext(UserContext)
+	const userContext = useContext(UserContext)
 	const router = useIonRouter()
+	const [ showAlert ] = useIonAlert()
+	const [ showToast ] = useIonToast()
 	
 	const loadSettings = async () => {
 		const res = await getSettings()
@@ -128,12 +133,20 @@ const AnimeInfoPage: React.FC<InfoProps> = ({ info, openRoom }) => {
 	}
 
 	const roomCreate = async () => {
-		if (!user || !info) return
+		if (!userContext || !info) return
+
+		if (!userContext.user) {
+			router.push("/login")
+			return
+		}
+
+		const { user, setUser, name } = userContext
 
         let roomId = info.Id
         roomId = roomId.toLowerCase()
         const randomNum = Math.floor(100000 + Math.random() * 900000)
-        roomId = roomId + "-" + randomNum.toString()
+        const randomNum2 = Math.floor(100000 + Math.random() * 900000)
+        roomId = roomId + "-" + randomNum.toString() + "-" + randomNum2.toString()
 
 		const room: OpenRoom = {
 			...user,
@@ -148,9 +161,11 @@ const AnimeInfoPage: React.FC<InfoProps> = ({ info, openRoom }) => {
 			},
 			Messages: []
 		}
+		console.log(room)
 		const res = await createRoom(room)
+		console.log(res)
 		if (res.peek == false) {
-			alert("Failed to create room")
+			showAlert("Failed to create room")
 			return
 		} else {
 			console.log(res)
@@ -160,9 +175,6 @@ const AnimeInfoPage: React.FC<InfoProps> = ({ info, openRoom }) => {
 
 	useEffect(() => {
 		loadSettings()
-		if (socket.id) {
-			setSockId(socket.id)
-		}
 	}, [])
 
 	useEffect(() => {
@@ -196,12 +208,37 @@ const AnimeInfoPage: React.FC<InfoProps> = ({ info, openRoom }) => {
 	return (
 		<IonPage>
 
-			<IonHeader>
-				<IonToolbar>
-					<IonTitle>{info ? info.Title : "Watch"}</IonTitle>
-					<IonTitle slot="end" className="socket-id">ID: {sockId}</IonTitle>
-				</IonToolbar>
-			</IonHeader>
+			<IonHeader
+					translucent={true}
+				>
+					<IonToolbar
+						style={{
+							paddingRight: "1rem"
+						}}
+					>
+						<IonTitle>Peek-A-Boo</IonTitle>
+						{userContext ? userContext.user 
+						? 
+							<IonChip slot='end'
+								onClick={() => {
+									showToast({
+										message: `UserID: ${userContext.user?.UserId}`,
+										duration: 3000,
+										position: "top",
+										swipeGesture: "vertical"
+									})
+								}}
+							>
+								<IonAvatar>
+									<img src={userContext.user.UserImage} alt="" />
+								</IonAvatar>
+								<IonLabel>{userContext.user.UserName}</IonLabel>
+							</IonChip>
+						: <IonButton routerLink='/login' slot='end'>Login</IonButton>
+						: <IonButton routerLink='/login' slot='end'>Login</IonButton>
+						}
+					</IonToolbar>
+				</IonHeader>
 			
 			<IonContent className="ion-padding">
 

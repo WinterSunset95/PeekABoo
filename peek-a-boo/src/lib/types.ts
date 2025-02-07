@@ -1,5 +1,6 @@
 import { IAnimeEpisode } from "@consumet/extensions";
 
+export const appVersion = "1.0.5"
 export interface MovieSearchResult {
 	Id: string;
 	Title: string;
@@ -81,6 +82,12 @@ export interface RoomMessage<T> {
 export interface RoomRequest {
 	RoomId: string,
 	RequesterId: string,
+}
+
+export interface Release {
+	Version: string,
+	Apk: string,
+	ChangeLogs: string
 }
 
 export interface PeekABoo<T> {

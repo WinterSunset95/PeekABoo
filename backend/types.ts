@@ -68,6 +68,12 @@ export interface RoomMessage<T> {
 	Payload: T
 }
 
+export interface Release {
+	Version: string,
+	Apk: string,
+	ChangeLogs: string
+}
+
 // When user requests to join a room
 // Should recieve OpenRoom as result
 export interface RoomRequest {
