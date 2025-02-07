@@ -4,7 +4,7 @@ import { serve } from "https://deno.land/std@0.166.0/http/server.ts";
 import { Application, Router } from "@oak/oak"
 import type { RouterContext } from "@oak/oak/router";
 import { AnimeProviderKey, AnimeProviders } from "./anime/anime.ts";
-import { OpenRoom, PeekABoo } from "./types.ts";
+import { OpenRoom, PeekABoo, Release } from "./types.ts";
 import "jsr:@std/dotenv/load";
 import { Gogo } from "./anime/gogo.ts";
 import { AnimePahe } from "./anime/animepahe.ts";
@@ -13,6 +13,7 @@ import { TMDB } from "./movies/tmdb.ts";
 import { MovieProviderKey, MovieProviders } from "./movies/movie.ts";
 import { FlixHq } from "./movies/flixhq.ts";
 import { checkIfRoomExists, io, rooms } from "./socket.ts";
+import { data } from "./releases.ts";
 
 const app = new Application()
 const router = new Router()
@@ -358,6 +359,10 @@ router.post("/releases", async (ctx) => {
 })
 router.get("/releases", async (ctx) => {
 	ctx.response.body = release
+})
+
+router.get("/updates", (ctx) => {
+	ctx.response.body = data
 })
 
 app.use(oakCors({

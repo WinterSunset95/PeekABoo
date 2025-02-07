@@ -15,17 +15,14 @@ const LoadingComponent: React.FC<{ choice: "card" | "card_large" | "list" | "ful
         }, [swiper])
         return (
             <Swiper
-                spaceBetween={5}
+                spaceBetween={10}
                 slidesPerView={2}
                 centeredSlides={true}
                 ref={swiper}
                 direction="horizontal"
             >
                 {Array.from({ length: 5}, (_, index) => (
-                    <SwiperSlide key={index}>
-                        <div className="loading-component-list loading-component">
-                            <div className="spinner"></div>
-                        </div>
+                    <SwiperSlide key={index} className="loading-component-list">
                     </SwiperSlide>
                 ))}
             </Swiper>
@@ -34,8 +31,7 @@ const LoadingComponent: React.FC<{ choice: "card" | "card_large" | "list" | "ful
 
     if (choice == "card_large") {
         return (
-            <div className="loading-component-card-large loading-component">
-                <div className="spinner"></div>
+            <div className="loading-component-card-large">
             </div>
         )
     }
@@ -68,7 +64,6 @@ const LoadingComponent: React.FC<{ choice: "card" | "card_large" | "list" | "ful
 
     return (
         <div className="loading-component-card loading-component">
-            <div className="spinner"></div>
         </div>
     )
 }

@@ -12,8 +12,13 @@ const Rooms: React.FC = () => {
     const [sockId, setSockId] = useState(socket.id)
     const [roomname, setRoomname] = useState("")
     const [disabled, setDisabled] = useState(false)
-    const user = useContext(UserContext)
     const router = useIonRouter()
+    const userContext = useContext(UserContext)
+    if (!userContext || !userContext.user || !userContext.setUser) {
+        router.push("/login", "forward", "push")
+        return
+    }
+    const { user, setUser } = userContext
     const [ showAlert, nothing ] = useIonAlert()
 
     const createRoom = () => {

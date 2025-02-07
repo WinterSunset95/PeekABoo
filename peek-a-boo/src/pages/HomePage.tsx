@@ -4,9 +4,14 @@ import {
 	IonHeader,
 	IonTitle,
 	IonToolbar,
-	IonIcon
+	IonIcon,
+	IonButton,
+	IonChip,
+	IonAvatar,
+	IonLabel,
+	useIonToast
 } from '@ionic/react';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { MovieInfo, MovieSearchResult } from '../lib/types';
 import { getTrending, getTopAiring } from '../lib/anime';
 import List from '../components/List';
@@ -14,14 +19,15 @@ import Featured from '../components/Featured'
 import './HomePage.css'
 import { getTrendingMovies, getTrendingTv } from '../lib/movies';
 import LoadingComponent from '../components/Loading';
-import { socket } from '../lib/socket';
+import { UserContext } from '../App';
 
 const HomePage: React.FC = () => {
 	const [trending, setTrending] = useState<MovieSearchResult[]>([])
 	const [trendingMovies, setTrendingMovies] = useState<MovieSearchResult[]>([])
 	const [trendingTv, setTrendingTv] = useState<MovieSearchResult[]>([])
 	const [featured, setFeatured] = useState<MovieInfo>()
-	const [sockId, setSockId] = useState(socket.id)
+	const userContext = useContext(UserContext)
+	const [ showToast ] = useIonToast()
 
 	const loadTrending = async () => {
 		const response = await getTrending();
@@ -66,30 +72,43 @@ const HomePage: React.FC = () => {
 		loadTrendingMovies()
 		loadTrendingTv()
 		loadFeatured()
-
-		socket.on("connect", () => {
-			setSockId(socket.id)
-		})
-
-		socket.on("new user", (data) => {
-			console.log("New user: " + data)
-		})
-
+		console.log(userContext?.user)
 	}, [])
 
 
 	return (
 		<IonPage>
-			<IonToolbar>
-				<IonHeader
-					translucent={true}
-					className='ion-padding'
-					slot='start'
+			<IonHeader
+				translucent={true}
+			>
+				<IonToolbar
+					style={{
+						paddingRight: "1rem"
+					}}
 				>
 					<IonTitle>Peek-A-Boo</IonTitle>
-				</IonHeader>
-				<IonTitle slot='end' className={`socket-id ${!sockId ? 'not-connected' : 'connected'}`}>ID: {sockId ? sockId : "Not Connected"}</IonTitle>
-			</IonToolbar>
+					{userContext ? userContext.user 
+					? 
+						<IonChip slot='end'
+							onClick={() => {
+								showToast({
+									message: `UserID: ${userContext.user?.UserId}`,
+									duration: 3000,
+									position: "top",
+									swipeGesture: "vertical"
+								})
+							}}
+						>
+							<IonAvatar>
+								<img src={userContext.user.UserImage} alt="" />
+							</IonAvatar>
+							<IonLabel>{userContext.user.UserName}</IonLabel>
+						</IonChip>
+					: <IonButton routerLink='/login' slot='end'>Login</IonButton>
+					: <IonButton routerLink='/login' slot='end'>Login</IonButton>
+					}
+				</IonToolbar>
+			</IonHeader>
 			<IonContent className='ion-padding'>
 				{
 					featured ?

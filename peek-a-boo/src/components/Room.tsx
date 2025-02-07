@@ -3,14 +3,21 @@ import { ActiveAnimeRoom, ChatMessage, OpenRoom, RoomMessage, RoomRequest } from
 import { socket } from "../lib/socket"
 import { useContext, useEffect, useState } from "react"
 import { UserContext } from "../App"
-import { IonAvatar, IonButton, IonInput, IonItem, IonText, IonToast, useIonToast } from "@ionic/react"
+import { IonAvatar, IonButton, IonInput, IonItem, IonText, IonToast, useIonRouter, useIonToast } from "@ionic/react"
 
 import './Room.css'
 
 const Room: React.FC<OpenRoom> = (room) => {
     const [messages, setMessages] = useState<ChatMessage[]>(room.Messages)
     const [text, setText] = useState("")
-    const user = useContext(UserContext)
+    const router = useIonRouter()
+    const userContext = useContext(UserContext)
+    if (!userContext || !userContext.user || !userContext.setUser) {
+        router.push("/login", "forward", "push")
+        return
+    }
+    const { user, setUser } = userContext
+
     const [ showToast, hideToast ] = useIonToast()
 
     const sendMessage = () => {

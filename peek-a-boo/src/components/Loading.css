@@ -1,20 +1,21 @@
-.loading-component {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-}
-
 .loading-component-list {
-    aspect-ratio: 3/4;
+    aspect-ratio: 9/16;
+    animation: loader infinite 1s alternate linear;
+	border-radius: 0.5rem;
 }
 
 .loading-component-card-large {
     aspect-ratio: 1/1;
+    width: 100%;
+    animation: loader infinite 1s alternate linear;
+	border-radius: 0.5rem;
 }
 
 .loading-component-card {
-    aspect-ratio: 3/4;
+    aspect-ratio: 9/16;
+    width: 100%;
+    animation: loader infinite 1s alternate linear;
+	border-radius: 0.5rem;
 }
 
 @keyframes loader {

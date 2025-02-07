@@ -1,17 +1,14 @@
 import {
   IonApp,
-  IonButton,
   IonIcon,
-  IonInput,
   IonLabel,
-  IonNav,
   IonPage,
   IonRouterOutlet,
-  IonTab,
   IonTabBar,
   IonTabButton,
   IonTabs,
-  setupIonicReact
+  setupIonicReact,
+  useIonAlert,
 } from '@ionic/react';
 import React, { createContext, useEffect, useRef, useState } from 'react';
 
@@ -48,52 +45,125 @@ import { Redirect, Route, Switch } from 'react-router';
 import { home, radio, search, settings } from 'ionicons/icons';
 import { IonReactRouter } from '@ionic/react-router';
 import { socket } from './lib/socket';
-import { Settings, User } from './lib/types';
+import { appVersion, Settings, User } from './lib/types';
 import SettingsPage from './pages/Settings';
 import HomePage from './pages/HomePage';
 import Search from './pages/Search';
 import Rooms from './pages/Rooms';
-import AnimeInfoPage from './pages/Info/AnimeInfo';
 import MovieInfoPage from './pages/Info/MovieInfo';
 import TvInfoPage from './pages/Info/TvInfo';
 import InfoMode from './pages/Info/InfoMode';
 import RoomMode from './pages/Info/RoomMode';
 import ChatMode from './pages/Info/ChatMode';
+import AuthPage from './pages/AuthPage';
+import { getUpdates } from './lib/backendconnection';
+import { Directory, Filesystem } from '@capacitor/filesystem';
+import { getSettings } from './lib/storage';
+import { FileOpener } from '@capacitor-community/file-opener';
+import { StatusBar } from '@capacitor/status-bar';
 
 setupIonicReact();
 
-export const UserContext = createContext<User | undefined>(undefined)
+export const UserContext = createContext<{
+	user: User | undefined,
+	setUser: React.Dispatch<React.SetStateAction<User | undefined>> | undefined,
+	name: React.MutableRefObject<string>
+} | undefined>(undefined)
 
 const App: React.FC = () => {
-	const name = useRef<string>()
-	const [sockId, setSockId] = useState(socket.id)
-	const [userData, setUserData] = useState<User>()
+	const name = useRef<string>("")
+	const [user, setUser] = useState<User>()
+	const [showAlert] = useIonAlert()
+	StatusBar.setOverlaysWebView({ overlay: false })
 
-	const connectSocket = () => {
-		if (!name) {
-			alert("Enter a name first!")
-			return
+	const checkPermissions = async () => {
+		const res = await Filesystem.checkPermissions()
+		if (res.publicStorage != 'granted') {
+			const data = await Filesystem.requestPermissions()
+			if (data.publicStorage != 'granted') {
+				showAlert("Storage permissions are necessary for automatic updates and file downloads!!")
+			}
 		}
-		socket.connect()
 	}
 
+	const loadUpdates = async () => {
+		const res = await getUpdates()
+		if (appVersion != res.latest.Version) {
+			showAlert({
+				header: `A new version (${res.latest.Version}) is available`,
+				message: `
+				ChangeLogs:
+				${res.latest.ChangeLogs}
+				`,
+				buttons: [
+					{
+						text: 'Ignore',
+						role: 'cancel',
+						handler: () => {
+							console.log("Cancelled")
+						}
+					},
+					{
+						text: 'Update',
+						role: 'accept',
+						handler: () => {
+							downloadUpdate(res.latest.Apk)
+						}
+					}
+				]
+			})
+		}
+	}
 
-	
+	const downloadUpdate = async (filepath: string) => {
+		const filenameArray = filepath.split("/")
+		const filename = filenameArray[filenameArray.length-1]
+		let url = ""
+		const { boo } = await getSettings()
+		if (filepath.includes("http")) {
+			url = filepath
+		} else {
+			url = `${boo.Server}${filepath}`
+		}
+		console.log(filename)
+		const res = await Filesystem.downloadFile({
+			method: 'GET',
+			url: url,
+			directory: Directory.ExternalStorage,
+			path: `Download/${filename}`
+		})
+		if (res.path) {
+			showAlert(`File was successfully downloaded to: ${res.path}`)
+			await FileOpener.open({
+				filePath: res.path
+			})
+		} else {
+			showAlert("Failed to download file")
+		}
+	}
+
+	const initialLoad = async () => {
+		console.log("hiding status bar")
+	}
+
 	useEffect(() => {
 		document.title = "PeekABoo"
 
 		socket.on("connect", () => {
 			if (!socket.id) return
-			setSockId(socket.id)
-			console.log(`connected: ${socket.id}`)
+			console.log(`Connected as: ${socket.id}`)
 			socket.emit("addUser", {
 				UserId: socket.id,
 				UserName: name.current,
 				UserImage: "https://avatar.iran.liara.run/username?username=" + name.current
-			}, (user: User) => {
-				setUserData(user)
+			}, (returnedUser: User) => {
+				setUser(returnedUser)
 			})
 		})
+
+		checkPermissions()
+		loadUpdates()
+		initialLoad()
 
 		return () => {
 			socket.off("connect")
@@ -101,46 +171,8 @@ const App: React.FC = () => {
 
 	}, [])
 
-	if (!sockId || !userData) {
-		return (
-			<IonPage>
-				<IonTabs>
-					<IonTab tab='form'>
-						<div className="main">
-							<h1>
-								The app does NOT save any data. Everything you do here WILL disappear the moment you close your session.
-							</h1>
-							<form className="form" onSubmit={(e) => {
-								e.preventDefault()
-								connectSocket()
-							}}>
-								<IonInput placeholder='Enter a username'
-								label='Username'
-								fill='outline'
-								labelPlacement='floating'
-								value={name.current}
-								onIonInput={(e) => name.current = e.target.value as string}
-								></IonInput>
-								<IonButton type='submit' expand='block' className='form-button'>Submit</IonButton>
-							</form>
-						</div>
-					</IonTab>
-					<IonTab tab='settings'>
-						<SettingsPage />
-					</IonTab>
-
-					<IonTabBar>
-						<IonTabButton tab='form'>Form</IonTabButton>
-						<IonTabButton tab='settings'>Settings</IonTabButton>
-					</IonTabBar>
-
-				</IonTabs>
-			</IonPage>
-		)
-	}
-
 	return (
-		<UserContext.Provider value={userData}>
+		<UserContext.Provider value={{ user, setUser, name }}>
 		<IonApp>
 			<IonReactRouter>
 				<IonRouterOutlet>
@@ -150,44 +182,45 @@ const App: React.FC = () => {
 						<Route exact path="/tv/:id" component={TvInfoPage}/>
 						<Route exact path="/room/:id" component={RoomMode}/>
 						<Route exact path="/chat/:id" component={ChatMode}/>
-					<IonTabs>
-						<IonRouterOutlet>
-							<Redirect exact path='/' to="/home" />
-							<Route exact path="/home">
-								<HomePage />
-							</Route>
-							<Route exact path="/search">
-								<Search />
-							</Route>
-							<Route exact path="/rooms">
-								<Rooms />
-							</Route>
-							<Route exact path="/settings">
-								<SettingsPage />
-							</Route>
-						</IonRouterOutlet>
+						<Route exact path="/login" component={AuthPage}/>
+						<IonTabs>
+							<IonRouterOutlet>
+								<Redirect exact path='/' to="/home" />
+								<Route exact path="/home">
+									<HomePage />
+								</Route>
+								<Route exact path="/search">
+									<Search />
+								</Route>
+								<Route exact path="/rooms">
+									<Rooms />
+								</Route>
+								<Route exact path="/settings">
+									<SettingsPage />
+								</Route>
+							</IonRouterOutlet>
 
-						<IonTabBar slot='bottom'>
+							<IonTabBar slot='bottom'>
 
-							<IonTabButton tab='home' href='/home'>
-								<IonIcon icon={home}></IonIcon>
-								<IonLabel>Home</IonLabel>
-							</IonTabButton>
-							<IonTabButton tab='search' href='/search'>
-								<IonIcon icon={search}></IonIcon>
-								<IonLabel>Search</IonLabel>
-							</IonTabButton>
-							<IonTabButton tab='rooms' href='/rooms'>
-								<IonIcon icon={radio}></IonIcon>
-								<IonLabel>Room</IonLabel>
-							</IonTabButton>
-							<IonTabButton tab='settings' href='/settings'>
-								<IonIcon icon={settings}></IonIcon>
-								<IonLabel>Settings</IonLabel>
-							</IonTabButton>
+								<IonTabButton tab='home' href='/home'>
+									<IonIcon icon={home}></IonIcon>
+									<IonLabel>Home</IonLabel>
+								</IonTabButton>
+								<IonTabButton tab='search' href='/search'>
+									<IonIcon icon={search}></IonIcon>
+									<IonLabel>Search</IonLabel>
+								</IonTabButton>
+								<IonTabButton tab='rooms' href='/rooms'>
+									<IonIcon icon={radio}></IonIcon>
+									<IonLabel>Room</IonLabel>
+								</IonTabButton>
+								<IonTabButton tab='settings' href='/settings'>
+									<IonIcon icon={settings}></IonIcon>
+									<IonLabel>Settings</IonLabel>
+								</IonTabButton>
 
-						</IonTabBar>
-					</IonTabs>
+							</IonTabBar>
+						</IonTabs>
 					</Switch>
 				</IonRouterOutlet>
 			</IonReactRouter>

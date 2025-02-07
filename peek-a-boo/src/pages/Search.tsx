@@ -12,6 +12,7 @@ import { searchAnime } from '../lib/anime'
 import { MovieSearchResult } from '../lib/types'
 import List from '../components/List'
 import { searchMovie, searchTv } from '../lib/movies'
+import LoadingComponent from '../components/Loading'
 
 const Search: React.FC = () => {
 
@@ -68,11 +69,20 @@ const Search: React.FC = () => {
 				>
 				</IonInput>
 				<h1>Anime</h1>
+				{anime.length > 1 ?
 				<List {...anime} />
+				: <LoadingComponent choice='list' />
+				}
 				<h1>Movies</h1>
+				{movie.length > 1 ?
 				<List {...movie} />
+				: <LoadingComponent choice='list' />
+				}
 				<h1>Tv</h1>
+				{tv.length > 1 ?
 				<List {...tv} />
+				: <LoadingComponent choice='list' />
+				}
 			</IonContent>
 		</IonPage>
 	)

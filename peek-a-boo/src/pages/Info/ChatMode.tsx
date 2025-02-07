@@ -16,7 +16,12 @@ interface ChatProps extends RouteComponentProps<{
 const ChatMode: React.FC<ChatProps> = ({ match }) => {
     const [openRoom, setOpenRoom] = useState<OpenRoom>()
     const router = useIonRouter()
-    const user = useContext(UserContext)
+    const userContext = useContext(UserContext)
+    if (!userContext || !userContext.setUser || !userContext.user) {
+        router.push("/login", "forward", "push")
+        return
+    }
+    const { user, setUser } = userContext
 
     const initialLoad = async () => {
         const res = await getRoom({ RoomId: match.params.id, RequesterId: socket.id as string })
