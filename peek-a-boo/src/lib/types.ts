@@ -1,6 +1,6 @@
 import { IAnimeEpisode } from "@consumet/extensions";
 
-export const appVersion = "1.0.5"
+export const appVersion = "1.0.4"
 export interface MovieSearchResult {
 	Id: string;
 	Title: string;

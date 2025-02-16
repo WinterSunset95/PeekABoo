@@ -6,6 +6,7 @@ import { useContext, useEffect, useState } from "react"
 import './Rooms.css'
 import { UserContext } from "../App"
 import { getRoomsList } from "../lib/rooms"
+import AuthComponent from "../components/Auth"
 
 const Rooms: React.FC = () => {
     const [rooms, setRooms] = useState<OpenRoom[]>([])
@@ -14,12 +15,16 @@ const Rooms: React.FC = () => {
     const [disabled, setDisabled] = useState(false)
     const router = useIonRouter()
     const userContext = useContext(UserContext)
-    if (!userContext || !userContext.user || !userContext.setUser) {
-        router.push("/login", "forward", "push")
-        return
-    }
-    const { user, setUser } = userContext
     const [ showAlert, nothing ] = useIonAlert()
+
+    const initialLoad = async () => {
+        const res = await getRoomsList()
+        setRooms(res.boo)
+    }
+
+    const user = userContext?.user
+    const setUser = userContext?.setUser
+    const name = userContext?.name
 
     const createRoom = () => {
         if (!user || !sockId) {
@@ -80,12 +85,6 @@ const Rooms: React.FC = () => {
             router.push(`${item ? item.CurrentMedia ? `/room/${item.RoomId}` : `/chat/${item.RoomId}` : `/room/${roomname}`}`, "forward", "push")
         })
     }
-    
-    const initialLoad = async () => {
-        const res = await getRoomsList()
-        setRooms(res.boo)
-    }
-    
 
     useEffect(() => {
 
@@ -99,6 +98,15 @@ const Rooms: React.FC = () => {
         socket.on("connect", () => {
             setSockId(socket.id)
             console.log(`Connected: ${socket.id}`)
+			if (!socket.id || !name || !setUser) return
+			console.log(`Connected as: ${socket.id}`)
+			socket.emit("addUser", {
+				UserId: socket.id,
+				UserName: name.current,
+				UserImage: "https://avatar.iran.liara.run/username?username=" + name.current
+			}, (returnedUser: User) => {
+				setUser(returnedUser)
+			})
         })
 
         socket.on("newRoomAdded", (data: PeekABoo<OpenRoom>) => {
@@ -128,6 +136,21 @@ const Rooms: React.FC = () => {
 
     }, [])
 
+    if (!userContext || !userContext.user || !userContext.setUser) {
+        return (
+            <IonPage>
+                <IonHeader>
+                    <IonToolbar>
+                        <IonTitle>Login</IonTitle>
+                    </IonToolbar>
+                </IonHeader>
+                <IonContent>
+                    <AuthComponent />
+                </IonContent>
+            </IonPage>
+        )
+    }
+    
     return (
         <IonPage>
             <IonToolbar>

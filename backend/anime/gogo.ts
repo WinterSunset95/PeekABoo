@@ -12,15 +12,23 @@ export class Gogo {
 			boo: []
 		}
 
-		const result = await anime.fetchPopular();
-		if (!result || result.totalPages == 0) return defaultResult;
+		try {
+			const result = await anime.fetchPopular();
+			if (!result || result.totalPages == 0) return defaultResult;
 
-		const list: MovieSearchResult[] = animeSearchResult_to_MovieSearchResult(result)
+			const list: MovieSearchResult[] = animeSearchResult_to_MovieSearchResult(result)
 
-		return {
-			peek: true,
-			boo: list
-		};
+			return {
+				peek: true,
+				boo: list
+			};
+		} catch (e) {
+			console.error(e)
+			return {
+				peek: false,
+				boo: e as MovieSearchResult[]
+			}
+		}
 	}
 
 	async getEpisodeSources(id: string): Promise<PeekABoo<ISource | undefined>> {
@@ -94,16 +102,24 @@ export class Gogo {
 			boo: defaultAnimeInfo
 		}
 
-		const result = await anime.fetchTopAiring()
-		if (!result || result.totalPages == 0) return defaultResult;
-		const top = result.results[0]
-		const topInfo = await anime.fetchAnimeInfo(top.id)
-		// For some reason, the "id" from anime.fetchAnimeInfo always returns "category"
-		topInfo.id = top.id
+		try {
+			const result = await anime.fetchTopAiring()
+			if (!result || result.totalPages == 0) return defaultResult;
+			const top = result.results[0]
+			const topInfo = await anime.fetchAnimeInfo(top.id)
+			// For some reason, the "id" from anime.fetchAnimeInfo always returns "category"
+			topInfo.id = top.id
 
-		return {
-			peek: true,
-			boo: iAnimeInfo_to_AnimeInfo(topInfo)
+			return {
+				peek: true,
+				boo: iAnimeInfo_to_AnimeInfo(topInfo)
+			}
+		} catch (e) {
+			console.error(e)
+			return {
+				peek: false,
+				boo: e as AnimeInfo,
+			}
 		}
 	}
 

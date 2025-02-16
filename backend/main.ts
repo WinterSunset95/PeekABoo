@@ -14,6 +14,7 @@ import { MovieProviderKey, MovieProviders } from "./movies/movie.ts";
 import { FlixHq } from "./movies/flixhq.ts";
 import { checkIfRoomExists, io, rooms } from "./socket.ts";
 import { data } from "./releases.ts";
+import { vidsrcScrape } from "./vidsrc.ts";
 
 const app = new Application()
 const router = new Router()
@@ -166,6 +167,15 @@ router.get("/helpers/segment", async (ctx) => {
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+/////////////////////
+// Scraper section //
+/////////////////////
+router.get("/scraper/vidsrc/movie/:id", async (ctx: RouterContext<"/scraper/vidsrc/movie/:id">) => {
+	const id = ctx.params.id
+	const result = await vidsrcScrape(id, "movie")
+	ctx.response.body = result
+})
+
 ///////////////////
 // Movie section //
 ///////////////////
@@ -244,8 +254,15 @@ router.get("/tv/:provider/search", async (ctx: RouterContext<"/tv/:provider/sear
 router.get("/anime/:provider/trending", async (ctx: RouterContext<"/anime/:provider/trending">) => {
 	const provider = ctx.params.provider
 	const animeProvider = getAnimeProvider(provider)
-	const result = await animeProvider?.getTrending()
-	ctx.response.body = result
+	try {
+		const result = await animeProvider?.getTrending()
+		ctx.response.body = result
+	} catch {
+		ctx.response.body = {
+			peek: false,
+			boo: "Lol get fucked",
+		}
+	}
 })
 
 router.get("/anime/:provider/episode/:epid/sources", async (ctx: RouterContext<"/anime/:provider/episode/:epid/sources">) => {

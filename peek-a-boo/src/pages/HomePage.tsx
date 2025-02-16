@@ -9,9 +9,10 @@ import {
 	IonChip,
 	IonAvatar,
 	IonLabel,
-	useIonToast
+	useIonToast,
+	IonModal
 } from '@ionic/react';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { MovieInfo, MovieSearchResult } from '../lib/types';
 import { getTrending, getTopAiring } from '../lib/anime';
 import List from '../components/List';
@@ -20,6 +21,7 @@ import './HomePage.css'
 import { getTrendingMovies, getTrendingTv } from '../lib/movies';
 import LoadingComponent from '../components/Loading';
 import { UserContext } from '../App';
+import AuthComponent from '../components/Auth';
 
 const HomePage: React.FC = () => {
 	const [trending, setTrending] = useState<MovieSearchResult[]>([])
@@ -28,11 +30,21 @@ const HomePage: React.FC = () => {
 	const [featured, setFeatured] = useState<MovieInfo>()
 	const userContext = useContext(UserContext)
 	const [ showToast ] = useIonToast()
+	const modalRef = useRef<HTMLIonModalElement>(null)
+
+	const errorMessage = (msg: string) => {
+		showToast({
+			message: msg,
+			duration: 5000,
+			swipeGesture: "vertical",
+			position: "top"
+		})
+	}
 
 	const loadTrending = async () => {
 		const response = await getTrending();
-		if (response.peek == false) {
-			alert("Error loading trending anime")
+		if (response.peek != true) {
+			errorMessage("Error loading trending anime")
 			return
 		}
 		setTrending(response.boo)
@@ -40,8 +52,8 @@ const HomePage: React.FC = () => {
 
 	const loadTrendingMovies = async () => {
 		const res = await getTrendingMovies()
-		if (res.peek == false) {
-			alert("Error loading trending movies")
+		if (res.peek != true) {
+			errorMessage("Error loading trending movies")
 			return
 
 		}
@@ -50,8 +62,8 @@ const HomePage: React.FC = () => {
 
 	const loadTrendingTv = async () => {
 		const res = await getTrendingTv()
-		if (res.peek == false) {
-			alert("Error loading trending movies")
+		if (res.peek != true) {
+			errorMessage("Error loading trending movies")
 			return
 
 		}
@@ -61,7 +73,7 @@ const HomePage: React.FC = () => {
 	const loadFeatured = async () => {
 		const response = await getTopAiring();
 		if (response.peek == false) {
-			alert("Error loading top anime")
+			errorMessage("Error loading top anime")
 			return
 		}
 		setFeatured(response.boo)
@@ -104,12 +116,21 @@ const HomePage: React.FC = () => {
 							</IonAvatar>
 							<IonLabel>{userContext.user.UserName}</IonLabel>
 						</IonChip>
-					: <IonButton routerLink='/login' slot='end'>Login</IonButton>
-					: <IonButton routerLink='/login' slot='end'>Login</IonButton>
+					: <IonButton id='loginButton' slot='end'>Login</IonButton>
+					: <IonButton id='loginButton' slot='end'>Login</IonButton>
 					}
 				</IonToolbar>
 			</IonHeader>
 			<IonContent className='ion-padding'>
+				<IonModal
+					trigger='loginButton'
+					backdropBreakpoint={0.5}
+					backdropDismiss={true}
+					id='loginModal'
+					ref={modalRef}
+				>
+					<AuthComponent modalRef={modalRef} />
+				</IonModal>
 				{
 					featured ?
 					<Featured {...featured} />

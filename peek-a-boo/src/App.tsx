@@ -61,6 +61,7 @@ import { Directory, Filesystem } from '@capacitor/filesystem';
 import { getSettings } from './lib/storage';
 import { FileOpener } from '@capacitor-community/file-opener';
 import { StatusBar } from '@capacitor/status-bar';
+import { Capacitor } from '@capacitor/core';
 
 setupIonicReact();
 
@@ -73,8 +74,11 @@ export const UserContext = createContext<{
 const App: React.FC = () => {
 	const name = useRef<string>("")
 	const [user, setUser] = useState<User>()
-	const [showAlert] = useIonAlert()
-	StatusBar.setOverlaysWebView({ overlay: false })
+	const [showAlert, controls] = useIonAlert()
+
+	if (Capacitor.getPlatform() != 'web') {
+		StatusBar.setOverlaysWebView({ overlay: false })
+	}
 
 	const checkPermissions = async () => {
 		const res = await Filesystem.checkPermissions()
@@ -92,7 +96,7 @@ const App: React.FC = () => {
 			showAlert({
 				header: `A new version (${res.latest.Version}) is available`,
 				message: `
-				ChangeLogs:
+				ChangeLogs: \n\n
 				${res.latest.ChangeLogs}
 				`,
 				buttons: [
@@ -133,17 +137,35 @@ const App: React.FC = () => {
 			path: `Download/${filename}`
 		})
 		if (res.path) {
-			showAlert(`File was successfully downloaded to: ${res.path}`)
-			await FileOpener.open({
-				filePath: res.path
+			showAlert({
+				header: "Download successful!",
+				message: `File was successfully downloaded to: ${res.path}. Install now?`,
+				buttons: [
+					{
+						text: 'Later',
+						role: 'cancel',
+						handler: () => {
+							console.log("Will install later")
+						}
+					},
+					{
+						text: 'Install',
+						role: 'accept',
+						handler: async () => {
+							try {
+								await FileOpener.open({
+									filePath: res.path as string
+								})
+							} catch (e) {
+								console.log(e)
+							}
+						}
+					},
+				]
 			})
 		} else {
 			showAlert("Failed to download file")
 		}
-	}
-
-	const initialLoad = async () => {
-		console.log("hiding status bar")
 	}
 
 	useEffect(() => {
@@ -163,7 +185,6 @@ const App: React.FC = () => {
 
 		checkPermissions()
 		loadUpdates()
-		initialLoad()
 
 		return () => {
 			socket.off("connect")

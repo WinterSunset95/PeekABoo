@@ -40,3 +40,9 @@
 .main > .form > .form-button {
     width: 100%;
 }
+
+ion-modal#loginModal {
+    --width: fit-content;
+    --height: fit-content;
+    --box-shadow: 0 28px 48px rgba(var(--ion-color-dark-rgb), 1);
+}
