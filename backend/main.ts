@@ -15,6 +15,7 @@ import { FlixHq } from "./movies/flixhq.ts";
 import { checkIfRoomExists, io, rooms } from "./socket.ts";
 import { data } from "./releases.ts";
 import { vidsrcScrape } from "./vidsrc.ts";
+import { FMovies } from "./movies/fmovie.ts";
 
 const app = new Application()
 const router = new Router()
@@ -38,7 +39,7 @@ function getAnimeProvider(provider: string): Gogo | AnimePahe | Zoro | null {
 	return null;
 }
 
-function getMovieProvider(provier: string): TMDB | FlixHq | null {
+function getMovieProvider(provier: string): TMDB | null {
 	if (provier in MovieProviders) {
 		return MovieProviders[provier as MovieProviderKey]
 	}
@@ -215,6 +216,22 @@ router.get("/movie/:provider/search", async (ctx: RouterContext<"/movie/:provide
 	ctx.response.body = result
 })
 
+router.get("/movie/:provider/:movieid/embed", (ctx: RouterContext<"/movie/:provider/:movieid/embed">) => {
+	const provider = ctx.params.provider
+	const movieid = ctx.params.movieid
+	const movieProvider = getMovieProvider(provider)
+	const result = movieProvider?.getMovieEmbeds(movieid)
+	ctx.response.body = result
+})
+
+router.get("/movie/:provider/:movieid/sources", async (ctx: RouterContext<"/movie/:provider/:movieid/sources">) => {
+	const provider = ctx.params.provider
+	const movieid = ctx.params.movieid
+	const movieProvider = getMovieProvider(provider)
+	const result = await movieProvider?.getMovieSources(movieid)
+	ctx.response.body = result
+})
+
 ////////////////
 // TV section //
 ////////////////
@@ -247,6 +264,27 @@ router.get("/tv/:provider/search", async (ctx: RouterContext<"/tv/:provider/sear
 	const result = await movieProvider?.searchTv("a")
 	ctx.response.body = result
 })
+
+router.get("/tv/:provider/:tvid/:season/:episode/embed", (ctx: RouterContext<"/tv/:provider/:tvid/:season/:episode/embed">) => {
+	const provider = ctx.params.provider
+	const tvid = ctx.params.tvid
+	const season = ctx.params.season
+	const episode = ctx.params.season
+	const movieProvider = getMovieProvider(provider)
+	const result = movieProvider?.getTvEmbeds(tvid, parseInt(season), parseInt(episode))
+	ctx.response.body = result
+})
+
+router.get("/tv/:provider/:tvid/:season/:episode/sources", async (ctx: RouterContext<"/tv/:provider/:tvid/:season/:episode/sources">) => {
+	const provider = ctx.params.provider
+	const tvid = ctx.params.tvid
+	const season = ctx.params.season
+	const episode = ctx.params.season
+	const movieProvider = getMovieProvider(provider)
+	const result = await movieProvider?.getEpisodeSources(tvid, parseInt(season), parseInt(episode))
+	ctx.response.body = result
+})
+
 
 ///////////////////
 // Anime section //

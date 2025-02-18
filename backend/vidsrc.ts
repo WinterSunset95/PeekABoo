@@ -65,18 +65,13 @@ const getProrcp = async (rcpUrl: string): Promise<string | undefined> => {
 
 const getM3u8FromProrcp = async (prorcp: string): Promise<string | undefined> => {
 	console.log(`getM3u8FromProrcp: ${prorcp}`)
-	let url = `${BASEURL}/prorcp/${prorcp}`
+	const url = `${BASEURL}${prorcp}`
 
 	console.log(url)
-	let res = await fetch(url, {
+	const res = await fetch(url, {
 		redirect: "follow"
 	})
-	if (res.status == 400) {
-		url = `${BASEURL}/prorcp2/${prorcp}`
-		res = await fetch(url, {
-			redirect: "follow"
-		})
-	}
+
 	const resText = await res.text();
 	console.log(resText)
 
@@ -118,15 +113,17 @@ const getM3u8FromProrcp = async (prorcp: string): Promise<string | undefined> =>
 	const id = decrypt(decryptMatches[2].toString().trim(), decryptMatches[1].toString().trim());
 	console.log(id)
 	const data = $("#" + id);
-	const result = await decrypt(await data.text(), decryptMatches[2].toString().trim());
+	const result = await decrypt(data.text(), decryptMatches[2].toString().trim());
 	return result;
 }
 
 export const vidsrcScrape = async (tmdbId: string, type: "movie" | "tv", season?: number, episode?: number): Promise<ApiRes[]> => {
-
 	const url = (type === "movie")
 		? `https://vidsrc.net/embed/${type}?tmdb=${tmdbId}`
-		: `https://vidsrc.to/embed/${type}?tmdb=${tmdbId}&season=${season}&episode=${episode}`
+		: `https://vidsrc.net/embed/${type}?tmdb=${tmdbId}&season=${season}&episode=${episode}`
+	//const url = (type === "movie")
+	//	? `https://vidsrc.net/embed/${type}?tmdb=${tmdbId}`
+	//	: `https://vidsrc.to/embed/${type}?tmdb=${tmdbId}&season=${season}&episode=${episode}`
 	// Get the raw html from the links above
 	const embed = await fetch(url);
 	const embedRes = await embed.text()
@@ -146,16 +143,13 @@ export const vidsrcScrape = async (tmdbId: string, type: "movie" | "tv", season?
 
 	for (const item of proRcpArr) {
 		if (!item) continue;
-		switch (item.substring(0,8)) {
-			case "/prorcp/":
-				apiResponse.push({
-					name: title,
-					image: "",
-					mediaId: tmdbId,
-					stream: await getM3u8FromProrcp(item.replace("/prorcp/", "")),
-					referer: BASEURL
-				})
-		}
+		apiResponse.push({
+			name: title,
+			image: "",
+			mediaId: tmdbId,
+			stream: await getM3u8FromProrcp(item),
+			referer: BASEURL
+		})
 	}
 
 	return apiResponse
