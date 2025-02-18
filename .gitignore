@@ -31,6 +31,12 @@ yarn-error.log*
 
 
 # dependencies
+/bin
+/include
+/lib
+/lib64
+
+*/pyenv.cfg
 */node_modules
 */.pnp
 */.pnp.js
@@ -60,6 +66,3 @@ yarn-error.log*
 !*/android/app/build/outputs/apk
 
 *storybook.log
-
-/peekaboo
-/vue
