@@ -1,6 +1,6 @@
 import { ANIME, IAnimeInfo, IEpisodeServer, ISource } from "@consumet/extensions";
-import { AnimeInfo, MovieSearchResult, PeekABoo } from "../types.ts";
-import { animeSearchResult_to_MovieSearchResult, defaultAnimeInfo, iAnimeInfo_to_AnimeInfo } from "../utilities/typeconverter.ts";
+import { AnimeInfo, MediaInfo, MovieSearchResult, PeekABoo } from "../types.ts";
+import { animeSearchResult_to_MovieSearchResult, defaultAnimeInfo, iAnimeInfo_to_AnimeInfo, iAnimeInfo_to_MediaInfo } from "../utilities/typeconverter.ts";
 
 const anime = new ANIME.Gogoanime();
 
@@ -45,10 +45,10 @@ export class Gogo {
 		}
 	}
 
-	async getAnimeInfo(id: string): Promise<PeekABoo<AnimeInfo>> {
-		const defaultResult: PeekABoo<AnimeInfo> = {
+	async getAnimeInfo(id: string): Promise<PeekABoo<MediaInfo | string>> {
+		const defaultResult: PeekABoo<MediaInfo | string> = {
 			peek: false,
-			boo: defaultAnimeInfo
+			boo: "Error getting anime info"
 		}
 
 		try {
@@ -58,24 +58,13 @@ export class Gogo {
 
 			return {
 				peek: true,
-				boo: iAnimeInfo_to_AnimeInfo(result)
+				boo: iAnimeInfo_to_MediaInfo(result)
 			}
 		} catch (err) {
 			console.error(err)
 			return {
 				peek: false,
-				boo: {
-					Id: "null",
-					Title: "Error",
-					Poster: "",
-					Type: "unknown",
-					Overview: "Failed to fetch Information: " + JSON.stringify(err),
-					Year: "",
-					Duration: "",
-					Genres: [],
-					Languages: [],
-					Episodes: [],
-				}
+				boo: err as string
 			}
 		}
 	}
@@ -96,10 +85,10 @@ export class Gogo {
 		}
 	}
 
-	async getTopAiring(): Promise<PeekABoo<AnimeInfo>> {
-		const defaultResult: PeekABoo<AnimeInfo> = {
+	async getTopAiring(): Promise<PeekABoo<MediaInfo | string>> {
+		const defaultResult: PeekABoo<MediaInfo | string> = {
 			peek: false,
-			boo: defaultAnimeInfo
+			boo: "Error! Failed to get the top airing anime"
 		}
 
 		try {
@@ -112,13 +101,13 @@ export class Gogo {
 
 			return {
 				peek: true,
-				boo: iAnimeInfo_to_AnimeInfo(topInfo)
+				boo: iAnimeInfo_to_MediaInfo(topInfo)
 			}
 		} catch (e) {
 			console.error(e)
 			return {
 				peek: false,
-				boo: e as AnimeInfo,
+				boo: e as string,
 			}
 		}
 	}

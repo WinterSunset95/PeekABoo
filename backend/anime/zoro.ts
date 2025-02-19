@@ -1,6 +1,6 @@
 import { ANIME, IAnimeInfo, IEpisodeServer, ISource } from "@consumet/extensions";
-import { AnimeInfo, MovieSearchResult, PeekABoo } from "../types.ts";
-import { animeSearchResult_to_MovieSearchResult, defaultAnimeInfo, iAnimeInfo_to_AnimeInfo } from "../utilities/typeconverter.ts";
+import { AnimeInfo, MediaInfo, MovieSearchResult, PeekABoo } from "../types.ts";
+import { animeSearchResult_to_MovieSearchResult, defaultAnimeInfo, iAnimeInfo_to_AnimeInfo, iAnimeInfo_to_MediaInfo } from "../utilities/typeconverter.ts";
 
 const anime = new ANIME.Zoro();
 
@@ -38,10 +38,10 @@ export class Zoro {
 		}
 	}
 
-	async getAnimeInfo(id: string): Promise<PeekABoo<AnimeInfo>> {
-		const defaultResult: PeekABoo<AnimeInfo> = {
+	async getAnimeInfo(id: string): Promise<PeekABoo<MediaInfo | string>> {
+		const defaultResult: PeekABoo<MediaInfo | string> = {
 			peek: false,
-			boo: defaultAnimeInfo
+			boo: `Failed to get anime info ${id}`
 		}
 
 		const result: IAnimeInfo = await anime.fetchAnimeInfo(id)
@@ -50,7 +50,7 @@ export class Zoro {
 
 		return {
 			peek: true,
-			boo: iAnimeInfo_to_AnimeInfo(result)
+			boo: iAnimeInfo_to_MediaInfo(result)
 		}
 	}
 
@@ -70,10 +70,10 @@ export class Zoro {
 		}
 	}
 
-	async getTopAiring(): Promise<PeekABoo<AnimeInfo>> {
-		const defaultResult: PeekABoo<AnimeInfo> = {
+	async getTopAiring(): Promise<PeekABoo<MediaInfo | string>> {
+		const defaultResult: PeekABoo<MediaInfo | string> = {
 			peek: false,
-			boo: defaultAnimeInfo
+			boo: `Failed to top airing anime`
 		}
 
 		const result = await anime.fetchTopAiring()
@@ -85,7 +85,7 @@ export class Zoro {
 
 		return {
 			peek: true,
-			boo: iAnimeInfo_to_AnimeInfo(topInfo)
+			boo: iAnimeInfo_to_MediaInfo(topInfo)
 		}
 	}
 

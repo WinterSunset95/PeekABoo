@@ -1,21 +1,22 @@
 import { RouteComponentProps } from "react-router";
 import AnimeInfoPage from "./AnimeInfo";
 import { useEffect, useState } from "react";
-import { AnimeInfo, OpenRoom } from "../../lib/types";
+import { AnimeInfo, MediaInfo, OpenRoom } from "../../lib/types";
 import { getRoom } from "../../lib/rooms";
 import { socket } from "../../lib/socket";
 import { getAnimeInfo } from "../../lib/anime";
 import { useIonRouter } from "@ionic/react";
 import LoadingComponent from "../../components/Loading";
+import InfoPage from "./InfoPage";
 
 interface RoomModeProps extends RouteComponentProps<{
-    // RoomId 
+	type: string,
     id: string,
 }> {}
 
 const RoomMode: React.FC<RoomModeProps> = ({ match }) => {
     const [room, setRoom] = useState<OpenRoom>()
-    const [info, setInfo] = useState<AnimeInfo>()
+    const [info, setInfo] = useState<MediaInfo>()
     const router = useIonRouter()
 
     const initialLoad = async () => {
@@ -35,6 +36,10 @@ const RoomMode: React.FC<RoomModeProps> = ({ match }) => {
         }
         const showId = res.boo.CurrentMedia.Id
         const anInfo = await getAnimeInfo(showId)
+		if (anInfo.peek == false || typeof anInfo.boo == "string") {
+			alert("Failed to get show information")
+			return
+		}
         setInfo(anInfo.boo)
     }
 
@@ -44,7 +49,7 @@ const RoomMode: React.FC<RoomModeProps> = ({ match }) => {
 
     if (!room || !info) return <LoadingComponent choice="full_page" />
 
-    return <AnimeInfoPage openRoom={room} info={info} />
+    return <InfoPage openRoom={room} info={info} />
 }
 
 export default RoomMode

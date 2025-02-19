@@ -1,4 +1,4 @@
-import { MovieInfo, MovieSearchResult, PeekABoo, TvInfo, TvSeason } from "../types.ts";
+import { MediaInfo, MovieInfo, MovieSearchResult, PeekABoo, TvInfo, TvSeason } from "../types.ts";
 import { defaultAnimeInfo, defaultTvInfo } from "../utilities/typeconverter.ts";
 import { vidsrcScrape }  from "../vidsrc.ts"
 import { ISource, IVideo, IEpisodeServer } from "@consumet/extensions"
@@ -131,13 +131,13 @@ export class TMDB {
 		};
 	}
 
-	async getMovieInfo(id: string): Promise<PeekABoo<MovieInfo>> {
+	async getMovieInfo(id: string): Promise<PeekABoo<MediaInfo | string>> {
 		const response = await fetch(`${this.movieInfo(id)}`)
 		const data = await response.json();
 		if (data == undefined) {
 			return {
 				peek: false,
-				boo: defaultAnimeInfo
+				boo: `Failed to get Movie Info ${id}`
 			}
 		}
 
@@ -157,13 +157,13 @@ export class TMDB {
 		}
 	}
 
-	async getTvInfo(id: string): Promise<PeekABoo<TvInfo>> {
+	async getTvInfo(id: string): Promise<PeekABoo<MediaInfo | string>> {
 		const response = await fetch(`${this.tvInfo(id)}`)
 		const data = await response.json();
 		if (data == undefined) {
 			return {
 				peek: false,
-				boo: defaultTvInfo
+				boo: `Failed to get Show ${id}`
 			}
 		}
 
@@ -171,7 +171,7 @@ export class TMDB {
 		const seasonsList = data.seasons
 		if (!seasonsList) return {
 			peek: false,
-			boo: defaultTvInfo
+			boo: `No seasons available for ${id}`
 		}
 		seasonsList.forEach((item: any) => {
 			const season: TvSeason = {
@@ -198,7 +198,7 @@ export class TMDB {
 				Duration: data.runtime,
 				Genres: [],
 				Languages: [],
-				Season: seasons
+				TvShowSeason: seasons
 			}
 		}
 	}

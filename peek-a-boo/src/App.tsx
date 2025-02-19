@@ -198,10 +198,8 @@ const App: React.FC = () => {
 			<IonReactRouter>
 				<IonRouterOutlet>
 					<Switch>
-						<Route exact path="/anime/:id" component={InfoMode}/>
-						<Route exact path="/movie/:id" component={MovieInfoPage}/>
-						<Route exact path="/tv/:id" component={TvInfoPage}/>
-						<Route exact path="/room/:id" component={RoomMode}/>
+						<Route exact path="/:type/:id" component={InfoMode}/>
+						<Route exact path="/room/:type/:id" component={RoomMode}/>
 						<Route exact path="/chat/:id" component={ChatMode}/>
 						<Route exact path="/login" component={AuthPage}/>
 						<IonTabs>

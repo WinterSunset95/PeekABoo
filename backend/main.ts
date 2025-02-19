@@ -94,6 +94,52 @@ router.get("/proxy", async (ctx) => {
 	}
 })
 
+router.get("/helpers/moviem3u8", async (ctx) => {
+	const url = ctx.request.url.searchParams.get("url") as string
+	if (!url) {
+		const errorRes: PeekABoo<string> = {
+			peek: false,
+			boo: "no url detected"
+		}
+		ctx.response.body = errorRes
+	}
+
+	try {
+		const response = await fetch(url)
+		if (!response.ok) {
+			throw new Error('Failed to fetch ' + response.statusText)
+		}
+		const m3u8Content = await response.text();
+		let modifiedm3u8: string;
+		if (m3u8Content.includes('.ts')) {
+			modifiedm3u8 = m3u8Content.replace(
+				/(.*\.ts)/g,
+				(segment) => `${SERVER}/helpers/segment?url=${encodeURIComponent(url + segment)}`
+			)
+		} else if (m3u8Content.includes('.html')) {
+			modifiedm3u8 = m3u8Content.replace(
+				/(.*\.html)/g,
+				(segment) => `${SERVER}/helpers/segment?url=${encodeURIComponent(url + segment)}`
+			)
+		} else {
+			modifiedm3u8 = m3u8Content.replace(
+				/(.*\.m3u8)/g,
+				(segment) => `${SERVER}/helpers/m3u8?url=${encodeURIComponent(url + segment)}`
+			)
+		}
+
+		ctx.response.headers.set("Content-Type", response.headers.get("content-type") || "application/vnd.apple.mpegurl");
+		ctx.response.headers.set("Access-Control-Allow-Origin", "*");
+		ctx.response.body = modifiedm3u8
+	} catch (e) {
+		const errorRes: PeekABoo<string> = {
+			peek: false,
+			boo: e as string
+		}
+		ctx.response.body = errorRes
+	}
+})
+
 router.get("/helpers/m3u8", async (ctx) => {
 	const url = ctx.request.url.searchParams.get("url") as string
 	if (!url) {
@@ -122,6 +168,11 @@ router.get("/helpers/m3u8", async (ctx) => {
 		if (m3u8Content.includes('.ts')) {
 			modifiedm3u8 = m3u8Content.replace(
 				/(.*\.ts)/g,
+				(segment) => `${SERVER}/helpers/segment?url=${encodeURIComponent(newUrl + segment)}`
+			)
+		} else if (m3u8Content.includes('.html')) {
+			modifiedm3u8 = m3u8Content.replace(
+				/(.*\.html)/g,
 				(segment) => `${SERVER}/helpers/segment?url=${encodeURIComponent(newUrl + segment)}`
 			)
 		} else {
