@@ -10,13 +10,6 @@ export const proxyThisLink = (url: string): string => {
 	return toReturn
 }
 
-export const proxyMovieLink = (url: string): string => {
-	console.log(`Initial url: ${url}`)
-	const toReturn = `${settings.boo.Server}/helpers/moviem3u8?url=${encodeURIComponent(url)}`
-	console.log(toReturn)
-	return toReturn
-}
-
 export const getUpdates = async (): Promise<{ latest: Release, previous: Release[] }> => {
 	const { boo } = await getSettings()
 	const res = await fetch(`${boo.Server}/updates`)

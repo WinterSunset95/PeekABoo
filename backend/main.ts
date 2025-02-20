@@ -104,6 +104,8 @@ router.get("/helpers/moviem3u8", async (ctx) => {
 		ctx.response.body = errorRes
 	}
 
+	console.log(`URL: ${url}`)
+
 	try {
 		const response = await fetch(url)
 		if (!response.ok) {
@@ -124,7 +126,7 @@ router.get("/helpers/moviem3u8", async (ctx) => {
 		} else {
 			modifiedm3u8 = m3u8Content.replace(
 				/(.*\.m3u8)/g,
-				(segment) => `${SERVER}/helpers/m3u8?url=${encodeURIComponent(url + segment)}`
+				(segment) => `${SERVER}/helpers/moviem3u8?url=${encodeURIComponent(url + segment)}`
 			)
 		}
 
@@ -151,12 +153,13 @@ router.get("/helpers/m3u8", async (ctx) => {
 	}
 
 	let urlArray = url.split("/")
+	console.log(urlArray)
 	urlArray.pop()
 	let newUrl = ""
 	for (let i=0; i<urlArray.length; i++) {
 		newUrl = newUrl + urlArray[i] + "/"
 	}
-	console.log(newUrl)
+	console.log(`New url after splitting: ${newUrl}`)
 
 	try {
 		const response = await fetch(url)
@@ -173,12 +176,12 @@ router.get("/helpers/m3u8", async (ctx) => {
 		} else if (m3u8Content.includes('.html')) {
 			modifiedm3u8 = m3u8Content.replace(
 				/(.*\.html)/g,
-				(segment) => `${SERVER}/helpers/segment?url=${encodeURIComponent(newUrl + segment)}`
+				(segment) => `${SERVER}/helpers/segment?url=${encodeURIComponent(segment)}`
 			)
 		} else {
 			modifiedm3u8 = m3u8Content.replace(
 				/(.*\.m3u8)/g,
-				(segment) => `${SERVER}/helpers/m3u8?url=${encodeURIComponent(newUrl + segment)}`
+				(segment) => `${SERVER}/helpers/m3u8?url=${encodeURIComponent(segment)}`
 			)
 		}
 

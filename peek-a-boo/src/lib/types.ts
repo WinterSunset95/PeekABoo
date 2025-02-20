@@ -1,6 +1,6 @@
 import { IAnimeEpisode } from "@consumet/extensions";
 
-export const appVersion = "1.0.5"
+export const appVersion = "1.0.6"
 
 export const mediaTypes = [ "anime", "movie", "tv", "unknown" ] as const
 export type MediaTypes = typeof mediaTypes[number]

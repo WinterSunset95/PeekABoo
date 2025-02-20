@@ -8,6 +8,7 @@ import { getAnimeInfo } from "../../lib/anime";
 import { useIonRouter } from "@ionic/react";
 import LoadingComponent from "../../components/Loading";
 import InfoPage from "./InfoPage";
+import { getMovieInfo, getTvInfo } from "../../lib/movies";
 
 interface RoomModeProps extends RouteComponentProps<{
 	type: string,
@@ -18,6 +19,7 @@ const RoomMode: React.FC<RoomModeProps> = ({ match }) => {
     const [room, setRoom] = useState<OpenRoom>()
     const [info, setInfo] = useState<MediaInfo>()
     const router = useIonRouter()
+	console.log(match.params.type, match.params.id)
 
     const initialLoad = async () => {
         const res = await getRoom({ RoomId: match.params.id, RequesterId: socket.id as string })
@@ -34,8 +36,15 @@ const RoomMode: React.FC<RoomModeProps> = ({ match }) => {
             router.push(`/chat/${match.params.id}`)
             return
         }
+		console.log(res.boo.CurrentMedia)
         const showId = res.boo.CurrentMedia.Id
-        const anInfo = await getAnimeInfo(showId)
+		const type = res.boo.CurrentMedia.Type
+		const choice = async () => {
+			if (type == "anime") return getAnimeInfo(showId)
+			else if (type == "tv") return getTvInfo(showId)
+			else return getMovieInfo(showId)
+		}
+        const anInfo = await choice()
 		if (anInfo.peek == false || typeof anInfo.boo == "string") {
 			alert("Failed to get show information")
 			return

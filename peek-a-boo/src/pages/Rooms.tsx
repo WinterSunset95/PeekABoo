@@ -82,7 +82,7 @@ const Rooms: React.FC = () => {
                 return
             }
             setDisabled(false)
-            router.push(`${item ? item.CurrentMedia ? `/room/${item.RoomId}` : `/chat/${item.RoomId}` : `/room/${roomname}`}`, "forward", "push")
+            router.push(`${item ? item.CurrentMedia ? `/room/${item.CurrentMedia.Type}/${item.RoomId}` : `/chat/${item.RoomId}` : `/room/${roomname}`}`, "forward", "push")
         })
     }
 

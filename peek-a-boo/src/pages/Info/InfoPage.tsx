@@ -29,10 +29,11 @@ import {
 	IonChip,
 	IonLabel,
 	useIonToast,
+    IonModal,
 } from "@ionic/react"
 
 import './AnimeInfo.css'
-import { useContext, useEffect, useState } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 import { AnimeInfo, MediaInfo, OpenRoom, PlayerOptions, Settings, TvSeason } from "../../lib/types"
 import { getEpisodeServers, getEpisodeSources } from "../../lib/anime"
 import { Swiper, SwiperSlide } from "swiper/react"
@@ -44,7 +45,7 @@ import 'swiper/css'
 import 'swiper/css/pagination'
 import { IAnimeEpisode, IEpisodeServer, ISource, Topics } from "@consumet/extensions"
 import PlayerComponent from "../../components/Player"
-import { proxyMovieLink, proxyThisLink } from "../../lib/backendconnection"
+import { proxyThisLink } from "../../lib/backendconnection"
 import { getSettings, resetSettings } from "../../lib/storage"
 import LoadingComponent from "../../components/Loading"
 import { UserContext } from "../../App"
@@ -52,6 +53,7 @@ import Room from "../../components/Room"
 import { createRoom } from "../../lib/rooms"
 import { getMovieEmbeds, getMovieSources, getTvEpisodeEmbeds, getTvEpisodeSources } from "../../lib/movies"
 import { play } from "ionicons/icons"
+import AuthComponent from "../../components/Auth"
 
 interface InfoProps {
 	info: MediaInfo,
@@ -121,9 +123,10 @@ const InfoPage: React.FC<InfoProps> = ({ info, openRoom }) => {
 		setEpisodeSources(res.boo)
 		let sources: { src: string, type: string }[] = []
 		res.boo.sources.forEach((source) => {
-			console.log(source)
+			if (source.url == "") return;
+
 			sources.push({
-				src: info.Type == "anime" ? proxyThisLink(source.url) : proxyMovieLink(source.url),
+				src: proxyThisLink(source.url),
 				type: source.isM3U8 ? 'application/x-mpegURL' : 'video/mp4'
 			})
 		})
@@ -134,8 +137,6 @@ const InfoPage: React.FC<InfoProps> = ({ info, openRoom }) => {
 			fluid: true,
 			sources: sources
 		}
-		console.log(sources)
-		console.log(options)
 		setPlayeroptions(options)
 	}
 
@@ -191,13 +192,13 @@ const InfoPage: React.FC<InfoProps> = ({ info, openRoom }) => {
 		if (!userContext || !info) return
 
 		if (!userContext.user) {
-			router.push("/login")
+			router.push(`/login?return=/${info.Type}/${info.Id}`)
 			return
 		}
 
 		const { user, setUser, name } = userContext
 
-        let roomId = info.Id
+        let roomId = info.Id.toString()
         roomId = roomId.toLowerCase()
         const randomNum = Math.floor(100000 + Math.random() * 900000)
         const randomNum2 = Math.floor(100000 + Math.random() * 900000)
@@ -311,7 +312,9 @@ const InfoPage: React.FC<InfoProps> = ({ info, openRoom }) => {
 		return (
 			<div>
 				<p>{info.Overview}</p>
-				<IonButton onClick={roomCreate}>
+				<IonButton 
+					onClick={roomCreate}
+				>
 					Create Room
 				</IonButton>
 			</div>
@@ -354,7 +357,6 @@ const InfoPage: React.FC<InfoProps> = ({ info, openRoom }) => {
 			</IonHeader>
 
 			<IonContent className="ion-padding">
-
 				<div className="info-content">
 
 					<div className="info-content-half"
