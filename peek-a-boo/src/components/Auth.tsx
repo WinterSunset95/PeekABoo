@@ -4,7 +4,12 @@ import { IonButton, IonInput, IonTab, IonTabBar, IonTabButton, IonTabs, useIonAl
 import SettingsPage from "../pages/Settings"
 import { socket } from "../lib/socket"
 
-const AuthComponent: React.FC = () => {
+interface AuthProps {
+    returnUrl?: string,
+    modalRef?: React.RefObject<HTMLIonModalElement>
+}
+
+const AuthComponent: React.FC<AuthProps> = ({ returnUrl, modalRef }) => {
 
     const user = useContext(UserContext)
     if (!user) {
@@ -28,42 +33,33 @@ const AuthComponent: React.FC = () => {
     }
 
     if (user.user) {
-        router.goBack()
+        if (returnUrl) {
+            router.push(returnUrl, "forward", "replace")
+        } else if (modalRef && modalRef.current != null) {
+            modalRef.current.dismiss()
+        }
     }
 
     return (
-        <IonTabs>
-            <IonTab tab='form'>
-                <div className="main">
-                    <h1>
-                        The app does NOT save any data. Everything you do here WILL disappear the moment you close your session.
-                    </h1>
-                    <form className="form" onSubmit={(e) => {
-                        e.preventDefault()
-                        connectSocket()
-                    }}>
-                        <IonInput placeholder='Enter a username'
-                        label='Username'
-                        fill='outline'
-                        labelPlacement='floating'
-                        value={name.current}
-                        onIonInput={(e) => name.current = e.target.value as string}
-                        disabled={disabled}
-                        ></IonInput>
-                        <IonButton type='submit' expand='block' className='form-button' disabled={disabled}>Submit</IonButton>
-                    </form>
-                </div>
-            </IonTab>
-            <IonTab tab='settings'>
-                <SettingsPage />
-            </IonTab>
-
-            <IonTabBar>
-                <IonTabButton tab='form'>Form</IonTabButton>
-                <IonTabButton tab='settings'>Settings</IonTabButton>
-            </IonTabBar>
-
-        </IonTabs>
+        <div className="main">
+            <h1>
+                The app does NOT save any data. Everything you do here WILL disappear the moment you close your session.
+            </h1>
+            <form className="form" onSubmit={(e) => {
+                e.preventDefault()
+                connectSocket()
+            }}>
+                <IonInput placeholder='Enter a username'
+                label='Username'
+                fill='outline'
+                labelPlacement='floating'
+                value={name.current}
+                onIonInput={(e) => name.current = e.target.value as string}
+                disabled={disabled}
+                ></IonInput>
+                <IonButton type='submit' expand='block' className='form-button' disabled={disabled}>Submit</IonButton>
+            </form>
+        </div>
     )
 }
 

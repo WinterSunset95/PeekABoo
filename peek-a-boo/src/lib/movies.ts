@@ -1,10 +1,11 @@
-import { MOVIES } from "@consumet/extensions";
+import { IEpisodeServer, ISource, MOVIES } from "@consumet/extensions";
 
 import { 
 	PeekABoo, 
 	MovieSearchResult, 
 	MovieInfo,
-    TvInfo
+    TvInfo,
+    MediaInfo
 } from './types'
 import { getSettings } from "./storage";
 
@@ -25,11 +26,11 @@ export const searchMovie = async (query: string): Promise<PeekABoo<MovieSearchRe
 	return data
 }
 
-export const getMovieInfo = async (query: string): Promise<PeekABoo<MovieInfo>> => {
+export const getMovieInfo = async (query: string): Promise<PeekABoo<MediaInfo | string>> => {
 	const { boo } = await getSettings()
 	const settings = boo
 	const res = await fetch(`${settings.Server}/movie/${settings.MovieSource}/${query}/info`)
-	const data = await res.json() as PeekABoo<MovieInfo>
+	const data = await res.json() as PeekABoo<MediaInfo | string>
 	return data
 }
 
@@ -49,13 +50,46 @@ export const searchTv = async (query: string): Promise<PeekABoo<MovieSearchResul
 	return data
 }
 
-export const getTvInfo = async (query: string): Promise<PeekABoo<TvInfo>> => {
+export const getTvInfo = async (query: string): Promise<PeekABoo<MediaInfo | string>> => {
 	const { boo } = await getSettings()
 	const settings = boo
 	const res = await fetch(`${settings.Server}/tv/${settings.MovieSource}/${query}/info`)
-	const data = await res.json() as PeekABoo<TvInfo>
+	const data = await res.json() as PeekABoo<MediaInfo | string>
 	return data
 }
+
+export const getMovieSources = async (id: string): Promise<PeekABoo<ISource | string>> => {
+	const { boo } = await getSettings()
+	const settings = boo
+	const res = await fetch(`${settings.Server}/movie/${boo.MovieSource}/${id}/sources`);
+	let data = await res.json() as PeekABoo<ISource | string>;
+	return data
+}
+
+export const getMovieEmbeds = async (id: string): Promise<PeekABoo<IEpisodeServer[]>> => {
+	const { boo } = await getSettings()
+	const settings = boo
+	const res = await fetch(`${settings.Server}/movie/${settings.AnimeSource}/${id}/embed`)
+	const data = await res.json() as PeekABoo<IEpisodeServer[]>
+	return data
+}
+
+export const getTvEpisodeSources = async (id: string, season: number, episode: number): Promise<PeekABoo<ISource | string>> => {
+	const { boo } = await getSettings()
+	const settings = boo
+	const res = await fetch(`${settings.Server}/tv/${boo.MovieSource}/${id}/${season}/${episode}/sources`);
+	let data = await res.json() as PeekABoo<ISource | string>;
+	return data
+}
+
+export const getTvEpisodeEmbeds = async (id: string, season: number, episode: number): Promise<PeekABoo<IEpisodeServer[]>> => {
+	const { boo } = await getSettings()
+	const settings = boo
+	const res = await fetch(`${settings.Server}/tv/${boo.MovieSource}/${id}/${season}/${episode}/embeds`)
+	const data = await res.json() as PeekABoo<IEpisodeServer[]>
+	return data
+}
+
 
 export const movieSources = [ "vidsrc", "vidpro", "vidvip", "vidin", "superembed" ] as const
 

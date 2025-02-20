@@ -1,5 +1,7 @@
-import { MovieInfo, MovieSearchResult, PeekABoo, TvInfo, TvSeason } from "../types.ts";
+import { MediaInfo, MovieInfo, MovieSearchResult, PeekABoo, TvInfo, TvSeason } from "../types.ts";
 import { defaultAnimeInfo, defaultTvInfo } from "../utilities/typeconverter.ts";
+import { vidsrcScrape }  from "../vidsrc.ts"
+import { ISource, IVideo, IEpisodeServer } from "@consumet/extensions"
 
 export class TMDB {
 
@@ -129,13 +131,13 @@ export class TMDB {
 		};
 	}
 
-	async getMovieInfo(id: string): Promise<PeekABoo<MovieInfo>> {
+	async getMovieInfo(id: string): Promise<PeekABoo<MediaInfo | string>> {
 		const response = await fetch(`${this.movieInfo(id)}`)
 		const data = await response.json();
 		if (data == undefined) {
 			return {
 				peek: false,
-				boo: defaultAnimeInfo
+				boo: `Failed to get Movie Info ${id}`
 			}
 		}
 
@@ -155,13 +157,13 @@ export class TMDB {
 		}
 	}
 
-	async getTvInfo(id: string): Promise<PeekABoo<TvInfo>> {
+	async getTvInfo(id: string): Promise<PeekABoo<MediaInfo | string>> {
 		const response = await fetch(`${this.tvInfo(id)}`)
 		const data = await response.json();
 		if (data == undefined) {
 			return {
 				peek: false,
-				boo: defaultTvInfo
+				boo: `Failed to get Show ${id}`
 			}
 		}
 
@@ -169,7 +171,7 @@ export class TMDB {
 		const seasonsList = data.seasons
 		if (!seasonsList) return {
 			peek: false,
-			boo: defaultTvInfo
+			boo: `No seasons available for ${id}`
 		}
 		seasonsList.forEach((item: any) => {
 			const season: TvSeason = {
@@ -196,9 +198,148 @@ export class TMDB {
 				Duration: data.runtime,
 				Genres: [],
 				Languages: [],
-				Season: seasons
+				TvShowSeason: seasons
 			}
 		}
 	}
 
+	async getMovieSources(id: string): Promise<PeekABoo<ISource | string>> {
+		try {
+			const res = await vidsrcScrape(id, "movie")
+			const sourcesList: IVideo[] = []
+			res.forEach(item => {
+				const source: IVideo = {
+					url: item.stream ?? "",
+					isM3U8: true
+				}
+				sourcesList.push(source)
+			})
+
+			const toReturn: ISource = {
+				sources: sourcesList,
+				embedURL: `https://vidsrc.net/embed/movie?tmdb=${id}`
+			}
+			
+			return {
+				peek: true,
+				boo: toReturn
+			}
+		} catch (e) {
+			return {
+				peek: false,
+				boo: e as string
+			}
+		}
+	}
+
+	getMovieEmbeds(id: string): PeekABoo<IEpisodeServer[] | string> {
+		try {
+			const servers: IEpisodeServer[] = [
+				{
+					name: "VidSrc Net",
+					url: `https://vidsrc.net/embed/movie?tmdb=${id}`
+				},
+				{
+					name: "VidSrc Icu",
+					url: `https://vidsrc.icu/embed/movie/${id}`
+				},
+				{
+					name: "Super Embed",
+					url: `https://multiembed.mov/?video_id=${id}&tmdb=1`
+				},
+				{
+					name: "VidPro",
+					url: `https://vidsrc.pro/embed/movie/${id}`
+				},
+				{
+					name: "VidSrc In",
+					url: `https://vidsrc.in/embed/movie/${id}`
+				},
+				{
+					name: "VidSrc VIP",
+					url: `https://vidsrc.vip/embed/movie/${id}`
+				},
+				{
+					name: "VidSrc To",
+					url: `https://vidsrc.to/embed/movie/${id}`
+				}
+			]
+			return {
+				peek: true,
+				boo: servers
+			}
+		} catch (e) {
+			return {
+				peek: false,
+				boo: e as string,
+			}
+		}
+	}
+
+	async getEpisodeSources(id: string, season: number, episode: number): Promise<PeekABoo<ISource | string>> {
+		try {
+			const res = await vidsrcScrape(id, "tv", season, episode)
+
+			const sourcesList: IVideo[] = []
+			res.forEach(item => {
+				const source: IVideo = {
+					url: item.stream ?? "",
+					isM3U8: true
+				}
+				sourcesList.push(source)
+			})
+
+			const toReturn: ISource = {
+				sources: sourcesList,
+				embedURL: `https://vidsrc.net/embed/movie?tmdb=${id}`
+			}
+			
+			return {
+				peek: true,
+				boo: toReturn
+			}
+		} catch (e) {
+			return {
+				peek: false,
+				boo: e as string
+			}
+		}
+	}
+
+	getTvEmbeds(id: string, season: number, episode: number): PeekABoo<IEpisodeServer[] | string> {
+		const serversList: IEpisodeServer[] = [
+			{
+				name: "VidSrc Net",
+				url: `https://vidsrc.net/embed/tv?tmdb=${id}&season=${season}&episode=${episode}`
+			},
+			{
+				name: "VidSrc Icu",
+				url: `https://vidsrc.icu/embed/tv/${id}/${season}/${episode}`
+			},
+			{
+				name: "Super Embed",
+				url: `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${season}&e=${episode}`
+			},
+			{
+				name: "VidPro",
+				url: `https://vidsrc.pro/embed/tv/${id}/${season}/${episode}`
+			},
+			{
+				name: "VidSrc In",
+				url: `https://vidsrc.in/embed/tv/${id}/${season}/${episode}`
+			},
+			{
+				name: "VidSrc VIP",
+				url: `https://vidsrc.vip/embed/tv/${id}/${season}/${episode}`
+			},
+			{
+				name: "VidSrc To",
+				url: `https://vidsrc.to/embed/tv/${id}/${season}/${episode}`
+			}
+		]
+		return {
+			peek: true,
+			boo: serversList,
+		}
+	}
 }

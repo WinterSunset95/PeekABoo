@@ -1,6 +1,6 @@
 import { ANIME, IAnimeInfo, IEpisodeServer, ISource } from "@consumet/extensions";
-import { AnimeInfo, MovieSearchResult, PeekABoo } from "../types.ts";
-import { animeSearchResult_to_MovieSearchResult, defaultAnimeInfo, iAnimeInfo_to_AnimeInfo } from "../utilities/typeconverter.ts";
+import { AnimeInfo, MediaInfo, MovieSearchResult, PeekABoo } from "../types.ts";
+import { animeSearchResult_to_MovieSearchResult, defaultAnimeInfo, iAnimeInfo_to_AnimeInfo, iAnimeInfo_to_MediaInfo } from "../utilities/typeconverter.ts";
 
 const anime = new ANIME.Gogoanime();
 
@@ -12,15 +12,23 @@ export class Gogo {
 			boo: []
 		}
 
-		const result = await anime.fetchPopular();
-		if (!result || result.totalPages == 0) return defaultResult;
+		try {
+			const result = await anime.fetchPopular();
+			if (!result || result.totalPages == 0) return defaultResult;
 
-		const list: MovieSearchResult[] = animeSearchResult_to_MovieSearchResult(result)
+			const list: MovieSearchResult[] = animeSearchResult_to_MovieSearchResult(result)
 
-		return {
-			peek: true,
-			boo: list
-		};
+			return {
+				peek: true,
+				boo: list
+			};
+		} catch (e) {
+			console.error(e)
+			return {
+				peek: false,
+				boo: e as MovieSearchResult[]
+			}
+		}
 	}
 
 	async getEpisodeSources(id: string): Promise<PeekABoo<ISource | undefined>> {
@@ -37,10 +45,10 @@ export class Gogo {
 		}
 	}
 
-	async getAnimeInfo(id: string): Promise<PeekABoo<AnimeInfo>> {
-		const defaultResult: PeekABoo<AnimeInfo> = {
+	async getAnimeInfo(id: string): Promise<PeekABoo<MediaInfo | string>> {
+		const defaultResult: PeekABoo<MediaInfo | string> = {
 			peek: false,
-			boo: defaultAnimeInfo
+			boo: "Error getting anime info"
 		}
 
 		try {
@@ -50,24 +58,13 @@ export class Gogo {
 
 			return {
 				peek: true,
-				boo: iAnimeInfo_to_AnimeInfo(result)
+				boo: iAnimeInfo_to_MediaInfo(result)
 			}
 		} catch (err) {
 			console.error(err)
 			return {
 				peek: false,
-				boo: {
-					Id: "null",
-					Title: "Error",
-					Poster: "",
-					Type: "unknown",
-					Overview: "Failed to fetch Information: " + JSON.stringify(err),
-					Year: "",
-					Duration: "",
-					Genres: [],
-					Languages: [],
-					Episodes: [],
-				}
+				boo: err as string
 			}
 		}
 	}
@@ -88,22 +85,30 @@ export class Gogo {
 		}
 	}
 
-	async getTopAiring(): Promise<PeekABoo<AnimeInfo>> {
-		const defaultResult: PeekABoo<AnimeInfo> = {
+	async getTopAiring(): Promise<PeekABoo<MediaInfo | string>> {
+		const defaultResult: PeekABoo<MediaInfo | string> = {
 			peek: false,
-			boo: defaultAnimeInfo
+			boo: "Error! Failed to get the top airing anime"
 		}
 
-		const result = await anime.fetchTopAiring()
-		if (!result || result.totalPages == 0) return defaultResult;
-		const top = result.results[0]
-		const topInfo = await anime.fetchAnimeInfo(top.id)
-		// For some reason, the "id" from anime.fetchAnimeInfo always returns "category"
-		topInfo.id = top.id
+		try {
+			const result = await anime.fetchTopAiring()
+			if (!result || result.totalPages == 0) return defaultResult;
+			const top = result.results[0]
+			const topInfo = await anime.fetchAnimeInfo(top.id)
+			// For some reason, the "id" from anime.fetchAnimeInfo always returns "category"
+			topInfo.id = top.id
 
-		return {
-			peek: true,
-			boo: iAnimeInfo_to_AnimeInfo(topInfo)
+			return {
+				peek: true,
+				boo: iAnimeInfo_to_MediaInfo(topInfo)
+			}
+		} catch (e) {
+			console.error(e)
+			return {
+				peek: false,
+				boo: e as string,
+			}
 		}
 	}
 

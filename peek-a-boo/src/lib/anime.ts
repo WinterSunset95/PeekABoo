@@ -6,10 +6,10 @@
  */
 
 import { ANIME, IAnimeInfo, IEpisodeServer, ISource } from "@consumet/extensions";
-import { MovieSearchResult, PeekABoo, MovieInfo, AnimeInfo, Settings } from "./types";
+import { MovieSearchResult, PeekABoo, MovieInfo, AnimeInfo, Settings, MediaInfo } from "./types";
 import { getSettings, resetSettings } from "./storage";
 
-export const getEpisodeSources = async (id: string): Promise<PeekABoo<ISource | undefined>> => {
+export const getEpisodeSources = async (id: string): Promise<PeekABoo<ISource | string>> => {
 	const { boo } = await getSettings()
 	const settings = boo
 	const res = await fetch(`${settings.Server}/anime/${boo.AnimeSource}/episode/${id}/sources`);
@@ -17,11 +17,11 @@ export const getEpisodeSources = async (id: string): Promise<PeekABoo<ISource | 
 	return data
 }
 
-export const getAnimeInfo = async (id: string): Promise<PeekABoo<AnimeInfo>> => {
+export const getAnimeInfo = async (id: string): Promise<PeekABoo<MediaInfo | string>> => {
 	const { boo } = await getSettings()
 	const settings = boo
 	const res = await fetch(`${settings.Server}/anime/${settings.AnimeSource}/${id}/info`)
-	const data = await res.json() as PeekABoo<AnimeInfo>
+	const data = await res.json() as PeekABoo<MediaInfo | string>
 	return data
 }
 

@@ -1,11 +1,15 @@
 import { IAnimeEpisode } from "@consumet/extensions";
 
-export const appVersion = "1.0.5"
+export const appVersion = "1.0.6"
+
+export const mediaTypes = [ "anime", "movie", "tv", "unknown" ] as const
+export type MediaTypes = typeof mediaTypes[number]
+
 export interface MovieSearchResult {
 	Id: string;
 	Title: string;
 	Poster: string;
-	Type: "anime" | "movie" | "tv" | "unknown";
+	Type: MediaTypes
 }
 
 export interface MovieInfo extends MovieSearchResult {
@@ -32,6 +36,11 @@ export interface TvSeason {
 
 export interface TvInfo extends MovieInfo {
 	Season: TvSeason[]
+}
+
+export interface MediaInfo extends MovieInfo {
+	AnimeEpisodes?: IAnimeEpisode[],
+	TvShowSeason?: TvSeason[],
 }
 
 export interface PlayerOptions {

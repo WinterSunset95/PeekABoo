@@ -14,6 +14,8 @@ import { MovieProviderKey, MovieProviders } from "./movies/movie.ts";
 import { FlixHq } from "./movies/flixhq.ts";
 import { checkIfRoomExists, io, rooms } from "./socket.ts";
 import { data } from "./releases.ts";
+import { vidsrcScrape } from "./vidsrc.ts";
+import { FMovies } from "./movies/fmovie.ts";
 
 const app = new Application()
 const router = new Router()
@@ -37,7 +39,7 @@ function getAnimeProvider(provider: string): Gogo | AnimePahe | Zoro | null {
 	return null;
 }
 
-function getMovieProvider(provier: string): TMDB | FlixHq | null {
+function getMovieProvider(provier: string): TMDB | null {
 	if (provier in MovieProviders) {
 		return MovieProviders[provier as MovieProviderKey]
 	}
@@ -92,6 +94,54 @@ router.get("/proxy", async (ctx) => {
 	}
 })
 
+router.get("/helpers/moviem3u8", async (ctx) => {
+	const url = ctx.request.url.searchParams.get("url") as string
+	if (!url) {
+		const errorRes: PeekABoo<string> = {
+			peek: false,
+			boo: "no url detected"
+		}
+		ctx.response.body = errorRes
+	}
+
+	console.log(`URL: ${url}`)
+
+	try {
+		const response = await fetch(url)
+		if (!response.ok) {
+			throw new Error('Failed to fetch ' + response.statusText)
+		}
+		const m3u8Content = await response.text();
+		let modifiedm3u8: string;
+		if (m3u8Content.includes('.ts')) {
+			modifiedm3u8 = m3u8Content.replace(
+				/(.*\.ts)/g,
+				(segment) => `${SERVER}/helpers/segment?url=${encodeURIComponent(url + segment)}`
+			)
+		} else if (m3u8Content.includes('.html')) {
+			modifiedm3u8 = m3u8Content.replace(
+				/(.*\.html)/g,
+				(segment) => `${SERVER}/helpers/segment?url=${encodeURIComponent(url + segment)}`
+			)
+		} else {
+			modifiedm3u8 = m3u8Content.replace(
+				/(.*\.m3u8)/g,
+				(segment) => `${SERVER}/helpers/moviem3u8?url=${encodeURIComponent(url + segment)}`
+			)
+		}
+
+		ctx.response.headers.set("Content-Type", response.headers.get("content-type") || "application/vnd.apple.mpegurl");
+		ctx.response.headers.set("Access-Control-Allow-Origin", "*");
+		ctx.response.body = modifiedm3u8
+	} catch (e) {
+		const errorRes: PeekABoo<string> = {
+			peek: false,
+			boo: e as string
+		}
+		ctx.response.body = errorRes
+	}
+})
+
 router.get("/helpers/m3u8", async (ctx) => {
 	const url = ctx.request.url.searchParams.get("url") as string
 	if (!url) {
@@ -103,12 +153,13 @@ router.get("/helpers/m3u8", async (ctx) => {
 	}
 
 	let urlArray = url.split("/")
+	console.log(urlArray)
 	urlArray.pop()
 	let newUrl = ""
 	for (let i=0; i<urlArray.length; i++) {
 		newUrl = newUrl + urlArray[i] + "/"
 	}
-	console.log(newUrl)
+	console.log(`New url after splitting: ${newUrl}`)
 
 	try {
 		const response = await fetch(url)
@@ -122,10 +173,15 @@ router.get("/helpers/m3u8", async (ctx) => {
 				/(.*\.ts)/g,
 				(segment) => `${SERVER}/helpers/segment?url=${encodeURIComponent(newUrl + segment)}`
 			)
+		} else if (m3u8Content.includes('.html')) {
+			modifiedm3u8 = m3u8Content.replace(
+				/(.*\.html)/g,
+				(segment) => `${SERVER}/helpers/segment?url=${encodeURIComponent(segment)}`
+			)
 		} else {
 			modifiedm3u8 = m3u8Content.replace(
 				/(.*\.m3u8)/g,
-				(segment) => `${SERVER}/helpers/m3u8?url=${encodeURIComponent(newUrl + segment)}`
+				(segment) => `${SERVER}/helpers/m3u8?url=${encodeURIComponent(segment)}`
 			)
 		}
 
@@ -166,6 +222,15 @@ router.get("/helpers/segment", async (ctx) => {
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+/////////////////////
+// Scraper section //
+/////////////////////
+router.get("/scraper/vidsrc/movie/:id", async (ctx: RouterContext<"/scraper/vidsrc/movie/:id">) => {
+	const id = ctx.params.id
+	const result = await vidsrcScrape(id, "movie")
+	ctx.response.body = result
+})
+
 ///////////////////
 // Movie section //
 ///////////////////
@@ -205,6 +270,22 @@ router.get("/movie/:provider/search", async (ctx: RouterContext<"/movie/:provide
 	ctx.response.body = result
 })
 
+router.get("/movie/:provider/:movieid/embed", (ctx: RouterContext<"/movie/:provider/:movieid/embed">) => {
+	const provider = ctx.params.provider
+	const movieid = ctx.params.movieid
+	const movieProvider = getMovieProvider(provider)
+	const result = movieProvider?.getMovieEmbeds(movieid)
+	ctx.response.body = result
+})
+
+router.get("/movie/:provider/:movieid/sources", async (ctx: RouterContext<"/movie/:provider/:movieid/sources">) => {
+	const provider = ctx.params.provider
+	const movieid = ctx.params.movieid
+	const movieProvider = getMovieProvider(provider)
+	const result = await movieProvider?.getMovieSources(movieid)
+	ctx.response.body = result
+})
+
 ////////////////
 // TV section //
 ////////////////
@@ -238,14 +319,42 @@ router.get("/tv/:provider/search", async (ctx: RouterContext<"/tv/:provider/sear
 	ctx.response.body = result
 })
 
+router.get("/tv/:provider/:tvid/:season/:episode/embed", (ctx: RouterContext<"/tv/:provider/:tvid/:season/:episode/embed">) => {
+	const provider = ctx.params.provider
+	const tvid = ctx.params.tvid
+	const season = ctx.params.season
+	const episode = ctx.params.season
+	const movieProvider = getMovieProvider(provider)
+	const result = movieProvider?.getTvEmbeds(tvid, parseInt(season), parseInt(episode))
+	ctx.response.body = result
+})
+
+router.get("/tv/:provider/:tvid/:season/:episode/sources", async (ctx: RouterContext<"/tv/:provider/:tvid/:season/:episode/sources">) => {
+	const provider = ctx.params.provider
+	const tvid = ctx.params.tvid
+	const season = ctx.params.season
+	const episode = ctx.params.season
+	const movieProvider = getMovieProvider(provider)
+	const result = await movieProvider?.getEpisodeSources(tvid, parseInt(season), parseInt(episode))
+	ctx.response.body = result
+})
+
+
 ///////////////////
 // Anime section //
 ///////////////////
 router.get("/anime/:provider/trending", async (ctx: RouterContext<"/anime/:provider/trending">) => {
 	const provider = ctx.params.provider
 	const animeProvider = getAnimeProvider(provider)
-	const result = await animeProvider?.getTrending()
-	ctx.response.body = result
+	try {
+		const result = await animeProvider?.getTrending()
+		ctx.response.body = result
+	} catch {
+		ctx.response.body = {
+			peek: false,
+			boo: "Lol get fucked",
+		}
+	}
 })
 
 router.get("/anime/:provider/episode/:epid/sources", async (ctx: RouterContext<"/anime/:provider/episode/:epid/sources">) => {

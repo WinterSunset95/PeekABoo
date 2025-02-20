@@ -1,5 +1,5 @@
 import { IAnimeInfo, IAnimeResult, ISearch } from "@consumet/extensions";
-import { AnimeInfo, MovieSearchResult, TvInfo } from "../types.ts";
+import { AnimeInfo, MediaInfo, MovieSearchResult, TvInfo } from "../types.ts";
 
 ////////////////////////////////////////////////////////////
 // Convert ISearch<IAnimeResult> into MovieSearchResult[] //
@@ -31,6 +31,23 @@ export const iAnimeInfo_to_AnimeInfo = (input: IAnimeInfo): AnimeInfo => {
 		Languages: [],
 		Type: "anime",
 		Episodes: result.episodes ? result.episodes : []
+	}
+}
+
+export const iAnimeInfo_to_MediaInfo = (input: IAnimeInfo): MediaInfo => {
+	const result = input
+	return {
+		// The "id" field of anime.fetchAnimeInfo always returns the word "category" for some reaosn
+		Id: result.id,
+		Title: result.title as string,
+		Poster: result.image as string,
+		Overview: result.description as string,
+		Year: result.releaseDate as string,
+		Duration: result.totalEpisodes ? result.totalEpisodes + " episodes" : "Unknown",
+		Genres: result.genres ? result.genres : [],
+		Languages: [],
+		Type: "anime",
+		AnimeEpisodes: result.episodes ?? []
 	}
 }
 
