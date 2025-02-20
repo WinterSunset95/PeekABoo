@@ -47,7 +47,7 @@ export const iAnimeInfo_to_MediaInfo = (input: IAnimeInfo): MediaInfo => {
 		Genres: result.genres ? result.genres : [],
 		Languages: [],
 		Type: "anime",
-		AnimeEpisodes: result.episodes ?? []
+		AnimeEpisodes: result.episodes ? result.episodes : []
 	}
 }
 
