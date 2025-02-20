@@ -56,6 +56,7 @@ export class Gogo {
 			if (!result) return defaultResult;
 			result.id = id
 
+			console.log(result)
 			return {
 				peek: true,
 				boo: iAnimeInfo_to_MediaInfo(result)
@@ -94,6 +95,7 @@ export class Gogo {
 		try {
 			const result = await anime.fetchTopAiring()
 			if (!result || result.totalPages == 0) return defaultResult;
+			console.log(result.results.length)
 			const top = result.results[0]
 			const topInfo = await anime.fetchAnimeInfo(top.id)
 			// For some reason, the "id" from anime.fetchAnimeInfo always returns "category"
