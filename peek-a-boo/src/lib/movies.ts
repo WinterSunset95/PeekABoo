@@ -9,6 +9,31 @@ import {
 } from './types'
 import { getSettings } from "./storage";
 
+export const getFeaturedMovie = async (): Promise<PeekABoo<MediaInfo | string>> => {
+	const res = await getTrendingMovies()
+	if (res.boo.length < 1) {
+		return {
+			peek: false,
+			boo: "Failed to get featured movie"
+		}
+	}
+
+	const index = Math.floor(Math.random() * (res.boo.length))
+
+	const data = await getMovieInfo(res.boo[index] ? res.boo[index].Id : res.boo[0].Id)
+	if (data.peek == false || typeof data.boo == "string") {
+		return {
+			peek: false,
+			boo: "Failed to get info for featured movie"
+		}
+	}
+
+	return {
+		peek: true,
+		boo: data.boo
+	}
+}
+
 // getTrendingMovies() returns an array of objects of type MovieSearchResult wrapped by a PeekABoo object
 export const getTrendingMovies = async (): Promise<PeekABoo<MovieSearchResult[]>> => {
 	const { boo } = await getSettings()
@@ -69,7 +94,7 @@ export const getMovieSources = async (id: string): Promise<PeekABoo<ISource | st
 export const getMovieEmbeds = async (id: string): Promise<PeekABoo<IEpisodeServer[]>> => {
 	const { boo } = await getSettings()
 	const settings = boo
-	const res = await fetch(`${settings.Server}/movie/${settings.AnimeSource}/${id}/embed`)
+	const res = await fetch(`${settings.Server}/movie/${settings.MovieSource}/${id}/embed`)
 	const data = await res.json() as PeekABoo<IEpisodeServer[]>
 	return data
 }
@@ -85,7 +110,7 @@ export const getTvEpisodeSources = async (id: string, season: number, episode: n
 export const getTvEpisodeEmbeds = async (id: string, season: number, episode: number): Promise<PeekABoo<IEpisodeServer[]>> => {
 	const { boo } = await getSettings()
 	const settings = boo
-	const res = await fetch(`${settings.Server}/tv/${boo.MovieSource}/${id}/${season}/${episode}/embeds`)
+	const res = await fetch(`${settings.Server}/tv/${boo.MovieSource}/${id}/${season}/${episode}/embed`)
 	const data = await res.json() as PeekABoo<IEpisodeServer[]>
 	return data
 }

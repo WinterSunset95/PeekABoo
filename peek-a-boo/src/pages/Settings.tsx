@@ -40,11 +40,11 @@ const SettingsPage: React.FC = () => {
 			Server: server
 		}
 		const res = await setSettings(newSettings)
-		if (res.peek == false) {
-			alert(res.boo)
+		if (res.peek == false || typeof res.boo == "string") {
+			openAlert(res.boo as string)
 			return
 		} else {
-			alert("New Settings: " + JSON.stringify(newSettings))
+			openAlert("New Settings: " + JSON.stringify(newSettings))
 			window.location.reload()
 		}
 	}

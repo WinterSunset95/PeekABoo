@@ -9,6 +9,7 @@ try {
 	.then(() => console.log("Service worker registered"))
 	.catch((error) => console.log(error));
 } catch (e) {
+	console.log(e)
 	console.log("service workers are not supported")
 }
 root.render(

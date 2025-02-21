@@ -30,6 +30,8 @@ import {
 	IonLabel,
 	useIonToast,
     IonModal,
+    IonSelect,
+    IonSelectOption,
 } from "@ionic/react"
 
 import './AnimeInfo.css'
@@ -53,7 +55,7 @@ import Room from "../../components/Room"
 import { createRoom } from "../../lib/rooms"
 import { getMovieEmbeds, getMovieSources, getTvEpisodeEmbeds, getTvEpisodeSources } from "../../lib/movies"
 import { play } from "ionicons/icons"
-import AuthComponent from "../../components/Auth"
+import "./InfoPage.css"
 
 interface InfoProps {
 	info: MediaInfo,
@@ -65,9 +67,13 @@ const InfoPage: React.FC<InfoProps> = ({ info, openRoom }) => {
 	const [season, setSeason] = useState<TvSeason>()
 	const [tvEpisode, setTvEpisode] = useState<number>()
 	const [episode, setEpisode] = useState<IAnimeEpisode>();
+	// Used in ad-free mode
 	const [episodeSources, setEpisodeSources] = useState<ISource>();
-	const [episodeServers, setEpisodeServers] = useState<IEpisodeServer[]>([]);
+	// Used in ad mode
 	const [server, setServer] = useState<IEpisodeServer>();
+	// List of embed links
+	const [episodeServers, setEpisodeServers] = useState<IEpisodeServer[]>([]);
+
 	const [playeroptions, setPlayeroptions] = useState<PlayerOptions>();
 	const [settings, setSettings] = useState<Settings>()
 	const [topH, setTopH] = useState(50)
@@ -110,11 +116,6 @@ const InfoPage: React.FC<InfoProps> = ({ info, openRoom }) => {
 		if (res.peek == false || typeof res.boo == "string") {
 			showToast({
 				message: "Failed to load episode sources. Either change the Server or switch to ads mode (Settings)",
-				duration: 3000,
-				position: "top"
-			})
-			showToast({
-				message: `Server message: ${res.boo}`,
 				duration: 3000,
 				position: "top"
 			})
@@ -176,7 +177,6 @@ const InfoPage: React.FC<InfoProps> = ({ info, openRoom }) => {
 
 	const loadEpisodeInfo = async () => {
 		if (!settings) {
-			console.log("Variable \"Settings\" is not available")
 			return
 		};
 		if (settings.AnimeType == "ad") {
@@ -231,7 +231,6 @@ const InfoPage: React.FC<InfoProps> = ({ info, openRoom }) => {
 	}, [])
 
 	useEffect(() => {
-		console.log("Episode | tvEpisode changed")
 		loadEpisodeInfo()
 		loadSettings()
 	}, [episode, tvEpisode])
@@ -260,28 +259,6 @@ const InfoPage: React.FC<InfoProps> = ({ info, openRoom }) => {
 							className="info-iframe"
 						></iframe>
 					</div>
-					<h4>{episodeServers.length} servers</h4>
-					<Swiper
-						modules={[Pagination]}
-						spaceBetween={5}
-						slidesPerView={2}
-					>
-						{episodeServers.map((item, index) => (
-						<SwiperSlide 
-							key={index}
-						>
-							<IonButton
-								className={`episode-button`}
-								color={server?.name == item.name ? "warning" : "primary"}
-								onClick={() => {
-									setServer(item)
-								}}
-							>
-								{item.name}
-							</IonButton>
-						</SwiperSlide>
-						))}
-					</Swiper>
 				</div>
 			)
 		}
@@ -305,17 +282,122 @@ const InfoPage: React.FC<InfoProps> = ({ info, openRoom }) => {
 			</div>
 		)
 	}
+
+	const Selectors = () => {
+		if (info.Type == "anime") {
+			return (
+				<>
+					{settings.AnimeType == "ad" ?
+						<IonSelect aria-label="server"
+							label="Select Server"
+							labelPlacement="floating"
+							fill="solid"
+							onIonChange={(e) => {
+								setServer(e.target.value)
+							}}
+							value={server}
+						>
+							{episodeServers.map((item, index) => (
+								<IonSelectOption value={item} key={index}>{item.name}</IonSelectOption>
+							))}
+						</IonSelect>
+						: ""
+					}
+					<IonSelect aria-label="anime-episode"
+						label="Episode"
+						labelPlacement="floating"
+						fill="solid"
+						onIonChange={(e) => {
+							setSeason(e.target.value)
+						}}
+					>
+						{info.AnimeEpisodes?.map((item, index) => (
+							<IonSelectOption value={item} key={index}>{item.number}</IonSelectOption>
+						))}
+					</IonSelect>
+				</>
+			)
+		} else if (info.Type == "tv") {
+			return (
+				<>
+					{settings.AnimeType == "ad" ?
+						<IonSelect aria-label="server"
+							label="Server"
+							labelPlacement="floating"
+							value={server}
+							onIonChange={(e) => {
+								setServer(e.target.value)
+							}}
+							disabled={episodeServers.length>0 ? false : true}
+							fill="solid"
+						>
+							{episodeServers.map((item, index) => (
+								<IonSelectOption value={item} key={index}>{item.name}</IonSelectOption>
+							))}
+						</IonSelect>
+						: ""
+					}
+					<IonSelect aria-label="tv-season"
+						label="Season"
+						labelPlacement="floating"
+						fill="solid"
+						value={season}
+						onIonChange={(e) => {
+							setSeason(e.target.value)
+						}}
+					>
+						{info.TvShowSeason?.map((item, index) => (
+							<IonSelectOption value={item} key={index}>{item.Name}</IonSelectOption>
+						))}
+					</IonSelect>
+					<IonSelect
+						label="Episode"
+						labelPlacement="floating"
+						fill="solid"
+						value={tvEpisode}
+						onIonChange={(e) => {
+							setTvEpisode(e.target.value)
+						}}
+						disabled={season ? false : true}
+					>
+						{Array.from({ length: season ? season.EpisodeCount : 0}, ((_, index) => (
+							<IonSelectOption key={index} value={index+1}>Episode {index+1}</IonSelectOption>
+						)))}
+					</IonSelect>
+				</>
+			)
+		} else {
+			if (episodeServers.length < 1) return (
+				<IonButton onClick={loadEpisodeInfo}>
+					Play
+					<IonIcon icon={play}></IonIcon>
+				</IonButton>
+			); else return (
+				<IonSelect aria-label="server"
+					label="Server"
+					labelPlacement="floating"
+					fill="solid"
+					onIonChange={(e) => {
+						setServer(e.target.value)
+					}}
+					value={server}
+				>
+					{episodeServers.map((item, index) => (
+						<IonSelectOption value={item} key={index}>{item.name}</IonSelectOption>
+					))}
+				</IonSelect>
+			)
+		}
+	}
 	
 	const Details = () => {
-		if (!info) return <LoadingComponent choice="card_large" />
-
 		return (
 			<div>
 				<p>{info.Overview}</p>
 				<IonButton 
 					onClick={roomCreate}
 				>
-					Create Room
+					{userContext?.user ? "Create Room" : "Login first to create room"}
 				</IonButton>
 			</div>
 		)
@@ -324,15 +406,13 @@ const InfoPage: React.FC<InfoProps> = ({ info, openRoom }) => {
 	return (
 		<IonPage>
 
-			<IonHeader
-				translucent={true}
-			>
+			<IonHeader translucent={true}>
 				<IonToolbar
 					style={{
 						paddingRight: "1rem"
 					}}
 				>
-					<IonTitle>Peek-A-Boo</IonTitle>
+					<IonTitle>{info.Title}</IonTitle>
 					{userContext ? userContext.user 
 					? 
 						<IonChip slot='end'
@@ -357,124 +437,27 @@ const InfoPage: React.FC<InfoProps> = ({ info, openRoom }) => {
 			</IonHeader>
 
 			<IonContent className="ion-padding">
-				<div className="info-content">
-
-					<div className="info-content-half"
-						style={{
-							maxHeight: `${topH}%`
-						}}
-					>
-						
-						<PlayerAndBanner />
-
-						<div className="ion-padding">
-						{info.AnimeEpisodes ?
-							// If info.AnimeEpisodes is available,
-							// Show the number of available episodes,
-							// Along with buttons for selecting an anime
-							// Conditions: adfree, info.AnimeEpisodes
-							<>
-							<h4>{info.AnimeEpisodes.length} Episodes</h4>
-							<Swiper
-								modules={[Pagination]}
-								spaceBetween={5}
-								slidesPerView={5}
-							>
-								{info.AnimeEpisodes?.map((item, index) => (
-									<SwiperSlide 
-										key={index}
-									>
-										<IonButton
-											className={`episode-button`}
-											color={episode?.number == index+1 ? "warning" : "primary"}
-											onClick={() => {
-												setEpisode(item)
-											}}
-										>
-											{item.number}
-										</IonButton>
-										<div>{item.description}</div>
-									</SwiperSlide>
-								))}
-							</Swiper>
-							</>
-						: info.TvShowSeason && info.Type == "tv" ?
-							// Conditions: adfree, info.TvShowSeason
-							// Users can select tv seasons here
-							<>
-							<h4>Select Season</h4>
-							<Swiper
-								modules={[Pagination]}
-								spaceBetween={5}
-								slidesPerView={5}
-							>
-								{info.TvShowSeason.map((item, index) => (
-									<SwiperSlide 
-										key={index}
-									>
-										<IonButton
-											className={`episode-button`}
-											color={episode?.number == index+1 ? "warning" : "primary"}
-											onClick={() => {
-												setSeason(item)
-											}}
-										>
-											{item.SeasonNumber}
-										</IonButton>
-										<div>{item.Name}</div>
-									</SwiperSlide>
-								))}
-							</Swiper>
-							</>
-						:
-							// Conditions: adfree, info.Type == "movie"
-							<>
-							<IonButton onClick={loadEpisodeInfo}>
-								Play
-								<IonIcon icon={play}></IonIcon>
-							</IonButton>
-							</>
-						}
-						{season ?
-							// If user selects a season from above
-							// Show the list of episodes from that season
-							<>
-								<h4>Select Episode</h4>
-								<Swiper
-									modules={[Pagination]}
-									spaceBetween={5}
-									slidesPerView={5}
-								>
-									{Array.from({ length: season.EpisodeCount}, ((_, index) => (
-										<SwiperSlide 
-											key={index}
-										>
-											<IonButton
-												className={`episode-button`}
-												color={episode?.number == index+1 ? "warning" : "primary"}
-												onClick={() => {
-													setTvEpisode(index+1)
-												}}
-											>
-												{index+1}
-											</IonButton>
-										</SwiperSlide>
-									)))}
-								</Swiper>
-							</>
-						: "" }
-						</div>
-
+				<div className="info-content-half"
+					style={openRoom ?{
+						maxHeight: `${topH}%`,
+						overflow: `scroll`
+					}:{}}
+				>
+					
+					<PlayerAndBanner />
+					<div className="infopage-selectors">
+						<Selectors />
 					</div>
 
-					<div className="info-content-half"
-					style={{
-						overflow: "scroll"
-					}} >
 
-						{openRoom ? <Room {...openRoom} /> : <Details />}
+				</div>
 
-					</div>
+				<div className="info-content-half"
+				style={openRoom ? {
+					overflow: `scroll`
+				}:{}} >
+
+					{openRoom ? <Room {...openRoom} /> : <Details />}
 
 				</div>
 			</IonContent>
