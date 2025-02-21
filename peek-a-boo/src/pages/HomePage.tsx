@@ -13,12 +13,12 @@ import {
 	IonModal
 } from '@ionic/react';
 import { useContext, useEffect, useRef, useState } from 'react';
-import { MovieInfo, MovieSearchResult } from '../lib/types';
+import { MediaInfo, MovieInfo, MovieSearchResult } from '../lib/types';
 import { getTrending, getTopAiring } from '../lib/anime';
 import List from '../components/List';
 import Featured from '../components/Featured'
 import './HomePage.css'
-import { getTrendingMovies, getTrendingTv } from '../lib/movies';
+import { getFeaturedMovie, getTrendingMovies, getTrendingTv } from '../lib/movies';
 import LoadingComponent from '../components/Loading';
 import { UserContext } from '../App';
 import AuthComponent from '../components/Auth';
@@ -27,7 +27,7 @@ const HomePage: React.FC = () => {
 	const [trending, setTrending] = useState<MovieSearchResult[]>([])
 	const [trendingMovies, setTrendingMovies] = useState<MovieSearchResult[]>([])
 	const [trendingTv, setTrendingTv] = useState<MovieSearchResult[]>([])
-	const [featured, setFeatured] = useState<MovieInfo>()
+	const [featured, setFeatured] = useState<MediaInfo>()
 	const userContext = useContext(UserContext)
 	const [ showToast ] = useIonToast()
 	const modalRef = useRef<HTMLIonModalElement>(null)
@@ -35,7 +35,7 @@ const HomePage: React.FC = () => {
 	const errorMessage = (msg: string) => {
 		showToast({
 			message: msg,
-			duration: 5000,
+			duration: 3000,
 			swipeGesture: "vertical",
 			position: "top"
 		})
@@ -71,9 +71,9 @@ const HomePage: React.FC = () => {
 	}
 
 	const loadFeatured = async () => {
-		const response = await getTopAiring();
-		if (response.peek == false) {
-			errorMessage("Error loading top anime")
+		const response = await getFeaturedMovie();
+		if (response.peek == false || typeof response.boo == "string") {
+			showToast("Error loading top anime")
 			return
 		}
 		setFeatured(response.boo)
@@ -136,12 +136,11 @@ const HomePage: React.FC = () => {
 					<Featured {...featured} />
 					: <LoadingComponent choice='card_large' />
 				}
-				<h1>Trending Anime</h1>
+				<h1>Trending Shows</h1>
 				{
-					trending.length > 1 ? 
-					<List {...trending} />
+					trendingTv.length > 1 ?
+					<List {...trendingTv} />
 					: <LoadingComponent choice='list' />
-
 				}
 				<h1>Trending Movies</h1>
 				{
@@ -149,11 +148,12 @@ const HomePage: React.FC = () => {
 					<List {...trendingMovies} />
 					: <LoadingComponent choice='list' />
 				}
-				<h1>Trending Shows</h1>
+				<h1>Trending Anime</h1>
 				{
-					trendingTv.length > 1 ?
-					<List {...trendingTv} />
+					trending.length > 1 ? 
+					<List {...trending} />
 					: <LoadingComponent choice='list' />
+
 				}
 
 			</IonContent>

@@ -4,16 +4,15 @@ import {
 	IonCardTitle,
 	IonImg
 } from '@ionic/react'
-import { MovieInfo, MovieSearchResult } from "../lib/types"
+import { MediaInfo, MovieInfo, MovieSearchResult } from "../lib/types"
 
 import "./Featured.css"
 import AnimeInfoPage from '../pages/Info/AnimeInfo'
 import { Link } from 'react-router-dom'
 
-const Featured: React.FC<MovieInfo> = (item) => {
-
+const Featured: React.FC<MediaInfo> = (item) => {
 	return (
-		<Link to={`/anime/${item.Id}`}>
+		<Link to={`/${item.Type}/${item.Id}`}>
 			<IonCard className="featured-card-ion-container">
 				<div className="featured-card">
 					<IonImg

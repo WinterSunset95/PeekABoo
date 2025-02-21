@@ -324,6 +324,7 @@ router.get("/tv/:provider/:tvid/:season/:episode/embed", (ctx: RouterContext<"/t
 	const tvid = ctx.params.tvid
 	const season = ctx.params.season
 	const episode = ctx.params.season
+	console.log(provider, tvid, season, episode)
 	const movieProvider = getMovieProvider(provider)
 	const result = movieProvider?.getTvEmbeds(tvid, parseInt(season), parseInt(episode))
 	ctx.response.body = result

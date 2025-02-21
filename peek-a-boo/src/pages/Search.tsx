@@ -15,7 +15,6 @@ import { searchMovie, searchTv } from '../lib/movies'
 import LoadingComponent from '../components/Loading'
 
 const Search: React.FC = () => {
-
 	const [search, setSearch] = useState('')
 	const [anime, setAnime] = useState<MovieSearchResult[]>([])
 	const [movie, setMovie] = useState<MovieSearchResult[]>([])
@@ -53,12 +52,6 @@ const Search: React.FC = () => {
 
 	return (
 		<IonPage>
-			<IonHeader
-				translucent={true}
-				className='ion-padding'
-			>
-				Search
-			</IonHeader>
 			<IonContent className="ion-padding">
 				<IonInput
 					label="Search Movies, TV Shows, Anime"
@@ -68,9 +61,9 @@ const Search: React.FC = () => {
 					onIonInput={(e) => setSearch(e.target.value as string)}
 				>
 				</IonInput>
-				<h1>Anime</h1>
-				{anime.length > 1 ?
-				<List {...anime} />
+				<h1>Tv</h1>
+				{tv.length > 1 ?
+				<List {...tv} />
 				: <LoadingComponent choice='list' />
 				}
 				<h1>Movies</h1>
@@ -78,9 +71,9 @@ const Search: React.FC = () => {
 				<List {...movie} />
 				: <LoadingComponent choice='list' />
 				}
-				<h1>Tv</h1>
-				{tv.length > 1 ?
-				<List {...tv} />
+				<h1>Anime</h1>
+				{anime.length > 1 ?
+				<List {...anime} />
 				: <LoadingComponent choice='list' />
 				}
 			</IonContent>
