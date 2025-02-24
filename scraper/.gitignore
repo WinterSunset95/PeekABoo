@@ -4,3 +4,4 @@
 /lib
 /lib64
 /pyenv.cfg
+/src/cloudflare_bypass.log

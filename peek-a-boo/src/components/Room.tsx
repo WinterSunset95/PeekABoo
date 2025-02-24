@@ -80,7 +80,7 @@ const Room: React.FC<OpenRoom> = (room) => {
     }, [])
 
     return (
-        <div className="room-chat">
+		<>
             <ul className="room-chat-list">
                 {messages.map((message, index) => {
                     return (
@@ -114,7 +114,7 @@ const Room: React.FC<OpenRoom> = (room) => {
                 ></IonInput>
                 <IonButton type="submit">Send</IonButton>
             </form>
-        </div>
+		</>
     )
 
 }

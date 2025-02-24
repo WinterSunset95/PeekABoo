@@ -21,7 +21,6 @@ const List: React.FC<MovieSearchResult[]> = (list) => {
 		if (!swiperRef) return;
 		swiperRef.slideTo(1)
 		swiperRef.loopCreate()
-		console.log(swiperRef.autoplay)
 		if (!swiperRef.autoplay) return;
 	},[swiper])
 	return (

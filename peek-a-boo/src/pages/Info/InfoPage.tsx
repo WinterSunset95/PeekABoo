@@ -63,7 +63,6 @@ interface InfoProps {
 }
 
 const InfoPage: React.FC<InfoProps> = ({ info, openRoom }) => {
-
 	const [season, setSeason] = useState<TvSeason>()
 	const [tvEpisode, setTvEpisode] = useState<number>()
 	const [episode, setEpisode] = useState<IAnimeEpisode>();
@@ -454,7 +453,7 @@ const InfoPage: React.FC<InfoProps> = ({ info, openRoom }) => {
 
 				<div className="info-content-half"
 				style={openRoom ? {
-					overflow: `scroll`
+					maxHeight: `${topH}%`,
 				}:{}} >
 
 					{openRoom ? <Room {...openRoom} /> : <Details />}
