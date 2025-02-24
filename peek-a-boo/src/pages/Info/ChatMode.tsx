@@ -8,6 +8,7 @@ import { socket } from "../../lib/socket";
 import { IonAvatar, IonContent, IonHeader, IonLabel, IonPage, IonText, IonTitle, IonToolbar, useIonRouter } from "@ionic/react";
 import LoadingComponent from "../../components/Loading";
 import { UserContext } from "../../App";
+import "./ChatMode.css"
 
 interface ChatProps extends RouteComponentProps<{
     id: string
@@ -21,10 +22,11 @@ const ChatMode: React.FC<ChatProps> = ({ match }) => {
         router.push("/login", "forward", "push")
         return
     }
-    const { user, setUser } = userContext
+    const { user, setUser } = userContext;
 
     const initialLoad = async () => {
         const res = await getRoom({ RoomId: match.params.id, RequesterId: socket.id as string })
+		console.log(res)
         if (!res.boo) {
             alert("This room does not exist")
             // Should route back to /home
@@ -32,7 +34,6 @@ const ChatMode: React.FC<ChatProps> = ({ match }) => {
             return
         }
         setOpenRoom(res.boo)
-        
     }
 
     useEffect(() => {
@@ -65,7 +66,9 @@ const ChatMode: React.FC<ChatProps> = ({ match }) => {
                 </IonToolbar>
             </IonHeader>
             <IonContent>
-                <Room {...openRoom} />
+				<div className="room-container">
+					<Room {...openRoom} />
+				</div>
             </IonContent>
         </IonPage>
     )

@@ -138,19 +138,19 @@ const HomePage: React.FC = () => {
 				}
 				<h1>Trending Shows</h1>
 				{
-					trendingTv.length > 1 ?
+					trendingTv.length > 0 ?
 					<List {...trendingTv} />
 					: <LoadingComponent choice='list' />
 				}
 				<h1>Trending Movies</h1>
 				{
-					trendingMovies.length > 1?
+					trendingMovies.length > 0 ?
 					<List {...trendingMovies} />
 					: <LoadingComponent choice='list' />
 				}
 				<h1>Trending Anime</h1>
 				{
-					trending.length > 1 ? 
+					trending.length > 0 ? 
 					<List {...trending} />
 					: <LoadingComponent choice='list' />
 

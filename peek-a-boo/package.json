@@ -32,6 +32,7 @@
     "install": "^0.13.0",
     "ionicons": "^7.4.0",
     "npm": "^11.0.0",
+    "peek-a-boo.ts": "^1.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router": "^5.0.1",

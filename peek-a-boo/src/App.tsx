@@ -198,9 +198,9 @@ const App: React.FC = () => {
 			<IonReactRouter>
 				<IonRouterOutlet>
 					<Switch>
+						<Route exact path="/chat/:id" component={ChatMode}/>
 						<Route exact path="/:type/:id" component={InfoMode}/>
 						<Route exact path="/room/:type/:id" component={RoomMode}/>
-						<Route exact path="/chat/:id" component={ChatMode}/>
 						<Route exact path="/login" component={AuthPage}/>
 						<IonTabs>
 							<IonRouterOutlet>

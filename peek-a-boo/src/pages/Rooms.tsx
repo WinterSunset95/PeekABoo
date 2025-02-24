@@ -32,6 +32,11 @@ const Rooms: React.FC = () => {
             return
         }
 
+		if (roomname == "") {
+			showAlert("Room name cannot be empty!!")
+			return
+		}
+
         setDisabled(true)
         let roomId = roomname.replaceAll(/[^a-zA-Z]/g, "-")
         roomId = roomId.toLowerCase()
