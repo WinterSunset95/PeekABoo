@@ -9,6 +9,7 @@ import {
   IonTabs,
   setupIonicReact,
   useIonAlert,
+  useIonRouter,
 } from '@ionic/react';
 import React, { createContext, useEffect, useRef, useState } from 'react';
 
@@ -72,6 +73,8 @@ import {
   onAuthStateChanged,
   User
 } from 'firebase/auth';
+import AuthComponent from './components/Auth';
+import PeoplePage from './pages/PeoplePage';
 
 const getFirebaseAuth = async () => {
   if (Capacitor.isNativePlatform()) {
@@ -196,36 +199,23 @@ const App: React.FC = () => {
 		document.title = "PeekABoo"
 		checkPermissions()
 		loadUpdates()
-    onAuthStateChanged(auth, (newLoginUser) => {
-      if (newLoginUser != null) {
-        console.log(newLoginUser.displayName)
-        setUser(newLoginUser)
-      }
-    })
 	}, [])
-
-  useEffect(() => {
-    console.log(user?.displayName)
-  }, [user])
 
 	return (
 		<UserContext.Provider value={{ user, setUser, name }}>
 		<IonApp>
 			<IonReactRouter>
 				<IonRouterOutlet>
-          {user == null ? (
-            <AuthPage />
-          ) : (
 					<Switch>
 						<Route exact path="/chat/:id" component={ChatMode}/>
 						<Route exact path="/:type/:id" component={InfoMode}/>
 						<Route exact path="/room/:type/:id" component={RoomMode}/>
-						<Route exact path="/login" component={AuthPage}/>
+						<Route exact path="/login" component={AuthComponent}/>
 						<IonTabs>
 							<IonRouterOutlet>
 								<Redirect exact path='/' to="/home" />
 								<Route exact path="/home">
-									<HomePage />
+									<PeoplePage />
 								</Route>
 								<Route exact path="/search">
 									<Search />
@@ -260,7 +250,6 @@ const App: React.FC = () => {
 							</IonTabBar>
 						</IonTabs>
 					</Switch>
-          )}
 				</IonRouterOutlet>
 			</IonReactRouter>
 		</IonApp>

@@ -1,70 +1,84 @@
-[debug] [2025-09-24T00:36:26.762Z] ----------------------------------------------------------------------
-[debug] [2025-09-24T00:36:26.764Z] Command:       /home/autumn/.nvm/versions/node/v22.13.0/bin/node /home/autumn/.nvm/versions/node/v22.13.0/bin/firebase emulators:start
-[debug] [2025-09-24T00:36:26.764Z] CLI Version:   14.2.2
-[debug] [2025-09-24T00:36:26.764Z] Platform:      linux
-[debug] [2025-09-24T00:36:26.764Z] Node Version:  v22.13.0
-[debug] [2025-09-24T00:36:26.764Z] Time:          Wed Sep 24 2025 06:06:26 GMT+0530 (India Standard Time)
-[debug] [2025-09-24T00:36:26.764Z] ----------------------------------------------------------------------
+[debug] [2025-09-25T22:40:08.063Z] ----------------------------------------------------------------------
+[debug] [2025-09-25T22:40:08.065Z] Command:       /home/autumn/.nvm/versions/node/v22.13.0/bin/node /home/autumn/.nvm/versions/node/v22.13.0/bin/firebase emulators:start --export-on-exit=./emulator
+[debug] [2025-09-25T22:40:08.066Z] CLI Version:   14.2.2
+[debug] [2025-09-25T22:40:08.066Z] Platform:      linux
+[debug] [2025-09-25T22:40:08.066Z] Node Version:  v22.13.0
+[debug] [2025-09-25T22:40:08.066Z] Time:          Fri Sep 26 2025 04:10:08 GMT+0530 (India Standard Time)
+[debug] [2025-09-25T22:40:08.067Z] ----------------------------------------------------------------------
 [debug] 
-[debug] [2025-09-24T00:36:27.007Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
-[debug] [2025-09-24T00:36:27.008Z] > authorizing via signed-in user (wintersunset95@gmail.com)
-[debug] [2025-09-24T00:36:27.039Z] openjdk version "21.0.8" 2025-07-15
-
-[debug] [2025-09-24T00:36:27.041Z] OpenJDK Runtime Environment (build 21.0.8+9)
+[debug] [2025-09-25T22:40:08.572Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-09-25T22:40:08.573Z] > authorizing via signed-in user (wintersunset95@gmail.com)
+[debug] [2025-09-25T22:40:08.629Z] openjdk version "21.0.8" 2025-07-15
+OpenJDK Runtime Environment (build 21.0.8+9)
 OpenJDK 64-Bit Server VM (build 21.0.8+9, mixed mode, sharing)
 
-[debug] [2025-09-24T00:36:27.046Z] Parsed Java major version: 21
-[info] i  emulators: Starting emulators: auth, functions, firestore, extensions {"metadata":{"emulator":{"name":"hub"},"message":"Starting emulators: auth, functions, firestore, extensions"}}
-[debug] [2025-09-24T00:36:27.047Z] Checked if tokens are valid: true, expires at: 1758677557376
-[debug] [2025-09-24T00:36:27.047Z] Checked if tokens are valid: true, expires at: 1758677557376
-[debug] [2025-09-24T00:36:27.048Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/peekaboo-fbf1a [none]
-[debug] [2025-09-24T00:36:29.407Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/peekaboo-fbf1a 200
-[debug] [2025-09-24T00:36:29.407Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/peekaboo-fbf1a {"projectNumber":"1081048087865","projectId":"peekaboo-fbf1a","lifecycleState":"ACTIVE","name":"PeekABoo","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2025-09-24T00:18:58.244176Z"}
-[debug] [2025-09-24T00:36:29.428Z] [logging] Logging Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
-[debug] [2025-09-24T00:36:29.428Z] [auth] Authentication Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
-[debug] [2025-09-24T00:36:29.428Z] [firestore] Firestore Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
-[debug] [2025-09-24T00:36:29.428Z] [firestore.websocket] websocket server for firestore only supports listening on one address (127.0.0.1). Not listening on ::1
-[debug] [2025-09-24T00:36:29.428Z] assigned listening specs for emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"auth":[{"address":"127.0.0.1","family":"IPv4","port":9099}],"firestore":[{"address":"127.0.0.1","family":"IPv4","port":8080}],"firestore.websocket":[{"address":"127.0.0.1","family":"IPv4","port":9150}]},"metadata":{"message":"assigned listening specs for emulators"}}
-[debug] [2025-09-24T00:36:29.437Z] [hub] writing locator at /tmp/hub-peekaboo-fbf1a.json
-[debug] [2025-09-24T00:36:29.444Z] [Extensions] Started Extensions emulator, this is a noop.
-[debug] [2025-09-24T00:36:29.446Z] [functions] Functions Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
-[debug] [2025-09-24T00:36:29.446Z] [eventarc] Eventarc Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
-[debug] [2025-09-24T00:36:29.446Z] [tasks] Cloud Tasks Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
-[debug] [2025-09-24T00:36:29.446Z] late-assigned ports for functions and eventarc emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"auth":[{"address":"127.0.0.1","family":"IPv4","port":9099}],"firestore":[{"address":"127.0.0.1","family":"IPv4","port":8080}],"firestore.websocket":[{"address":"127.0.0.1","family":"IPv4","port":9150}],"functions":[{"address":"127.0.0.1","family":"IPv4","port":5001}],"eventarc":[{"address":"127.0.0.1","family":"IPv4","port":9299}],"tasks":[{"address":"127.0.0.1","family":"IPv4","port":9499}]},"metadata":{"message":"late-assigned ports for functions and eventarc emulators"}}
-[warn] ⚠  functions: The following emulators are not running, calls to these services from the Functions emulator will affect production: apphosting, database, hosting, pubsub, storage, dataconnect {"metadata":{"emulator":{"name":"functions"},"message":"The following emulators are not running, calls to these services from the Functions emulator will affect production: \u001b[1mapphosting, database, hosting, pubsub, storage, dataconnect\u001b[22m"}}
-[debug] [2025-09-24T00:36:29.720Z] defaultcredentials: writing to file /home/autumn/.config/firebase/wintersunset95_gmail_com_application_default_credentials.json
-[debug] [2025-09-24T00:36:29.729Z] Setting GAC to /home/autumn/.config/firebase/wintersunset95_gmail_com_application_default_credentials.json {"metadata":{"emulator":{"name":"functions"},"message":"Setting GAC to /home/autumn/.config/firebase/wintersunset95_gmail_com_application_default_credentials.json"}}
-[debug] [2025-09-24T00:36:29.731Z] Checked if tokens are valid: true, expires at: 1758677557376
-[debug] [2025-09-24T00:36:29.731Z] Checked if tokens are valid: true, expires at: 1758677557376
-[debug] [2025-09-24T00:36:29.731Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/peekaboo-fbf1a/adminSdkConfig [none]
-[debug] [2025-09-24T00:36:31.255Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/peekaboo-fbf1a/adminSdkConfig 200
-[debug] [2025-09-24T00:36:31.256Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/peekaboo-fbf1a/adminSdkConfig {"projectId":"peekaboo-fbf1a","storageBucket":"peekaboo-fbf1a.firebasestorage.app"}
-[debug] [2025-09-24T00:36:31.285Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: auto_download"}}
-[debug] [2025-09-24T00:36:31.285Z] Ignoring unsupported arg: single_project_mode_error {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: single_project_mode_error"}}
-[debug] [2025-09-24T00:36:31.285Z] Starting Firestore Emulator with command {"binary":"java","args":["-Dgoogle.cloud_firestore.debug_log_level=FINE","-Duser.language=en","-jar","/home/autumn/.cache/firebase/emulators/cloud-firestore-emulator-v1.19.8.jar","--host","127.0.0.1","--port",8080,"--websocket_port",9150,"--project_id","peekaboo-fbf1a","--rules","/home/autumn/Apache/PeekABoo/peek-a-boo/firestore.rules","--single_project_mode",true,"--functions_emulator","127.0.0.1:5001"],"optionalArgs":["port","webchannel_port","host","rules","websocket_port","functions_emulator","seed_from_export","project_id","single_project_mode"],"joinArgs":false,"shell":false,"port":8080} {"metadata":{"emulator":{"name":"firestore"},"message":"Starting Firestore Emulator with command {\"binary\":\"java\",\"args\":[\"-Dgoogle.cloud_firestore.debug_log_level=FINE\",\"-Duser.language=en\",\"-jar\",\"/home/autumn/.cache/firebase/emulators/cloud-firestore-emulator-v1.19.8.jar\",\"--host\",\"127.0.0.1\",\"--port\",8080,\"--websocket_port\",9150,\"--project_id\",\"peekaboo-fbf1a\",\"--rules\",\"/home/autumn/Apache/PeekABoo/peek-a-boo/firestore.rules\",\"--single_project_mode\",true,\"--functions_emulator\",\"127.0.0.1:5001\"],\"optionalArgs\":[\"port\",\"webchannel_port\",\"host\",\"rules\",\"websocket_port\",\"functions_emulator\",\"seed_from_export\",\"project_id\",\"single_project_mode\"],\"joinArgs\":false,\"shell\":false,\"port\":8080}"}}
+[debug] [2025-09-25T22:40:08.638Z] Parsed Java major version: 21
+[info] i  emulators: Starting emulators: auth, functions, firestore, database, storage, extensions {"metadata":{"emulator":{"name":"hub"},"message":"Starting emulators: auth, functions, firestore, database, storage, extensions"}}
+[debug] [2025-09-25T22:40:08.641Z] Checked if tokens are valid: true, expires at: 1758842909598
+[debug] [2025-09-25T22:40:08.641Z] Checked if tokens are valid: true, expires at: 1758842909598
+[debug] [2025-09-25T22:40:08.643Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/peekaboo-fbf1a [none]
+[debug] [2025-09-25T22:40:10.380Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/peekaboo-fbf1a 200
+[debug] [2025-09-25T22:40:10.380Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/peekaboo-fbf1a {"projectNumber":"1081048087865","projectId":"peekaboo-fbf1a","lifecycleState":"ACTIVE","name":"PeekABoo","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2025-09-24T00:18:58.244176Z"}
+[debug] [2025-09-25T22:40:10.387Z] [logging] Logging Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-09-25T22:40:10.387Z] assigned listening specs for emulators {"user":{"auth":[{"address":"0.0.0.0","family":"IPv4","port":9099}],"firestore":[{"address":"0.0.0.0","family":"IPv4","port":8080}],"firestore.websocket":[{"address":"0.0.0.0","family":"IPv4","port":9150}],"database":[{"address":"0.0.0.0","family":"IPv4","port":9000}],"storage":[{"address":"0.0.0.0","family":"IPv4","port":9199}],"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}]},"metadata":{"message":"assigned listening specs for emulators"}}
+[debug] [2025-09-25T22:40:10.393Z] [hub] writing locator at /tmp/hub-peekaboo-fbf1a.json
+[debug] [2025-09-25T22:40:10.400Z] [Extensions] Started Extensions emulator, this is a noop.
+[debug] [2025-09-25T22:40:10.402Z] [eventarc] Eventarc Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-09-25T22:40:10.402Z] [tasks] Cloud Tasks Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-09-25T22:40:10.402Z] late-assigned ports for functions and eventarc emulators {"user":{"auth":[{"address":"0.0.0.0","family":"IPv4","port":9099}],"firestore":[{"address":"0.0.0.0","family":"IPv4","port":8080}],"firestore.websocket":[{"address":"0.0.0.0","family":"IPv4","port":9150}],"database":[{"address":"0.0.0.0","family":"IPv4","port":9000}],"storage":[{"address":"0.0.0.0","family":"IPv4","port":9199}],"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"functions":[{"address":"0.0.0.0","family":"IPv4","port":5001}],"eventarc":[{"address":"127.0.0.1","family":"IPv4","port":9299}],"tasks":[{"address":"127.0.0.1","family":"IPv4","port":9499}]},"metadata":{"message":"late-assigned ports for functions and eventarc emulators"}}
+[warn] ⚠  functions: The following emulators are not running, calls to these services from the Functions emulator will affect production: apphosting, hosting, pubsub, dataconnect {"metadata":{"emulator":{"name":"functions"},"message":"The following emulators are not running, calls to these services from the Functions emulator will affect production: \u001b[1mapphosting, hosting, pubsub, dataconnect\u001b[22m"}}
+[debug] [2025-09-25T22:40:10.436Z] defaultcredentials: writing to file /home/autumn/.config/firebase/wintersunset95_gmail_com_application_default_credentials.json
+[debug] [2025-09-25T22:40:10.438Z] Setting GAC to /home/autumn/.config/firebase/wintersunset95_gmail_com_application_default_credentials.json {"metadata":{"emulator":{"name":"functions"},"message":"Setting GAC to /home/autumn/.config/firebase/wintersunset95_gmail_com_application_default_credentials.json"}}
+[debug] [2025-09-25T22:40:10.439Z] Checked if tokens are valid: true, expires at: 1758842909598
+[debug] [2025-09-25T22:40:10.439Z] Checked if tokens are valid: true, expires at: 1758842909598
+[debug] [2025-09-25T22:40:10.439Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/peekaboo-fbf1a/adminSdkConfig [none]
+[debug] [2025-09-25T22:40:10.953Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/peekaboo-fbf1a/adminSdkConfig 200
+[debug] [2025-09-25T22:40:10.954Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/peekaboo-fbf1a/adminSdkConfig {"projectId":"peekaboo-fbf1a","databaseURL":"https://peekaboo-fbf1a-default-rtdb.firebaseio.com","storageBucket":"peekaboo-fbf1a.firebasestorage.app"}
+[debug] [2025-09-25T22:40:10.981Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2025-09-25T22:40:10.981Z] Ignoring unsupported arg: single_project_mode_error {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: single_project_mode_error"}}
+[debug] [2025-09-25T22:40:10.981Z] Starting Firestore Emulator with command {"binary":"java","args":["-Dgoogle.cloud_firestore.debug_log_level=FINE","-Duser.language=en","-jar","/home/autumn/.cache/firebase/emulators/cloud-firestore-emulator-v1.19.8.jar","--host","0.0.0.0","--port",8080,"--websocket_port",9150,"--project_id","peekaboo-fbf1a","--rules","/home/autumn/Apache/PeekABoo/peek-a-boo/firestore.rules","--single_project_mode",true,"--functions_emulator","127.0.0.1:5001"],"optionalArgs":["port","webchannel_port","host","rules","websocket_port","functions_emulator","seed_from_export","project_id","single_project_mode"],"joinArgs":false,"shell":false,"port":8080} {"metadata":{"emulator":{"name":"firestore"},"message":"Starting Firestore Emulator with command {\"binary\":\"java\",\"args\":[\"-Dgoogle.cloud_firestore.debug_log_level=FINE\",\"-Duser.language=en\",\"-jar\",\"/home/autumn/.cache/firebase/emulators/cloud-firestore-emulator-v1.19.8.jar\",\"--host\",\"0.0.0.0\",\"--port\",8080,\"--websocket_port\",9150,\"--project_id\",\"peekaboo-fbf1a\",\"--rules\",\"/home/autumn/Apache/PeekABoo/peek-a-boo/firestore.rules\",\"--single_project_mode\",true,\"--functions_emulator\",\"127.0.0.1:5001\"],\"optionalArgs\":[\"port\",\"webchannel_port\",\"host\",\"rules\",\"websocket_port\",\"functions_emulator\",\"seed_from_export\",\"project_id\",\"single_project_mode\"],\"joinArgs\":false,\"shell\":false,\"port\":8080}"}}
 [info] i  firestore: Firestore Emulator logging to firestore-debug.log {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator logging to \u001b[1mfirestore-debug.log\u001b[22m"}}
-[debug] [2025-09-24T00:36:32.371Z] Sep 24, 2025 6:06:32 AM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketServer start
-INFO: Started WebSocket server on ws://127.0.0.1:9150
- {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 24, 2025 6:06:32 AM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketServer start\nINFO: Started WebSocket server on ws://127.0.0.1:9150\n"}}
-[debug] [2025-09-24T00:36:32.393Z] API endpoint: http:// {"metadata":{"emulator":{"name":"firestore"},"message":"API endpoint: http://"}}
-[debug] [2025-09-24T00:36:32.394Z] 127.0.0.1:8080
+[debug] [2025-09-25T22:40:12.612Z] Sep 26, 2025 4:10:12 AM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketServer start
+INFO: Started WebSocket server on ws://0.0.0.0:9150
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 26, 2025 4:10:12 AM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketServer start\nINFO: Started WebSocket server on ws://0.0.0.0:9150\n"}}
+[debug] [2025-09-25T22:40:12.656Z] API endpoint: http://0.0.0.0:8080
 If you are using a library that supports the FIRESTORE_EMULATOR_HOST environment variable, run:
 
-   export FIRESTORE_EMULATOR_HOST=127.0.0.1:8080
+   export FIRESTORE_EMULATOR_HOST=0.0.0.0:8080
 
 If you are running a Firestore in Datastore Mode project, run:
 
-   export DATASTORE_EMULATOR_HOST=127.0.0.1:8080
+   export DATASTORE_EMULATOR_HOST=0.0.0.0:8080
 
 Note: Support for Datastore Mode is in preview. If you encounter any bugs please file at https://github.com/firebase/firebase-tools/issues.
 Dev App Server is now running.
 
- {"metadata":{"emulator":{"name":"firestore"},"message":"127.0.0.1:8080\nIf you are using a library that supports the FIRESTORE_EMULATOR_HOST environment variable, run:\n\n   export FIRESTORE_EMULATOR_HOST=127.0.0.1:8080\n\nIf you are running a Firestore in Datastore Mode project, run:\n\n   export DATASTORE_EMULATOR_HOST=127.0.0.1:8080\n\nNote: Support for Datastore Mode is in preview. If you encounter any bugs please file at https://github.com/firebase/firebase-tools/issues.\nDev App Server is now running.\n\n"}}
+ {"metadata":{"emulator":{"name":"firestore"},"message":"API endpoint: http://0.0.0.0:8080\nIf you are using a library that supports the FIRESTORE_EMULATOR_HOST environment variable, run:\n\n   export FIRESTORE_EMULATOR_HOST=0.0.0.0:8080\n\nIf you are running a Firestore in Datastore Mode project, run:\n\n   export DATASTORE_EMULATOR_HOST=0.0.0.0:8080\n\nNote: Support for Datastore Mode is in preview. If you encounter any bugs please file at https://github.com/firebase/firebase-tools/issues.\nDev App Server is now running.\n\n"}}
 [info] ✔  firestore: Firestore Emulator UI websocket is running on 9150. {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator UI websocket is running on 9150."}}
-[debug] [2025-09-24T00:36:38.939Z] [Extensions] Connecting Extensions emulator, this is a noop.
+[debug] [2025-09-25T22:40:12.815Z] Checked if tokens are valid: true, expires at: 1758842909598
+[debug] [2025-09-25T22:40:12.816Z] Checked if tokens are valid: true, expires at: 1758842909598
+[debug] [2025-09-25T22:40:12.816Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/peekaboo-fbf1a [none]
+[debug] [2025-09-25T22:40:13.242Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/peekaboo-fbf1a 200
+[debug] [2025-09-25T22:40:13.243Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/peekaboo-fbf1a {"projectId":"peekaboo-fbf1a","projectNumber":"1081048087865","displayName":"PeekABoo","name":"projects/peekaboo-fbf1a","resources":{"hostingSite":"peekaboo-fbf1a","realtimeDatabaseInstance":"peekaboo-fbf1a-default-rtdb"},"state":"ACTIVE","etag":"1_de64415d-16f6-4655-ae7b-bc0f59e3df09"}
+[debug] [2025-09-25T22:40:13.243Z] database rules config:  [{"instance":"peekaboo-fbf1a-default-rtdb","rules":"/home/autumn/Apache/PeekABoo/peek-a-boo/database.rules.json"}]
+[debug] [2025-09-25T22:40:13.245Z] Ignoring unsupported arg: projectId {"metadata":{"emulator":{"name":"database"},"message":"Ignoring unsupported arg: projectId"}}
+[debug] [2025-09-25T22:40:13.245Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"database"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2025-09-25T22:40:13.246Z] Ignoring unsupported arg: rules {"metadata":{"emulator":{"name":"database"},"message":"Ignoring unsupported arg: rules"}}
+[debug] [2025-09-25T22:40:13.246Z] Starting Database Emulator with command {"binary":"java","args":["-Duser.language=en","-jar","/home/autumn/.cache/firebase/emulators/firebase-database-emulator-v4.11.2.jar","--host","0.0.0.0","--port",9000,"--single_project_mode","Warning","--functions_emulator_host","127.0.0.1","--functions_emulator_port",5001],"optionalArgs":["port","host","functions_emulator_port","functions_emulator_host","single_project_mode"],"joinArgs":false,"shell":false,"port":9000} {"metadata":{"emulator":{"name":"database"},"message":"Starting Database Emulator with command {\"binary\":\"java\",\"args\":[\"-Duser.language=en\",\"-jar\",\"/home/autumn/.cache/firebase/emulators/firebase-database-emulator-v4.11.2.jar\",\"--host\",\"0.0.0.0\",\"--port\",9000,\"--single_project_mode\",\"Warning\",\"--functions_emulator_host\",\"127.0.0.1\",\"--functions_emulator_port\",5001],\"optionalArgs\":[\"port\",\"host\",\"functions_emulator_port\",\"functions_emulator_host\",\"single_project_mode\"],\"joinArgs\":false,\"shell\":false,\"port\":9000}"}}
+[info] i  database: Database Emulator logging to database-debug.log {"metadata":{"emulator":{"name":"database"},"message":"Database Emulator logging to \u001b[1mdatabase-debug.log\u001b[22m"}}
+[debug] [2025-09-25T22:40:13.319Z] Sep 26, 2025 4:10:13 AM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler initChannel
+INFO: Connected to new websocket client
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 26, 2025 4:10:13 AM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler initChannel\nINFO: Connected to new websocket client\n"}}
+[debug] [2025-09-25T22:40:15.025Z] 04:10:15.018 [NamespaceSystem-akka.actor.default-dispatcher-5] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started
+ {"metadata":{"emulator":{"name":"database"},"message":"04:10:15.018 [NamespaceSystem-akka.actor.default-dispatcher-5] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started\n"}}
+[debug] [2025-09-25T22:40:15.313Z] 04:10:15.312 [main] INFO com.firebase.server.forge.App$ - Listening at 0.0.0.0:9000
+ {"metadata":{"emulator":{"name":"database"},"message":"04:10:15.312 [main] INFO com.firebase.server.forge.App$ - Listening at 0.0.0.0:9000\n"}}
+[debug] [2025-09-25T22:40:26.707Z] Ignoring unsupported arg: port {"metadata":{"emulator":{"name":"storage"},"message":"Ignoring unsupported arg: port"}}
+[debug] [2025-09-25T22:40:28.212Z] Temp file directory for storage emulator: /tmp/firebase/storage/blobs {"metadata":{"emulator":{"name":"storage"},"message":"Temp file directory for storage emulator: /tmp/firebase/storage/blobs"}}
+[debug] [2025-09-25T22:40:28.227Z] [Extensions] Connecting Extensions emulator, this is a noop.
 [info] i  functions: Watching "/home/autumn/Apache/PeekABoo/peek-a-boo/functions" for Cloud Functions... {"metadata":{"emulator":{"name":"functions"},"message":"Watching \"/home/autumn/Apache/PeekABoo/peek-a-boo/functions\" for Cloud Functions..."}}
-[debug] [2025-09-24T00:36:38.954Z] Validating nodejs source
-[debug] [2025-09-24T00:36:39.943Z] > [functions] package.json contents: {
+[debug] [2025-09-25T22:40:28.237Z] Validating nodejs source
+[debug] [2025-09-25T22:40:29.026Z] > [functions] package.json contents: {
   "name": "functions",
   "scripts": {
     "lint": "eslint --ext .js,.ts .",
@@ -98,24 +112,36 @@ Dev App Server is now running.
 [error] ⬢  functions: Failed to load function definition from source: FirebaseError: There was an error reading functions/package.json:
 
  functions/lib/index.js does not exist, can't deploy Cloud Functions {"metadata":{"emulator":{"name":"functions"},"message":"Failed to load function definition from source: FirebaseError: There was an error reading functions/package.json:\n\n functions/lib/index.js does not exist, can't deploy Cloud Functions"}}
-[debug] [2025-09-24T00:36:39.952Z] Could not find VSCode notification endpoint: FetchError: request to http://localhost:40001/vscode/notify failed, reason: . If you are not running the Firebase Data Connect VSCode extension, this is expected and not an issue.
+[debug] [2025-09-25T22:40:29.028Z] >>> [apiv2][query] PUT http://127.0.0.1:9000/.settings/rules.json ns=peekaboo-fbf1a-default-rtdb
+[debug] [2025-09-25T22:40:29.028Z] >>> [apiv2][body] PUT http://127.0.0.1:9000/.settings/rules.json "{\n  \"rules\": {\n    \".read\": \"now < 1761417000000\",  // 2025-10-26\n    \".write\": \"now < 1761417000000\",  // 2025-10-26\n  }\n}"
+[debug] [2025-09-25T22:40:29.399Z] 04:10:29.397 [NamespaceSystem-akka.actor.default-dispatcher-5] INFO com.firebase.core.namespace.NamespaceActor - peekaboo-fbf1a-default-rtdb successfully activated FBKV (SurveyIdle(0)) wait: 184ms, init: 0ms
+ {"metadata":{"emulator":{"name":"database"},"message":"04:10:29.397 [NamespaceSystem-akka.actor.default-dispatcher-5] INFO com.firebase.core.namespace.NamespaceActor - peekaboo-fbf1a-default-rtdb successfully activated FBKV (SurveyIdle(0)) wait: 184ms, init: 0ms\n"}}
+[debug] [2025-09-25T22:40:29.522Z] 04:10:29.521 [NamespaceSystem-blocking-namespace-operation-dispatcher-7] INFO com.firebase.core.namespace.StateManager - Namespace peekaboo-fbf1a-default-rtdb status Active to Active
+ {"metadata":{"emulator":{"name":"database"},"message":"04:10:29.521 [NamespaceSystem-blocking-namespace-operation-dispatcher-7] INFO com.firebase.core.namespace.StateManager - Namespace peekaboo-fbf1a-default-rtdb status Active to Active\n"}}
+[debug] [2025-09-25T22:40:29.630Z] <<< [apiv2][status] PUT http://127.0.0.1:9000/.settings/rules.json 200
+[debug] [2025-09-25T22:40:29.630Z] <<< [apiv2][body] PUT http://127.0.0.1:9000/.settings/rules.json {"status":"ok"}
+[debug] [2025-09-25T22:40:29.646Z] Could not find VSCode notification endpoint: FetchError: request to http://localhost:40001/vscode/notify failed, reason: . If you are not running the Firebase Data Connect VSCode extension, this is expected and not an issue.
 [info] 
 ┌─────────────────────────────────────────────────────────────┐
 │ ✔  All emulators ready! It is now safe to connect your app. │
 │ i  View Emulator UI at http://127.0.0.1:4000/               │
 └─────────────────────────────────────────────────────────────┘
 
-┌────────────────┬────────────────┬──────────────────────────────────┐
-│ Emulator       │ Host:Port      │ View in Emulator UI              │
-├────────────────┼────────────────┼──────────────────────────────────┤
-│ Authentication │ 127.0.0.1:9099 │ http://127.0.0.1:4000/auth       │
-├────────────────┼────────────────┼──────────────────────────────────┤
-│ Functions      │ 127.0.0.1:5001 │ http://127.0.0.1:4000/functions  │
-├────────────────┼────────────────┼──────────────────────────────────┤
-│ Firestore      │ 127.0.0.1:8080 │ http://127.0.0.1:4000/firestore  │
-├────────────────┼────────────────┼──────────────────────────────────┤
-│ Extensions     │ 127.0.0.1:5001 │ http://127.0.0.1:4000/extensions │
-└────────────────┴────────────────┴──────────────────────────────────┘
+┌────────────────┬──────────────┬──────────────────────────────────┐
+│ Emulator       │ Host:Port    │ View in Emulator UI              │
+├────────────────┼──────────────┼──────────────────────────────────┤
+│ Authentication │ 0.0.0.0:9099 │ http://127.0.0.1:4000/auth       │
+├────────────────┼──────────────┼──────────────────────────────────┤
+│ Functions      │ 0.0.0.0:5001 │ http://127.0.0.1:4000/functions  │
+├────────────────┼──────────────┼──────────────────────────────────┤
+│ Firestore      │ 0.0.0.0:8080 │ http://127.0.0.1:4000/firestore  │
+├────────────────┼──────────────┼──────────────────────────────────┤
+│ Database       │ 0.0.0.0:9000 │ http://127.0.0.1:4000/database   │
+├────────────────┼──────────────┼──────────────────────────────────┤
+│ Storage        │ 0.0.0.0:9199 │ http://127.0.0.1:4000/storage    │
+├────────────────┼──────────────┼──────────────────────────────────┤
+│ Extensions     │ 0.0.0.0:5001 │ http://127.0.0.1:4000/extensions │
+└────────────────┴──────────────┴──────────────────────────────────┘
   Emulator Hub host: 127.0.0.1 port: 4400
   Other reserved ports: 4500, 9150
 ┌─────────────────────────┬───────────────┬─────────────────────┐
@@ -123,13 +149,36 @@ Dev App Server is now running.
 └─────────────────────────┴───────────────┴─────────────────────┘
 Issues? Report them at https://github.com/firebase/firebase-tools/issues and attach the *-debug.log files.
  
-[debug] [2025-09-25T19:17:57.858Z] >>> [apiv2][query] POST http://127.0.0.1:5001/functions/projects/peekaboo-fbf1a/trigger_multicast [none]
-[debug] [2025-09-25T19:17:57.860Z] >>> [apiv2][body] POST http://127.0.0.1:5001/functions/projects/peekaboo-fbf1a/trigger_multicast {"eventId":"d7597620-ec1c-4f31-9cc4-387aab50e54f","eventType":"providers/firebase.auth/eventTypes/user.create","resource":{"name":"projects/peekaboo-fbf1a","service":"firebaseauth.googleapis.com"},"params":{},"timestamp":"2025-09-25T19:17:57.856Z","data":{"uid":"5lYBqGi3PQy88tyeZlJOvPnrkMtF","email":"otter.orange.882@example.com","emailVerified":true,"displayName":"Otter Orange","metadata":{"creationTime":"2025-09-25T19:17:57.854Z","lastSignInTime":"2025-09-25T19:17:57.854Z"},"customClaims":{},"providerData":[{"providerId":"google.com","rawId":"7876858655150335193740848463510022854131","federatedId":"7876858655150335193740848463510022854131","displayName":"Otter Orange","email":"otter.orange.882@example.com","screenName":"orange_otter"}]}}
-[debug] [2025-09-25T19:17:57.885Z] <<< [apiv2][status] POST http://127.0.0.1:5001/functions/projects/peekaboo-fbf1a/trigger_multicast 200
-[debug] [2025-09-25T19:17:57.885Z] <<< [apiv2][body] POST http://127.0.0.1:5001/functions/projects/peekaboo-fbf1a/trigger_multicast {"status":"multicast_acknowledged"}
-[debug] [2025-09-25T19:20:15.842Z] >>> [apiv2][query] POST http://127.0.0.1:5001/functions/projects/peekaboo-fbf1a/trigger_multicast [none]
-[debug] [2025-09-25T19:20:15.842Z] >>> [apiv2][body] POST http://127.0.0.1:5001/functions/projects/peekaboo-fbf1a/trigger_multicast {"eventId":"4d5e9ed4-2c84-42d8-a2a9-a6dd4fe9f6e8","eventType":"providers/firebase.auth/eventTypes/user.create","resource":{"name":"projects/peekaboo-fbf1a","service":"firebaseauth.googleapis.com"},"params":{},"timestamp":"2025-09-25T19:20:15.842Z","data":{"uid":"skWiENtz70L4eOQJ2xVzxIHIcEEB","email":"chicken.olive.40@example.com","emailVerified":true,"displayName":"Chicken Olive","metadata":{"creationTime":"2025-09-25T19:20:15.841Z","lastSignInTime":"2025-09-25T19:20:15.841Z"},"customClaims":{},"providerData":[{"providerId":"google.com","rawId":"5252585718821282171966353287066946453952","federatedId":"5252585718821282171966353287066946453952","displayName":"Chicken Olive","email":"chicken.olive.40@example.com","screenName":"olive_chicken"}]}}
-[debug] [2025-09-25T19:20:15.847Z] <<< [apiv2][status] POST http://127.0.0.1:5001/functions/projects/peekaboo-fbf1a/trigger_multicast 200
-[debug] [2025-09-25T19:20:15.847Z] <<< [apiv2][body] POST http://127.0.0.1:5001/functions/projects/peekaboo-fbf1a/trigger_multicast {"status":"multicast_acknowledged"}
-[warn] ⚠  Received a signed JWT. Auth Emulator does not validate JWTs and IS NOT SECURE {"metadata":{"emulator":{"name":"auth"},"message":"Received a signed JWT. Auth Emulator does not validate JWTs and IS NOT SECURE"}}
-[warn] ⚠  Received a signed JWT. Auth Emulator does not validate JWTs and IS NOT SECURE {"metadata":{"emulator":{"name":"auth"},"message":"Received a signed JWT. Auth Emulator does not validate JWTs and IS NOT SECURE"}}
+[debug] [2025-09-25T22:47:37.347Z] Sep 26, 2025 4:17:37 AM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler channelClosed
+INFO: Websocket client disconnected
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 26, 2025 4:17:37 AM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler channelClosed\nINFO: Websocket client disconnected\n"}}
+[debug] [2025-09-25T22:47:37.473Z] Sep 26, 2025 4:17:37 AM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler initChannel
+INFO: Connected to new websocket client
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 26, 2025 4:17:37 AM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler initChannel\nINFO: Connected to new websocket client\n"}}
+[debug] [2025-09-25T22:50:06.304Z] 04:20:06.303 [FirebaseWorkerPool-1-3] WARN com.firebase.core.persistence.backend.dummy.EmulatorMetadataPersistence - Multiple projectIds are not recommended in single project mode. Requested 
+namespace peekaboo-fbf1a, but the emulator is configured for peekaboo-fbf1a-default-rtdb. To 
+opt-out of single project mode add/set the singleProjectMode: false property in 
+the firebase.json emulators config. 
+ {"metadata":{"emulator":{"name":"database"},"message":"04:20:06.303 [FirebaseWorkerPool-1-3] WARN com.firebase.core.persistence.backend.dummy.EmulatorMetadataPersistence - Multiple projectIds are not recommended in single project mode. Requested \nnamespace peekaboo-fbf1a, but the emulator is configured for peekaboo-fbf1a-default-rtdb. To \nopt-out of single project mode add/set the singleProjectMode: false property in \nthe firebase.json emulators config. \n"}}
+[debug] [2025-09-25T22:50:06.319Z] 04:20:06.319 [NamespaceSystem-akka.actor.default-dispatcher-13] INFO com.firebase.core.namespace.NamespaceActor - peekaboo-fbf1a successfully activated FBKV (SurveyIdle(0)) wait: 2ms, init: 0ms
+ {"metadata":{"emulator":{"name":"database"},"message":"04:20:06.319 [NamespaceSystem-akka.actor.default-dispatcher-13] INFO com.firebase.core.namespace.NamespaceActor - peekaboo-fbf1a successfully activated FBKV (SurveyIdle(0)) wait: 2ms, init: 0ms\n"}}
+[debug] [2025-09-25T22:51:30.599Z] >>> [apiv2][query] POST http://127.0.0.1:5001/functions/projects/peekaboo-fbf1a/trigger_multicast [none]
+[debug] [2025-09-25T22:51:30.600Z] >>> [apiv2][body] POST http://127.0.0.1:5001/functions/projects/peekaboo-fbf1a/trigger_multicast {"eventId":"d73aa6b7-9862-4d12-9f0c-5293659dc9df","eventType":"providers/firebase.auth/eventTypes/user.create","resource":{"name":"projects/peekaboo-fbf1a","service":"firebaseauth.googleapis.com"},"params":{},"timestamp":"2025-09-25T22:51:30.599Z","data":{"uid":"s2KCWFKsW9mJc625X8RjUEQE4oGR","email":"orange.panda.282@example.com","emailVerified":true,"displayName":"Orange Panda","metadata":{"creationTime":"2025-09-25T22:51:30.597Z","lastSignInTime":"2025-09-25T22:51:30.597Z"},"customClaims":{},"providerData":[{"providerId":"google.com","rawId":"6930380707195040520883483056413584599396","federatedId":"6930380707195040520883483056413584599396","displayName":"Orange Panda","email":"orange.panda.282@example.com","screenName":"panda_orange"}]}}
+[debug] [2025-09-25T22:51:30.613Z] <<< [apiv2][status] POST http://127.0.0.1:5001/functions/projects/peekaboo-fbf1a/trigger_multicast 200
+[debug] [2025-09-25T22:51:30.613Z] <<< [apiv2][body] POST http://127.0.0.1:5001/functions/projects/peekaboo-fbf1a/trigger_multicast {"status":"multicast_acknowledged"}
+[debug] [2025-09-25T23:00:50.587Z] >>> [apiv2][query] POST http://127.0.0.1:5001/functions/projects/peekaboo-fbf1a/trigger_multicast [none]
+[debug] [2025-09-25T23:00:50.587Z] >>> [apiv2][body] POST http://127.0.0.1:5001/functions/projects/peekaboo-fbf1a/trigger_multicast {"eventId":"b7df5811-39fa-492f-98a8-d56bc088bdfa","eventType":"providers/firebase.auth/eventTypes/user.create","resource":{"name":"projects/peekaboo-fbf1a","service":"firebaseauth.googleapis.com"},"params":{},"timestamp":"2025-09-25T23:00:50.586Z","data":{"uid":"W8GGA5F8D616i3ApbMYrUX9vT9TB","email":"thenicsman@gmail.com","emailVerified":true,"displayName":"Αυƚυɱɳ","photoURL":"https://lh3.googleusercontent.com/a/ACg8ocIxBJWUx48RdR065mn5BNg_AT5iOfSwDUjMmvzfs8x1hJLunf0j=s96-c","metadata":{"creationTime":"2025-09-25T23:00:50.586Z","lastSignInTime":"2025-09-25T23:00:50.586Z"},"customClaims":{},"providerData":[{"providerId":"google.com","rawId":"107907539609316261476","federatedId":"107907539609316261476","displayName":"Αυƚυɱɳ","photoUrl":"https://lh3.googleusercontent.com/a/ACg8ocIxBJWUx48RdR065mn5BNg_AT5iOfSwDUjMmvzfs8x1hJLunf0j=s96-c","email":"thenicsman@gmail.com"}]}}
+[debug] [2025-09-25T23:00:50.593Z] <<< [apiv2][status] POST http://127.0.0.1:5001/functions/projects/peekaboo-fbf1a/trigger_multicast 200
+[debug] [2025-09-25T23:00:50.594Z] <<< [apiv2][body] POST http://127.0.0.1:5001/functions/projects/peekaboo-fbf1a/trigger_multicast {"status":"multicast_acknowledged"}
+[debug] [2025-09-25T23:01:46.677Z] Sep 26, 2025 4:31:46 AM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler channelClosed
+INFO: Websocket client disconnected
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 26, 2025 4:31:46 AM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler channelClosed\nINFO: Websocket client disconnected\n"}}
+[debug] [2025-09-25T23:01:47.047Z] Sep 26, 2025 4:31:47 AM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler initChannel
+INFO: Connected to new websocket client
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 26, 2025 4:31:47 AM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler initChannel\nINFO: Connected to new websocket client\n"}}
+[debug] [2025-09-25T23:01:52.617Z] Sep 26, 2025 4:31:52 AM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler channelClosed
+INFO: Websocket client disconnected
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 26, 2025 4:31:52 AM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler channelClosed\nINFO: Websocket client disconnected\n"}}
+[debug] [2025-09-25T23:01:58.789Z] Sep 26, 2025 4:31:58 AM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler initChannel
+INFO: Connected to new websocket client
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 26, 2025 4:31:58 AM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketChannelHandler initChannel\nINFO: Connected to new websocket client\n"}}

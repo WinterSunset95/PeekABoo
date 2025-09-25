@@ -28,7 +28,7 @@ const HomePage: React.FC = () => {
 	const [trendingMovies, setTrendingMovies] = useState<MovieSearchResult[]>([])
 	const [trendingTv, setTrendingTv] = useState<MovieSearchResult[]>([])
 	const [featured, setFeatured] = useState<MediaInfo>()
-	const userContext = useContext(UserContext)
+	const { user, setUser, name } = useContext(UserContext)
 	const [ showToast ] = useIonToast()
 	const modalRef = useRef<HTMLIonModalElement>(null)
 
@@ -99,12 +99,12 @@ const HomePage: React.FC = () => {
 					}}
 				>
 					<IonTitle>Peek-A-Boo</IonTitle>
-					{userContext ? userContext.user 
+					{user ? user.email
 					? 
 						<IonChip slot='end'
 							onClick={() => {
 								showToast({
-									message: `UserID: ${userContext.user?.UserId}`,
+									message: `UserID: ${user.email}`,
 									duration: 3000,
 									position: "top",
 									swipeGesture: "vertical"
@@ -112,9 +112,9 @@ const HomePage: React.FC = () => {
 							}}
 						>
 							<IonAvatar>
-								<img src={userContext.user.UserImage} alt="" />
+								<img src={user.photoURL ?? ""} alt="" />
 							</IonAvatar>
-							<IonLabel>{userContext.user.UserName}</IonLabel>
+							<IonLabel>{user.displayName}</IonLabel>
 						</IonChip>
 					: <IonButton id='loginButton' slot='end'>Login</IonButton>
 					: <IonButton id='loginButton' slot='end'>Login</IonButton>
@@ -155,7 +155,6 @@ const HomePage: React.FC = () => {
 					: <LoadingComponent choice='list' />
 
 				}
-
 			</IonContent>
 		</IonPage>
 	)

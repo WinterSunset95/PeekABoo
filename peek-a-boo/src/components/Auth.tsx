@@ -34,14 +34,23 @@ const AuthComponent: React.FC<AuthProps> = ({ returnUrl, modalRef }) => {
     }
 
     useEffect(() => {
+      document.title = "PeekABoo"
       onAuthStateChanged(auth, (newLoginUser) => {
-        console.log("Auth state changed")
-        console.log(auth, newLoginUser)
         if (newLoginUser != null) {
           setUser(newLoginUser)
+        } else {
+          setUser(null)
         }
       })
     }, [])
+
+    useEffect(() => {
+      if (user != null && auth.currentUser != null) {
+          router.push("/home", "root")
+      } else {
+          router.push("/login", "root")
+      }
+    }, [user])
 
     //const connectSocket = () => {
     //    if (name.current.length == 0) {
