@@ -4,6 +4,8 @@ import { IonButton, IonInput, IonTab, IonTabBar, IonTabButton, IonTabs, useIonAl
 import SettingsPage from "../pages/Settings"
 import { socket } from "../lib/socket"
 import { app, auth } from "../lib/firebase"
+import { FirebaseAuthentication } from "@capacitor-firebase/authentication"
+import { getAuth, GoogleAuthProvider, signInWithCredential } from "firebase/auth"
 
 interface AuthProps {
     returnUrl?: string,
@@ -20,31 +22,46 @@ const AuthComponent: React.FC<AuthProps> = ({ returnUrl, modalRef }) => {
     const { name } = user
     const router = useIonRouter()
 
-    const connectSocket = () => {
-        if (name.current.length == 0) {
-            showAlert("The username should not be empty")
-            return
-        }
-		setDisabled(true)
-		socket.connect()
-		setTimeout(() => {
-            setDisabled(false)
-        }, 5000)
+    const signInWithGoogle = async () => {
+      try {
+        setDisabled(true)
+        const result = await FirebaseAuthentication.signInWithGoogle();
+        const credential = GoogleAuthProvider.credential(result.credential?.idToken)
+        const auth = getAuth(app)
+        signInWithCredential(auth, credential)
+      } catch (error) {
+        console.error("Google Sign-In Error", error);
+        showAlert("Failed to signin with Google.")
+      } finally {
+        setDisabled(false)
+      }
     }
 
-    if (user.user) {
-        if (returnUrl) {
-            router.push(returnUrl, "forward", "replace")
-        } else if (modalRef && modalRef.current != null) {
-            modalRef.current.dismiss()
-        }
-    }
+    //const connectSocket = () => {
+    //    if (name.current.length == 0) {
+    //        showAlert("The username should not be empty")
+    //        return
+    //    }
+		//setDisabled(true)
+		//socket.connect()
+		//setTimeout(() => {
+    //        setDisabled(false)
+    //    }, 5000)
+    //}
+
+    //if (user.user) {
+    //    if (returnUrl) {
+    //        router.push(returnUrl, "forward", "replace")
+    //    } else if (modalRef && modalRef.current != null) {
+    //        modalRef.current.dismiss()
+    //    }
+    //}
 
     return (
         <div className="main">
             <form className="form" onSubmit={(e) => {
                 e.preventDefault()
-                connectSocket()
+                //connectSocket()
             }}>
                 <IonInput placeholder='Enter a username'
                   label='Email'
@@ -64,6 +81,9 @@ const AuthComponent: React.FC<AuthProps> = ({ returnUrl, modalRef }) => {
                 ></IonInput>
                 <IonButton type='submit' expand='block' className='form-button' disabled={disabled}>Submit</IonButton>
             </form>
+            <IonButton expand='block' className='form-button' disabled={disabled} onClick={signInWithGoogle}>
+              Sign in with Google
+            </IonButton>
         </div>
     )
 }

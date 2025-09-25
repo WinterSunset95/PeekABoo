@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@capacitor-community/file-opener": "^7.0.0",
+    "@capacitor-firebase/app": "^7.3.1",
     "@capacitor-firebase/authentication": "^7.3.1",
     "@capacitor-firebase/firestore": "^7.3.1",
     "@capacitor-firebase/functions": "^7.3.1",

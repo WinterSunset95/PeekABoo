@@ -6,6 +6,7 @@ import { FirebaseAuthentication } from "@capacitor-firebase/authentication";
 import { connectFirestoreEmulator, getFirestore } from "firebase/firestore";
 import { connectFunctionsEmulator, getFunctions } from "firebase/functions";
 import { connectStorageEmulator, getStorage } from "firebase/storage";
+import { FirebaseApp } from "@capacitor-firebase/app";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -28,10 +29,12 @@ console.log(auth.currentUser)
 //getAuth(app).tenantId = "chat-um-bhulo";
 //const storage = getStorage(app);
 if (process.env.NODE_ENV === "development") {
-  connectAuthEmulator(getAuth(app), "http://localhost:9099");
-  connectFirestoreEmulator(getFirestore(app), "localhost", 8080);
-  const functions = getFunctions(getApp());
-  connectFunctionsEmulator(functions, "localhost", 5001);
+  //console.log("Hello there!!")
+  //console.log(window.location.href)
+  //connectAuthEmulator(getAuth(app), "http://localhost:9099");
+  //connectFirestoreEmulator(getFirestore(app), "localhost", 8080);
+  //const functions = getFunctions(getApp());
+  //connectFunctionsEmulator(functions, "localhost", 5001);
   //connectStorageEmulator(storage, "localhost", 9199);
 }
 

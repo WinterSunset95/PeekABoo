@@ -45,7 +45,7 @@ import { Redirect, Route, Switch } from 'react-router';
 import { home, radio, search, settings } from 'ionicons/icons';
 import { IonReactRouter } from '@ionic/react-router';
 import { socket } from './lib/socket';
-import { appVersion, Settings, User } from './lib/types';
+import { appVersion, Settings } from './lib/types';
 import SettingsPage from './pages/Settings';
 import HomePage from './pages/HomePage';
 import Search from './pages/Search';
@@ -68,7 +68,8 @@ import { getApp } from 'firebase/app';
 import {
   getAuth,
   indexedDBLocalPersistence,
-  initializeAuth
+  initializeAuth,
+  User
 } from 'firebase/auth';
 
 const getFirebaseAuth = async () => {
@@ -82,23 +83,17 @@ const getFirebaseAuth = async () => {
 }
 
 setupIonicReact();
-getFirebaseAuth();
 
 export const UserContext = createContext<{
-	user: User | undefined,
-	setUser: React.Dispatch<React.SetStateAction<User | undefined>> | undefined,
+	user: User | null,
+	setUser: React.Dispatch<React.SetStateAction<User | null>> | undefined,
 	name: React.MutableRefObject<string>
 } | undefined>(undefined)
 
 const App: React.FC = () => {
 	const name = useRef<string>("")
-	const [user, setUser] = useState<User>()
+	const [user, setUser] = useState<User | null>(null)
 	const [showAlert, controls] = useIonAlert()
-
-  async function authStatus() {
-    const user = await FirebaseAuthentication.getCurrentUser();
-    console.log("auth:", user)
-  }
 
 	if (Capacitor.getPlatform() != 'web') {
 		StatusBar.setOverlaysWebView({ overlay: false })
@@ -207,14 +202,14 @@ const App: React.FC = () => {
 			})
 		})
 
-    authStatus()
 		checkPermissions()
 		loadUpdates()
+    setUser(auth.currentUser)
+    console.log("Normal auth: ", auth.currentUser)
 
 		return () => {
 			socket.off("connect")
 		}
-
 	}, [])
 
 	return (
@@ -222,6 +217,9 @@ const App: React.FC = () => {
 		<IonApp>
 			<IonReactRouter>
 				<IonRouterOutlet>
+          {auth.currentUser === null ? (
+            <AuthPage />
+          ) : (
 					<Switch>
 						<Route exact path="/chat/:id" component={ChatMode}/>
 						<Route exact path="/:type/:id" component={InfoMode}/>
@@ -266,6 +264,7 @@ const App: React.FC = () => {
 							</IonTabBar>
 						</IonTabs>
 					</Switch>
+          )}
 				</IonRouterOutlet>
 			</IonReactRouter>
 		</IonApp>
