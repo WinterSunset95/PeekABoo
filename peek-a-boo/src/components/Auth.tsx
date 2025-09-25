@@ -42,20 +42,25 @@ const AuthComponent: React.FC<AuthProps> = ({ returnUrl, modalRef }) => {
 
     return (
         <div className="main">
-            <h1>
-                The app does NOT save any data. Everything you do here WILL disappear the moment you close your session.
-            </h1>
             <form className="form" onSubmit={(e) => {
                 e.preventDefault()
                 connectSocket()
             }}>
                 <IonInput placeholder='Enter a username'
-                label='Username'
-                fill='outline'
-                labelPlacement='floating'
-                value={name.current}
-                onIonInput={(e) => name.current = e.target.value as string}
-                disabled={disabled}
+                  label='Email'
+                  fill='outline'
+                  labelPlacement='floating'
+                  value={name.current}
+                  onIonInput={(e) => name.current = e.target.value as string}
+                  disabled={disabled}
+                ></IonInput>
+                <IonInput placeholder='Enter a username'
+                  label='Password'
+                  fill='outline'
+                  labelPlacement='floating'
+                  value={name.current}
+                  onIonInput={(e) => name.current = e.target.value as string}
+                  disabled={disabled}
                 ></IonInput>
                 <IonButton type='submit' expand='block' className='form-button' disabled={disabled}>Submit</IonButton>
             </form>
