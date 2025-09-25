@@ -3,6 +3,7 @@ import { UserContext } from "../App"
 import { IonButton, IonInput, IonTab, IonTabBar, IonTabButton, IonTabs, useIonAlert, useIonRouter } from "@ionic/react"
 import SettingsPage from "../pages/Settings"
 import { socket } from "../lib/socket"
+import { app, auth } from "../lib/firebase"
 
 interface AuthProps {
     returnUrl?: string,
@@ -10,7 +11,6 @@ interface AuthProps {
 }
 
 const AuthComponent: React.FC<AuthProps> = ({ returnUrl, modalRef }) => {
-
     const user = useContext(UserContext)
     if (!user) {
         return "There is a REALLYY horrible error under the hood if you can see this message!! Reload the app or contact the developer!!"

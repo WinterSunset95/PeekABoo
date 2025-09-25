@@ -62,6 +62,8 @@ import { getSettings } from './lib/storage';
 import { FileOpener } from '@capacitor-community/file-opener';
 import { StatusBar } from '@capacitor/status-bar';
 import { Capacitor } from '@capacitor/core';
+import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
+import { app, auth } from "./lib/firebase"
 
 setupIonicReact();
 
@@ -75,6 +77,11 @@ const App: React.FC = () => {
 	const name = useRef<string>("")
 	const [user, setUser] = useState<User>()
 	const [showAlert, controls] = useIonAlert()
+
+  async function authStatus() {
+    //const auth = await FirebaseAuthentication.getCurrentUser();
+    console.log("auth:", auth)
+  }
 
 	if (Capacitor.getPlatform() != 'web') {
 		StatusBar.setOverlaysWebView({ overlay: false })
@@ -183,6 +190,7 @@ const App: React.FC = () => {
 			})
 		})
 
+    authStatus()
 		checkPermissions()
 		loadUpdates()
 

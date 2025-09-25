@@ -13,6 +13,11 @@ const config: CapacitorConfig = {
 	  CapacitorHttp: {
 		  enabled: true
 	  },
+    FirebaseAuthentication: {
+      authDomain: undefined,
+      skipNativeAuth: false,
+      providers: ["google.com", "phone"],
+    },
   }
 };
 

@@ -1,0 +1,125 @@
+[debug] [2025-09-24T00:36:26.762Z] ----------------------------------------------------------------------
+[debug] [2025-09-24T00:36:26.764Z] Command:       /home/autumn/.nvm/versions/node/v22.13.0/bin/node /home/autumn/.nvm/versions/node/v22.13.0/bin/firebase emulators:start
+[debug] [2025-09-24T00:36:26.764Z] CLI Version:   14.2.2
+[debug] [2025-09-24T00:36:26.764Z] Platform:      linux
+[debug] [2025-09-24T00:36:26.764Z] Node Version:  v22.13.0
+[debug] [2025-09-24T00:36:26.764Z] Time:          Wed Sep 24 2025 06:06:26 GMT+0530 (India Standard Time)
+[debug] [2025-09-24T00:36:26.764Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-09-24T00:36:27.007Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-09-24T00:36:27.008Z] > authorizing via signed-in user (wintersunset95@gmail.com)
+[debug] [2025-09-24T00:36:27.039Z] openjdk version "21.0.8" 2025-07-15
+
+[debug] [2025-09-24T00:36:27.041Z] OpenJDK Runtime Environment (build 21.0.8+9)
+OpenJDK 64-Bit Server VM (build 21.0.8+9, mixed mode, sharing)
+
+[debug] [2025-09-24T00:36:27.046Z] Parsed Java major version: 21
+[info] i  emulators: Starting emulators: auth, functions, firestore, extensions {"metadata":{"emulator":{"name":"hub"},"message":"Starting emulators: auth, functions, firestore, extensions"}}
+[debug] [2025-09-24T00:36:27.047Z] Checked if tokens are valid: true, expires at: 1758677557376
+[debug] [2025-09-24T00:36:27.047Z] Checked if tokens are valid: true, expires at: 1758677557376
+[debug] [2025-09-24T00:36:27.048Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/peekaboo-fbf1a [none]
+[debug] [2025-09-24T00:36:29.407Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/peekaboo-fbf1a 200
+[debug] [2025-09-24T00:36:29.407Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/peekaboo-fbf1a {"projectNumber":"1081048087865","projectId":"peekaboo-fbf1a","lifecycleState":"ACTIVE","name":"PeekABoo","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2025-09-24T00:18:58.244176Z"}
+[debug] [2025-09-24T00:36:29.428Z] [logging] Logging Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-09-24T00:36:29.428Z] [auth] Authentication Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-09-24T00:36:29.428Z] [firestore] Firestore Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-09-24T00:36:29.428Z] [firestore.websocket] websocket server for firestore only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-09-24T00:36:29.428Z] assigned listening specs for emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"auth":[{"address":"127.0.0.1","family":"IPv4","port":9099}],"firestore":[{"address":"127.0.0.1","family":"IPv4","port":8080}],"firestore.websocket":[{"address":"127.0.0.1","family":"IPv4","port":9150}]},"metadata":{"message":"assigned listening specs for emulators"}}
+[debug] [2025-09-24T00:36:29.437Z] [hub] writing locator at /tmp/hub-peekaboo-fbf1a.json
+[debug] [2025-09-24T00:36:29.444Z] [Extensions] Started Extensions emulator, this is a noop.
+[debug] [2025-09-24T00:36:29.446Z] [functions] Functions Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-09-24T00:36:29.446Z] [eventarc] Eventarc Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-09-24T00:36:29.446Z] [tasks] Cloud Tasks Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-09-24T00:36:29.446Z] late-assigned ports for functions and eventarc emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"auth":[{"address":"127.0.0.1","family":"IPv4","port":9099}],"firestore":[{"address":"127.0.0.1","family":"IPv4","port":8080}],"firestore.websocket":[{"address":"127.0.0.1","family":"IPv4","port":9150}],"functions":[{"address":"127.0.0.1","family":"IPv4","port":5001}],"eventarc":[{"address":"127.0.0.1","family":"IPv4","port":9299}],"tasks":[{"address":"127.0.0.1","family":"IPv4","port":9499}]},"metadata":{"message":"late-assigned ports for functions and eventarc emulators"}}
+[warn] ⚠  functions: The following emulators are not running, calls to these services from the Functions emulator will affect production: apphosting, database, hosting, pubsub, storage, dataconnect {"metadata":{"emulator":{"name":"functions"},"message":"The following emulators are not running, calls to these services from the Functions emulator will affect production: \u001b[1mapphosting, database, hosting, pubsub, storage, dataconnect\u001b[22m"}}
+[debug] [2025-09-24T00:36:29.720Z] defaultcredentials: writing to file /home/autumn/.config/firebase/wintersunset95_gmail_com_application_default_credentials.json
+[debug] [2025-09-24T00:36:29.729Z] Setting GAC to /home/autumn/.config/firebase/wintersunset95_gmail_com_application_default_credentials.json {"metadata":{"emulator":{"name":"functions"},"message":"Setting GAC to /home/autumn/.config/firebase/wintersunset95_gmail_com_application_default_credentials.json"}}
+[debug] [2025-09-24T00:36:29.731Z] Checked if tokens are valid: true, expires at: 1758677557376
+[debug] [2025-09-24T00:36:29.731Z] Checked if tokens are valid: true, expires at: 1758677557376
+[debug] [2025-09-24T00:36:29.731Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/peekaboo-fbf1a/adminSdkConfig [none]
+[debug] [2025-09-24T00:36:31.255Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/peekaboo-fbf1a/adminSdkConfig 200
+[debug] [2025-09-24T00:36:31.256Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/peekaboo-fbf1a/adminSdkConfig {"projectId":"peekaboo-fbf1a","storageBucket":"peekaboo-fbf1a.firebasestorage.app"}
+[debug] [2025-09-24T00:36:31.285Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2025-09-24T00:36:31.285Z] Ignoring unsupported arg: single_project_mode_error {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: single_project_mode_error"}}
+[debug] [2025-09-24T00:36:31.285Z] Starting Firestore Emulator with command {"binary":"java","args":["-Dgoogle.cloud_firestore.debug_log_level=FINE","-Duser.language=en","-jar","/home/autumn/.cache/firebase/emulators/cloud-firestore-emulator-v1.19.8.jar","--host","127.0.0.1","--port",8080,"--websocket_port",9150,"--project_id","peekaboo-fbf1a","--rules","/home/autumn/Apache/PeekABoo/peek-a-boo/firestore.rules","--single_project_mode",true,"--functions_emulator","127.0.0.1:5001"],"optionalArgs":["port","webchannel_port","host","rules","websocket_port","functions_emulator","seed_from_export","project_id","single_project_mode"],"joinArgs":false,"shell":false,"port":8080} {"metadata":{"emulator":{"name":"firestore"},"message":"Starting Firestore Emulator with command {\"binary\":\"java\",\"args\":[\"-Dgoogle.cloud_firestore.debug_log_level=FINE\",\"-Duser.language=en\",\"-jar\",\"/home/autumn/.cache/firebase/emulators/cloud-firestore-emulator-v1.19.8.jar\",\"--host\",\"127.0.0.1\",\"--port\",8080,\"--websocket_port\",9150,\"--project_id\",\"peekaboo-fbf1a\",\"--rules\",\"/home/autumn/Apache/PeekABoo/peek-a-boo/firestore.rules\",\"--single_project_mode\",true,\"--functions_emulator\",\"127.0.0.1:5001\"],\"optionalArgs\":[\"port\",\"webchannel_port\",\"host\",\"rules\",\"websocket_port\",\"functions_emulator\",\"seed_from_export\",\"project_id\",\"single_project_mode\"],\"joinArgs\":false,\"shell\":false,\"port\":8080}"}}
+[info] i  firestore: Firestore Emulator logging to firestore-debug.log {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator logging to \u001b[1mfirestore-debug.log\u001b[22m"}}
+[debug] [2025-09-24T00:36:32.371Z] Sep 24, 2025 6:06:32 AM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketServer start
+INFO: Started WebSocket server on ws://127.0.0.1:9150
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Sep 24, 2025 6:06:32 AM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketServer start\nINFO: Started WebSocket server on ws://127.0.0.1:9150\n"}}
+[debug] [2025-09-24T00:36:32.393Z] API endpoint: http:// {"metadata":{"emulator":{"name":"firestore"},"message":"API endpoint: http://"}}
+[debug] [2025-09-24T00:36:32.394Z] 127.0.0.1:8080
+If you are using a library that supports the FIRESTORE_EMULATOR_HOST environment variable, run:
+
+   export FIRESTORE_EMULATOR_HOST=127.0.0.1:8080
+
+If you are running a Firestore in Datastore Mode project, run:
+
+   export DATASTORE_EMULATOR_HOST=127.0.0.1:8080
+
+Note: Support for Datastore Mode is in preview. If you encounter any bugs please file at https://github.com/firebase/firebase-tools/issues.
+Dev App Server is now running.
+
+ {"metadata":{"emulator":{"name":"firestore"},"message":"127.0.0.1:8080\nIf you are using a library that supports the FIRESTORE_EMULATOR_HOST environment variable, run:\n\n   export FIRESTORE_EMULATOR_HOST=127.0.0.1:8080\n\nIf you are running a Firestore in Datastore Mode project, run:\n\n   export DATASTORE_EMULATOR_HOST=127.0.0.1:8080\n\nNote: Support for Datastore Mode is in preview. If you encounter any bugs please file at https://github.com/firebase/firebase-tools/issues.\nDev App Server is now running.\n\n"}}
+[info] ✔  firestore: Firestore Emulator UI websocket is running on 9150. {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator UI websocket is running on 9150."}}
+[debug] [2025-09-24T00:36:38.939Z] [Extensions] Connecting Extensions emulator, this is a noop.
+[info] i  functions: Watching "/home/autumn/Apache/PeekABoo/peek-a-boo/functions" for Cloud Functions... {"metadata":{"emulator":{"name":"functions"},"message":"Watching \"/home/autumn/Apache/PeekABoo/peek-a-boo/functions\" for Cloud Functions..."}}
+[debug] [2025-09-24T00:36:38.954Z] Validating nodejs source
+[debug] [2025-09-24T00:36:39.943Z] > [functions] package.json contents: {
+  "name": "functions",
+  "scripts": {
+    "lint": "eslint --ext .js,.ts .",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "22"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^6.0.1"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^4.9.0"
+  },
+  "private": true
+}
+[error] ⬢  functions: Failed to load function definition from source: FirebaseError: There was an error reading functions/package.json:
+
+ functions/lib/index.js does not exist, can't deploy Cloud Functions {"metadata":{"emulator":{"name":"functions"},"message":"Failed to load function definition from source: FirebaseError: There was an error reading functions/package.json:\n\n functions/lib/index.js does not exist, can't deploy Cloud Functions"}}
+[debug] [2025-09-24T00:36:39.952Z] Could not find VSCode notification endpoint: FetchError: request to http://localhost:40001/vscode/notify failed, reason: . If you are not running the Firebase Data Connect VSCode extension, this is expected and not an issue.
+[info] 
+┌─────────────────────────────────────────────────────────────┐
+│ ✔  All emulators ready! It is now safe to connect your app. │
+│ i  View Emulator UI at http://127.0.0.1:4000/               │
+└─────────────────────────────────────────────────────────────┘
+
+┌────────────────┬────────────────┬──────────────────────────────────┐
+│ Emulator       │ Host:Port      │ View in Emulator UI              │
+├────────────────┼────────────────┼──────────────────────────────────┤
+│ Authentication │ 127.0.0.1:9099 │ http://127.0.0.1:4000/auth       │
+├────────────────┼────────────────┼──────────────────────────────────┤
+│ Functions      │ 127.0.0.1:5001 │ http://127.0.0.1:4000/functions  │
+├────────────────┼────────────────┼──────────────────────────────────┤
+│ Firestore      │ 127.0.0.1:8080 │ http://127.0.0.1:4000/firestore  │
+├────────────────┼────────────────┼──────────────────────────────────┤
+│ Extensions     │ 127.0.0.1:5001 │ http://127.0.0.1:4000/extensions │
+└────────────────┴────────────────┴──────────────────────────────────┘
+  Emulator Hub host: 127.0.0.1 port: 4400
+  Other reserved ports: 4500, 9150
+┌─────────────────────────┬───────────────┬─────────────────────┐
+│ Extension Instance Name │ Extension Ref │ View in Emulator UI │
+└─────────────────────────┴───────────────┴─────────────────────┘
+Issues? Report them at https://github.com/firebase/firebase-tools/issues and attach the *-debug.log files.
+ 

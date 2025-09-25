@@ -5,8 +5,9 @@ import { Application, Router } from "@oak/oak"
 import type { RouterContext } from "@oak/oak/router";
 import { AnimeProviderKey, AnimeProviders } from "./anime/anime.ts";
 import "jsr:@std/dotenv/load";
-import { Gogo, AnimePahe, Zoro, TMDB, vidsrcScrape, OpenRoom, PeekABoo, Release, io, rooms, checkIfRoomExists } from "peek-a-boo.ts"
+import { Gogo, AnimePahe, Zoro, TMDB, vidsrcScrape, OpenRoom, PeekABoo, Release, rooms, checkIfRoomExists } from "peek-a-boo.ts"
 import { MovieProviderKey, MovieProviders } from "./movies/movie.ts";
+import { io } from "./socket.ts";
 import { data } from "./releases.ts";
 
 const app = new Application()
