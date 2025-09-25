@@ -28,11 +28,11 @@ console.log(auth.currentUser)
 //getAuth(app).tenantId = "chat-um-bhulo";
 //const storage = getStorage(app);
 if (process.env.NODE_ENV === "development") {
-        connectAuthEmulator(getAuth(app), "http://localhost:9099");
-        connectFirestoreEmulator(getFirestore(app), "localhost", 8080);
-        const functions = getFunctions(getApp());
-        connectFunctionsEmulator(functions, "localhost", 5001);
-        //connectStorageEmulator(storage, "localhost", 9199);
+  connectAuthEmulator(getAuth(app), "http://localhost:9099");
+  connectFirestoreEmulator(getFirestore(app), "localhost", 8080);
+  const functions = getFunctions(getApp());
+  connectFunctionsEmulator(functions, "localhost", 5001);
+  //connectStorageEmulator(storage, "localhost", 9199);
 }
 
 //export const analytics = getAnalytics(app);

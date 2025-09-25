@@ -64,8 +64,25 @@ import { StatusBar } from '@capacitor/status-bar';
 import { Capacitor } from '@capacitor/core';
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
 import { app, auth } from "./lib/firebase"
+import { getApp } from 'firebase/app';
+import {
+  getAuth,
+  indexedDBLocalPersistence,
+  initializeAuth
+} from 'firebase/auth';
+
+const getFirebaseAuth = async () => {
+  if (Capacitor.isNativePlatform()) {
+    return initializeAuth(app, {
+      persistence: indexedDBLocalPersistence,
+    });
+  } else {
+    return getAuth(app)
+  }
+}
 
 setupIonicReact();
+getFirebaseAuth();
 
 export const UserContext = createContext<{
 	user: User | undefined,
@@ -79,8 +96,8 @@ const App: React.FC = () => {
 	const [showAlert, controls] = useIonAlert()
 
   async function authStatus() {
-    //const auth = await FirebaseAuthentication.getCurrentUser();
-    console.log("auth:", auth)
+    const user = await FirebaseAuthentication.getCurrentUser();
+    console.log("auth:", user)
   }
 
 	if (Capacitor.getPlatform() != 'web') {
