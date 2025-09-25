@@ -69,6 +69,7 @@ import {
   getAuth,
   indexedDBLocalPersistence,
   initializeAuth,
+  onAuthStateChanged,
   User
 } from 'firebase/auth';
 
@@ -86,9 +87,13 @@ setupIonicReact();
 
 export const UserContext = createContext<{
 	user: User | null,
-	setUser: React.Dispatch<React.SetStateAction<User | null>> | undefined,
+	setUser: React.Dispatch<React.SetStateAction<User | null>>,
 	name: React.MutableRefObject<string>
-} | undefined>(undefined)
+}>({
+  user: null,
+  setUser: () => {},
+  name: { current: '' },
+})
 
 const App: React.FC = () => {
 	const name = useRef<string>("")
@@ -189,35 +194,26 @@ const App: React.FC = () => {
 
 	useEffect(() => {
 		document.title = "PeekABoo"
-
-		socket.on("connect", () => {
-			if (!socket.id) return
-			console.log(`Connected as: ${socket.id}`)
-			socket.emit("addUser", {
-				UserId: socket.id,
-				UserName: name.current,
-				UserImage: "https://avatar.iran.liara.run/username?username=" + name.current
-			}, (returnedUser: User) => {
-				setUser(returnedUser)
-			})
-		})
-
 		checkPermissions()
 		loadUpdates()
-    setUser(auth.currentUser)
-    console.log("Normal auth: ", auth.currentUser)
-
-		return () => {
-			socket.off("connect")
-		}
+    onAuthStateChanged(auth, (newLoginUser) => {
+      if (newLoginUser != null) {
+        console.log(newLoginUser.displayName)
+        setUser(newLoginUser)
+      }
+    })
 	}, [])
+
+  useEffect(() => {
+    console.log(user?.displayName)
+  }, [user])
 
 	return (
 		<UserContext.Provider value={{ user, setUser, name }}>
 		<IonApp>
 			<IonReactRouter>
 				<IonRouterOutlet>
-          {auth.currentUser === null ? (
+          {user == null ? (
             <AuthPage />
           ) : (
 					<Switch>

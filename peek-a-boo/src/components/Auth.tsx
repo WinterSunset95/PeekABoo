@@ -1,11 +1,11 @@
-import { useContext, useRef, useState } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 import { UserContext } from "../App"
 import { IonButton, IonInput, IonTab, IonTabBar, IonTabButton, IonTabs, useIonAlert, useIonRouter } from "@ionic/react"
 import SettingsPage from "../pages/Settings"
 import { socket } from "../lib/socket"
 import { app, auth } from "../lib/firebase"
 import { FirebaseAuthentication } from "@capacitor-firebase/authentication"
-import { getAuth, GoogleAuthProvider, signInWithCredential } from "firebase/auth"
+import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithCredential } from "firebase/auth"
 
 interface AuthProps {
     returnUrl?: string,
@@ -13,13 +13,9 @@ interface AuthProps {
 }
 
 const AuthComponent: React.FC<AuthProps> = ({ returnUrl, modalRef }) => {
-    const user = useContext(UserContext)
-    if (!user) {
-        return "There is a REALLYY horrible error under the hood if you can see this message!! Reload the app or contact the developer!!"
-    }
+    const { user, setUser, name} = useContext(UserContext)
     const [ showAlert ] = useIonAlert()
     const [disabled, setDisabled] = useState(false)
-    const { name } = user
     const router = useIonRouter()
 
     const signInWithGoogle = async () => {
@@ -36,6 +32,16 @@ const AuthComponent: React.FC<AuthProps> = ({ returnUrl, modalRef }) => {
         setDisabled(false)
       }
     }
+
+    useEffect(() => {
+      onAuthStateChanged(auth, (newLoginUser) => {
+        console.log("Auth state changed")
+        console.log(auth, newLoginUser)
+        if (newLoginUser != null) {
+          setUser(newLoginUser)
+        }
+      })
+    }, [])
 
     //const connectSocket = () => {
     //    if (name.current.length == 0) {
