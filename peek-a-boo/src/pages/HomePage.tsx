@@ -24,8 +24,9 @@ import LoadingComponent from '../components/Loading';
 import { UserContext } from '../App';
 import AuthComponent from '../components/Auth';
 import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../lib/firebase';
+import { app, auth } from '../lib/firebase';
 import { Favourite, Friend } from '../lib/models';
+import { collection, getDocs, getFirestore, query, where } from 'firebase/firestore';
 
 const HomePage: React.FC = () => {
 	const [trending, setTrending] = useState<MovieSearchResult[]>([])
@@ -87,9 +88,32 @@ const HomePage: React.FC = () => {
 	}
 
   const loadFavourites = async () => {
+    if (!user) return;
+    const db = getFirestore(app);
+    try {
+      const favsRef = collection(db, 'users', user.uid, 'favorites');
+      const querySnapshot = await getDocs(favsRef);
+      const favs = querySnapshot.docs.map(doc => doc.data() as Favourite);
+      setFavourites(favs);
+    } catch (error) {
+      console.error("Error loading favourites:", error)
+      errorMessage("Error loading favourites")
+    }
   }
 
   const loadFriends = async () => {
+    if (!user) return;
+    const db = getFirestore(app);
+    try {
+      const friendsRef = collection(db, 'users', user.uid, 'friends');
+      const q = query(friendsRef, where("status", "==", "friends"));
+      const querySnapshot = await getDocs(q);
+      const friendsList = querySnapshot.docs.map(doc => doc.data() as Friend);
+      setFriend(friendsList);
+    } catch (error) {
+      console.error("Error loading friends:", error)
+      errorMessage("Error loading friends")
+    }
   }
 
 	useEffect(() => {
@@ -98,6 +122,13 @@ const HomePage: React.FC = () => {
 		loadTrendingTv()
 		loadFeatured()
 	}, [])
+
+	useEffect(() => {
+		if (user) {
+			loadFavourites()
+			loadFriends()
+		}
+	}, [user])
 
 	useEffect(() => {
 		document.title = "PeekABoo"
