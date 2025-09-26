@@ -1,8 +1,0 @@
-<?xml version='1.0' encoding='utf-8'?>
-<resources>
-    <string name="app_name">PeekABoo</string>
-    <string name="title_activity_main">PeekABoo</string>
-    <string name="package_name">github.WinterSunset95.PeekABoo</string>
-    <string name="custom_url_scheme">github.WinterSunset95.PeekABoo</string>
-    <string name="server_client_id">1081048087865-1aua14b00trlv47bdfk1ia7c12bt7rsf.apps.googleusercontent.com</string>
-</resources>
