@@ -14,6 +14,7 @@ const ListVert: React.FC<MovieInfo[]> = (list) => {
                     type={item.Type}
                     year={item.Year}
                     duration={item.Duration}
+                    overview={item.Overview}
                 />
             ))}
         </IonList>
