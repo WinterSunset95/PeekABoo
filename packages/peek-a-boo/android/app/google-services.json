@@ -1,0 +1,56 @@
+{
+  "project_info": {
+    "project_number": "1081048087865",
+    "firebase_url": "https://peekaboo-fbf1a-default-rtdb.firebaseio.com",
+    "project_id": "peekaboo-fbf1a",
+    "storage_bucket": "peekaboo-fbf1a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1081048087865:android:1ef99cfce3a322fbb77ce8",
+        "android_client_info": {
+          "package_name": "github.WinterSunset95.PeekABoo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1081048087865-abs7h1rilmvi4d79ie8657tnq9e50v5c.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "github.WinterSunset95.PeekABoo",
+            "certificate_hash": "27cd446e4f22cb265aed85a10384ce47f60e5425"
+          }
+        },
+        {
+          "client_id": "1081048087865-s9ho2rj16h8u5862are434ftsb6vv68a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "github.WinterSunset95.PeekABoo",
+            "certificate_hash": "a5267ffb45ab2cfda163508fa786317e563e8281"
+          }
+        },
+        {
+          "client_id": "1081048087865-1aua14b00trlv47bdfk1ia7c12bt7rsf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCTs0QUT3d5Q7JwuHrSyWKg-CJuqIjueNc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1081048087865-1aua14b00trlv47bdfk1ia7c12bt7rsf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
