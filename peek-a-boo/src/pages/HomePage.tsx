@@ -10,7 +10,8 @@ import {
 	IonAvatar,
 	IonLabel,
 	useIonToast,
-	IonModal
+	IonModal,
+    useIonRouter
 } from '@ionic/react';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { MediaInfo, MovieInfo, MovieSearchResult } from '../lib/types';
@@ -22,15 +23,21 @@ import { getFeaturedMovie, getTrendingMovies, getTrendingTv } from '../lib/movie
 import LoadingComponent from '../components/Loading';
 import { UserContext } from '../App';
 import AuthComponent from '../components/Auth';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../lib/firebase';
+import { Favourite, Friend } from '../lib/models';
 
 const HomePage: React.FC = () => {
 	const [trending, setTrending] = useState<MovieSearchResult[]>([])
 	const [trendingMovies, setTrendingMovies] = useState<MovieSearchResult[]>([])
 	const [trendingTv, setTrendingTv] = useState<MovieSearchResult[]>([])
 	const [featured, setFeatured] = useState<MediaInfo>()
+  const [favourites, setFavourites] = useState<Favourite[]>([]);
+  const [friends, setFriend] = useState<Friend[]>([]);
 	const { user, setUser, name } = useContext(UserContext)
 	const [ showToast ] = useIonToast()
 	const modalRef = useRef<HTMLIonModalElement>(null)
+  const router = useIonRouter();
 
 	const errorMessage = (msg: string) => {
 		showToast({
@@ -79,14 +86,38 @@ const HomePage: React.FC = () => {
 		setFeatured(response.boo)
 	}
 
+  const loadFavourites = async () => {
+  }
+
+  const loadFriends = async () => {
+  }
+
 	useEffect(() => {
 		loadTrending()
 		loadTrendingMovies()
 		loadTrendingTv()
 		loadFeatured()
-		console.log(userContext?.user)
 	}, [])
 
+	useEffect(() => {
+		document.title = "PeekABoo"
+    onAuthStateChanged(auth, (newLoginUser) => {
+      if (newLoginUser != null) {
+        setUser(newLoginUser)
+      } else {
+        setUser(null)
+      }
+    })
+	}, [])
+
+  useEffect(() => {
+    console.log(user, auth.currentUser)
+    if (user != null && auth.currentUser != null) {
+        router.push("/home", "root")
+    } else {
+        router.push("/login", "root")
+    }
+  }, [user])
 
 	return (
 		<IonPage>
@@ -122,15 +153,6 @@ const HomePage: React.FC = () => {
 				</IonToolbar>
 			</IonHeader>
 			<IonContent className='ion-padding'>
-				<IonModal
-					trigger='loginButton'
-					backdropBreakpoint={0.5}
-					backdropDismiss={true}
-					id='loginModal'
-					ref={modalRef}
-				>
-					<AuthComponent modalRef={modalRef} />
-				</IonModal>
 				{
 					featured ?
 					<Featured {...featured} />
