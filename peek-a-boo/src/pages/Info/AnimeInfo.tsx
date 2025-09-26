@@ -32,8 +32,8 @@ import {
 } from "@ionic/react"
 
 import './AnimeInfo.css'
-import { useContext, useEffect, useRef, useState } from "react"
-import { ActiveAnimeRoom, AnimeInfo, ChatMessage, OpenRoom, PlayerOptions, RoomMessage, Settings } from "../../lib/types"
+import { useContext, useEffect, useState } from "react"
+import { AnimeInfo, OpenRoom, PlayerOptions, Settings } from "../../lib/types"
 import { getAnimeInfo, getEpisodeServers, getEpisodeSources } from "../../lib/anime"
 import { Swiper, SwiperSlide } from "swiper/react"
 
@@ -47,12 +47,7 @@ import PlayerComponent from "../../components/Player"
 import { proxyThisLink } from "../../lib/backendconnection"
 import { getSettings, resetSettings } from "../../lib/storage"
 import LoadingComponent from "../../components/Loading"
-import { socket } from "../../lib/socket"
-import { document, homeOutline, menu } from "ionicons/icons"
-import { RouteComponentProps } from "react-router"
-import { Link } from "react-router-dom"
 import { UserContext } from "../../App"
-import Rooms from "../Rooms"
 import Room from "../../components/Room"
 import { createRoom } from "../../lib/rooms"
 

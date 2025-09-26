@@ -7,14 +7,14 @@ interface AuthPageProps extends RouteComponentProps<{
 	returnUrl?: string
 }> {}
 
-const AuthPage: React.FC<AuthPageProps> = ({ match }) => {
+const AuthPage: React.FC = () => {
 	const urlParams = new URLSearchParams(window.location.search)
 	const returnUrl = urlParams.get("return") as string | undefined
     return (
         <IonPage>
             <IonTabs>
                 <IonTab tab='form'>
-                    <AuthComponent returnUrl={match.params.returnUrl ?? returnUrl} />
+                    <AuthComponent returnUrl={returnUrl} />
                 </IonTab>
                 <IonTab tab='settings'>
                     <SettingsPage />

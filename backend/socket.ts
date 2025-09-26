@@ -1,7 +1,7 @@
-import { Server } from "https://deno.land/x/socket_io@0.1.1/mod.ts";
-import { OpenRoom, ChatMessage, PeekABoo, RoomMessage, RoomRequest, User } from "./types.ts"
+import { DefaultEventsMap, Server } from "https://deno.land/x/socket_io@0.2.1/mod.ts";
+import { OpenRoom, ChatMessage, PeekABoo, RoomMessage, RoomRequest, User } from "peek-a-boo.ts"
 
-export const io = new Server({
+export const io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any> = new Server({
     cors: {
         origin: "*"
     }
@@ -156,5 +156,4 @@ io.on("connection", (socket) => {
 		}
 		socket.emit("getRooms", rooms)
 	})
-
 })

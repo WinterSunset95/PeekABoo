@@ -9,11 +9,13 @@ import {
   IonTabs,
   setupIonicReact,
   useIonAlert,
+  useIonRouter,
 } from '@ionic/react';
 import React, { createContext, useEffect, useRef, useState } from 'react';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
+import './App.css';
 
 /* Basic CSS for apps built with Ionic */
 import '@ionic/react/css/normalize.css';
@@ -45,7 +47,7 @@ import { Redirect, Route, Switch } from 'react-router';
 import { home, radio, search, settings } from 'ionicons/icons';
 import { IonReactRouter } from '@ionic/react-router';
 import { socket } from './lib/socket';
-import { appVersion, Settings, User } from './lib/types';
+import { appVersion, Settings } from './lib/types';
 import SettingsPage from './pages/Settings';
 import HomePage from './pages/HomePage';
 import Search from './pages/Search';
@@ -62,18 +64,44 @@ import { getSettings } from './lib/storage';
 import { FileOpener } from '@capacitor-community/file-opener';
 import { StatusBar } from '@capacitor/status-bar';
 import { Capacitor } from '@capacitor/core';
+import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
+import { app, auth } from "./lib/firebase"
+import { getApp } from 'firebase/app';
+import {
+  getAuth,
+  indexedDBLocalPersistence,
+  initializeAuth,
+  onAuthStateChanged,
+  User
+} from 'firebase/auth';
+import AuthComponent from './components/Auth';
+import PeoplePage from './pages/PeoplePage';
+
+const getFirebaseAuth = async () => {
+  if (Capacitor.isNativePlatform()) {
+    return initializeAuth(app, {
+      persistence: indexedDBLocalPersistence,
+    });
+  } else {
+    return getAuth(app)
+  }
+}
 
 setupIonicReact();
 
 export const UserContext = createContext<{
-	user: User | undefined,
-	setUser: React.Dispatch<React.SetStateAction<User | undefined>> | undefined,
+	user: User | null,
+	setUser: React.Dispatch<React.SetStateAction<User | null>>,
 	name: React.MutableRefObject<string>
-} | undefined>(undefined)
+}>({
+  user: null,
+  setUser: () => {},
+  name: { current: '' },
+})
 
 const App: React.FC = () => {
 	const name = useRef<string>("")
-	const [user, setUser] = useState<User>()
+	const [user, setUser] = useState<User | null>(null)
 	const [showAlert, controls] = useIonAlert()
 
 	if (Capacitor.getPlatform() != 'web') {
@@ -170,26 +198,8 @@ const App: React.FC = () => {
 
 	useEffect(() => {
 		document.title = "PeekABoo"
-
-		socket.on("connect", () => {
-			if (!socket.id) return
-			console.log(`Connected as: ${socket.id}`)
-			socket.emit("addUser", {
-				UserId: socket.id,
-				UserName: name.current,
-				UserImage: "https://avatar.iran.liara.run/username?username=" + name.current
-			}, (returnedUser: User) => {
-				setUser(returnedUser)
-			})
-		})
-
 		checkPermissions()
 		loadUpdates()
-
-		return () => {
-			socket.off("connect")
-		}
-
 	}, [])
 
 	return (
@@ -198,10 +208,10 @@ const App: React.FC = () => {
 			<IonReactRouter>
 				<IonRouterOutlet>
 					<Switch>
+						<Route exact path="/chat/:id" component={ChatMode}/>
 						<Route exact path="/:type/:id" component={InfoMode}/>
 						<Route exact path="/room/:type/:id" component={RoomMode}/>
-						<Route exact path="/chat/:id" component={ChatMode}/>
-						<Route exact path="/login" component={AuthPage}/>
+						<Route exact path="/login" component={AuthComponent}/>
 						<IonTabs>
 							<IonRouterOutlet>
 								<Redirect exact path='/' to="/home" />

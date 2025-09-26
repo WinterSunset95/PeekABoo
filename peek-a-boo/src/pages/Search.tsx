@@ -2,80 +2,97 @@ import {
 	IonPage,
 	IonContent,
 	IonHeader,
-	IonTitle,
 	IonToolbar,
-	IonIcon,
-	IonInput
+	IonInput,
+	IonSegment,
+	IonSegmentButton,
+	IonLabel
 } from '@ionic/react'
 import { useEffect, useState } from 'react'
 import { searchAnime } from '../lib/anime'
 import { MovieSearchResult } from '../lib/types'
-import List from '../components/List'
 import { searchMovie, searchTv } from '../lib/movies'
 import LoadingComponent from '../components/Loading'
+import ListVert from '../components/ListVert'
 
 const Search: React.FC = () => {
+	const [segment, setSegment] = useState('movies');
 	const [search, setSearch] = useState('')
 	const [anime, setAnime] = useState<MovieSearchResult[]>([])
 	const [movie, setMovie] = useState<MovieSearchResult[]>([])
 	const [tv, setTv] = useState<MovieSearchResult[]>([])
 
-	const loadAnime = async () => {
-		const res = await searchAnime(search)
-		if (res.peek == false) {
-			console.log("Error loading anime")
-			return
-		}
-		setAnime(res.boo)
-	}
-
-	const loadMovie = async () => {
-		const res = await searchMovie(search)
-		if (res.peek == false) {
-			console.log("Error loading movies")
-			return
-		}
-		setMovie(res.boo)
-	}
-
-	const loadTv = async () => {
-		const res = await searchTv(search)
-		if (res.peek == false) return;
-		setTv(res.boo)
-	}
-
 	useEffect(() => {
-		loadAnime()
-		loadMovie()
-		loadTv()
+		const searchTimer = setTimeout(() => {
+			if (search) {
+				const loadData = async () => {
+					const [animeRes, movieRes, tvRes] = await Promise.all([
+						searchAnime(search),
+						searchMovie(search),
+						searchTv(search)
+					]);
+					if (animeRes.peek) setAnime(animeRes.boo);
+					if (movieRes.peek) setMovie(movieRes.boo);
+					if (tvRes.peek) setTv(tvRes.boo);
+				}
+				loadData();
+			} else {
+				setAnime([])
+				setMovie([])
+				setTv([])
+			}
+		}, 500); // Debounce search
+	
+		return () => clearTimeout(searchTimer);
 	}, [search])
+
+	const renderContent = () => {
+		switch (segment) {
+			case 'people':
+				return <p style={{ textAlign: 'center', marginTop: '20px' }}>People search is not yet implemented.</p>;
+			case 'movies':
+				return movie.length > 0 ? <ListVert {...movie} /> : (search ? <LoadingComponent choice='vert-list' /> : <p style={{ textAlign: 'center', marginTop: '20px' }}>Search for movies.</p>);
+			case 'shows':
+				return tv.length > 0 ? <ListVert {...tv} /> : (search ? <LoadingComponent choice='vert-list' /> : <p style={{ textAlign: 'center', marginTop: '20px' }}>Search for TV shows.</p>);
+			case 'anime':
+				return anime.length > 0 ? <ListVert {...anime} /> : (search ? <LoadingComponent choice='vert-list' /> : <p style={{ textAlign: 'center', marginTop: '20px' }}>Search for anime.</p>);
+			default:
+				return null;
+		}
+	}
 
 	return (
 		<IonPage>
-			<IonContent className="ion-padding">
-				<IonInput
-					label="Search Movies, TV Shows, Anime"
-					labelPlacement="floating"
-					fill="outline"
-					value={search}
-					onIonInput={(e) => setSearch(e.target.value as string)}
-				>
-				</IonInput>
-				<h1>Tv</h1>
-				{tv.length > 1 ?
-				<List {...tv} />
-				: <LoadingComponent choice='list' />
-				}
-				<h1>Movies</h1>
-				{movie.length > 1 ?
-				<List {...movie} />
-				: <LoadingComponent choice='list' />
-				}
-				<h1>Anime</h1>
-				{anime.length > 1 ?
-				<List {...anime} />
-				: <LoadingComponent choice='list' />
-				}
+			<IonHeader>
+				<IonToolbar>
+					<IonInput
+						placeholder="Search..."
+						value={search}
+						onIonInput={(e) => setSearch(e.target.value as string)}
+						clearInput
+						style={{'--padding-start': '16px', '--padding-end': '16px'}}
+					>
+					</IonInput>
+				</IonToolbar>
+				<IonToolbar>
+					<IonSegment value={segment} onIonChange={e => setSegment(e.detail.value!)}>
+						<IonSegmentButton value="people">
+							<IonLabel>People</IonLabel>
+						</IonSegmentButton>
+						<IonSegmentButton value="movies">
+							<IonLabel>Movies</IonLabel>
+						</IonSegmentButton>
+						<IonSegmentButton value="shows">
+							<IonLabel>Shows</IonLabel>
+						</IonSegmentButton>
+						<IonSegmentButton value="anime">
+							<IonLabel>Anime</IonLabel>
+						</IonSegmentButton>
+					</IonSegment>
+				</IonToolbar>
+			</IonHeader>
+			<IonContent>
+				{renderContent()}
 			</IonContent>
 		</IonPage>
 	)

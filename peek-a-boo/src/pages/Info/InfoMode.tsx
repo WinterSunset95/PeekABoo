@@ -32,7 +32,11 @@ const InfoMode: React.FC<InfoProps> = ({ match }) => {
 		}
 		const res = await choice()
 		if (res.peek == false || typeof res.boo == "string") {
-			showToast(`Error: ${res.boo}`)
+			showToast({
+				message: `Error: ${res.boo}`,
+				duration: 3000,
+				position: 'top'
+			})
 			return
 		}
 		setInfo(res.boo)
