@@ -7,8 +7,32 @@
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
 
-import {onRequest} from "firebase-functions/v2/https";
-import * as logger from "firebase-functions/logger";
+import { user } from "firebase-functions/v1/auth";
+import { getFirestore } from "firebase-admin/firestore";
+import { initializeApp } from "firebase-admin/app";
+
+initializeApp();
+const db = getFirestore();
+
+exports.userCreated = user().onCreate(async (user) => {
+  const { uid, email, displayName, photoURL } = user;
+
+  const newUser = {
+    uid,
+    email,
+    displayName,
+    photoURL,
+    createdAt: user.metadata.creationTime,
+  };
+
+  return db
+    .collection("users")
+    .doc(uid)
+    .set(newUser)
+    .catch((error) => {
+      console.error("Error creating user document:", error);
+    });
+})
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript

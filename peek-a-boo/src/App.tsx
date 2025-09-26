@@ -15,6 +15,7 @@ import React, { createContext, useEffect, useRef, useState } from 'react';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
+import './App.css';
 
 /* Basic CSS for apps built with Ionic */
 import '@ionic/react/css/normalize.css';
@@ -215,7 +216,7 @@ const App: React.FC = () => {
 							<IonRouterOutlet>
 								<Redirect exact path='/' to="/home" />
 								<Route exact path="/home">
-									<PeoplePage />
+									<HomePage />
 								</Route>
 								<Route exact path="/search">
 									<Search />

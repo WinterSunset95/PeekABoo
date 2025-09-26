@@ -1,3 +1,4 @@
+// /users/{userId}
 export interface UserData {
   uid: string,
   displayName: string,
