@@ -1,5 +1,5 @@
 import { IEpisodeServer, ISource, MOVIES } from "@consumet/extensions";
-import { TMDB } from "peek-a-boo.ts";
+import { TMDB } from "../lib/tmdb";
 
 import { 
 	PeekABoo, 
@@ -10,8 +10,8 @@ import {
 } from './types'
 import { getSettings } from "./storage";
 
-console.log(TMDB)
-//const movieProvider = new TMDB("efe0d01423f29d0dd19e4a7e482b217b", "http://65.1.92.65/proxy?url=")
+const movieProvider = new TMDB("efe0d01423f29d0dd19e4a7e482b217b", "http://65.1.92.65/proxy?url=")
+console.log(movieProvider)
 
 export const getFeaturedMovie = async (): Promise<PeekABoo<MediaInfo | string>> => {
 	const res = await getTrendingMovies()
@@ -39,52 +39,29 @@ export const getFeaturedMovie = async (): Promise<PeekABoo<MediaInfo | string>> 
 }
 
 // getTrendingMovies() returns an array of objects of type MovieSearchResult wrapped by a PeekABoo object
-export const getTrendingMovies = async (): Promise<PeekABoo<MovieSearchResult[]>> => {
-	const { boo } = await getSettings()
-	const settings = boo
-	const res = await fetch(`${settings.Server}/movie/${settings.MovieSource}/trending`)
-	const data = await res.json() as PeekABoo<MovieSearchResult[]>
+export const getTrendingMovies = async (): Promise<PeekABoo<MovieInfo[]>> => {
+	return await movieProvider.getTrendingMovies()
+}
+
+export const searchMovie = async (query: string): Promise<PeekABoo<MovieInfo[]>> => {
+	return await movieProvider.searchMovie(query)
+}
+
+export const getMovieInfo = async (query: string): Promise<PeekABoo<string | MediaInfo>> => {
+  const data = await movieProvider.getMovieInfo(query)
 	return data
 }
 
-export const searchMovie = async (query: string): Promise<PeekABoo<MovieSearchResult[]>> => {
-	const { boo } = await getSettings()
-	const settings = boo
-	const res = await fetch(`${settings.Server}/movie/${settings.MovieSource}/search/${query}`)
-	const data = await res.json() as PeekABoo<MovieSearchResult[]>
-	return data
+export const getTrendingTv = async (): Promise<PeekABoo<MovieInfo[]>> => {
+	return await movieProvider.getTrendingTv()
 }
 
-export const getMovieInfo = async (query: string): Promise<PeekABoo<MediaInfo | string>> => {
-	const { boo } = await getSettings()
-	const settings = boo
-	const res = await fetch(`${settings.Server}/movie/${settings.MovieSource}/${query}/info`)
-	const data = await res.json() as PeekABoo<MediaInfo | string>
-	return data
-}
-
-export const getTrendingTv = async (): Promise<PeekABoo<MovieSearchResult[]>> => {
-	const { boo } = await getSettings()
-	const settings = boo
-	const res = await fetch(`${settings.Server}/tv/${settings.MovieSource}/trending`)
-	const data = await res.json() as PeekABoo<MovieSearchResult[]>
-	return data
-}
-
-export const searchTv = async (query: string): Promise<PeekABoo<MovieSearchResult[]>> => {
-	const { boo } = await getSettings()
-	const settings = boo
-	const res = await fetch(`${settings.Server}/tv/${settings.MovieSource}/search/${query}`)
-	const data = await res.json() as PeekABoo<MovieSearchResult[]>
-	return data
+export const searchTv = async (query: string): Promise<PeekABoo<MovieInfo[]>> => {
+	return await movieProvider.searchTv(query)
 }
 
 export const getTvInfo = async (query: string): Promise<PeekABoo<MediaInfo | string>> => {
-	const { boo } = await getSettings()
-	const settings = boo
-	const res = await fetch(`${settings.Server}/tv/${settings.MovieSource}/${query}/info`)
-	const data = await res.json() as PeekABoo<MediaInfo | string>
-	return data
+	return await movieProvider.getTvInfo(query)
 }
 
 export const getMovieSources = async (id: string): Promise<PeekABoo<ISource | string>> => {
@@ -118,7 +95,6 @@ export const getTvEpisodeEmbeds = async (id: string, season: number, episode: nu
 	const data = await res.json() as PeekABoo<IEpisodeServer[]>
 	return data
 }
-
 
 export const movieSources = [ "vidsrc", "vidpro", "vidvip", "vidin", "superembed" ] as const
 
