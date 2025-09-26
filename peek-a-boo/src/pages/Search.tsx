@@ -51,11 +51,11 @@ const Search: React.FC = () => {
 			case 'people':
 				return <p style={{ textAlign: 'center', marginTop: '20px' }}>People search is not yet implemented.</p>;
 			case 'movies':
-				return movie.length > 0 ? <ListVert {...movie} /> : (search ? <LoadingComponent choice='list' /> : <p style={{ textAlign: 'center', marginTop: '20px' }}>Search for movies.</p>);
+				return movie.length > 0 ? <ListVert {...movie} /> : (search ? <LoadingComponent choice='vert-list' /> : <p style={{ textAlign: 'center', marginTop: '20px' }}>Search for movies.</p>);
 			case 'shows':
-				return tv.length > 0 ? <ListVert {...tv} /> : (search ? <LoadingComponent choice='list' /> : <p style={{ textAlign: 'center', marginTop: '20px' }}>Search for TV shows.</p>);
+				return tv.length > 0 ? <ListVert {...tv} /> : (search ? <LoadingComponent choice='vert-list' /> : <p style={{ textAlign: 'center', marginTop: '20px' }}>Search for TV shows.</p>);
 			case 'anime':
-				return anime.length > 0 ? <ListVert {...anime} /> : (search ? <LoadingComponent choice='list' /> : <p style={{ textAlign: 'center', marginTop: '20px' }}>Search for anime.</p>);
+				return anime.length > 0 ? <ListVert {...anime} /> : (search ? <LoadingComponent choice='vert-list' /> : <p style={{ textAlign: 'center', marginTop: '20px' }}>Search for anime.</p>);
 			default:
 				return null;
 		}

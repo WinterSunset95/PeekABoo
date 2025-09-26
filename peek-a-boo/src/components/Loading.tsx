@@ -3,8 +3,23 @@ import { Swiper, SwiperRef, SwiperSlide } from "swiper/react"
 import "./Loading.css"
 import { IonContent, IonPage, IonText, IonTitle, IonToolbar } from "@ionic/react"
 
-const LoadingComponent: React.FC<{ choice: "card" | "card_large" | "list" | "full_page" | undefined }> = ({ choice }) => {
+const LoadingComponent: React.FC<{ choice: "card" | "card_large" | "list" | "full_page" | "vert-list" | undefined }> = ({ choice }) => {
     /* Loading components here all take up the full size of their parent */
+
+    if (choice == "vert-list") {
+        return (
+            <div>
+                {Array.from({ length: 5 }, (_, index) => (
+                    <div key={index} style={{ display: 'flex', alignItems: 'center', width: '100%', margin: '10px 0', padding: '10px' }} className="loading-component-card">
+                        <div style={{ width: '100px', minWidth: '100px', height: '130px', borderRadius: '4px' }} className="loading-component-card"></div>
+                        <div style={{ marginLeft: '10px', flex: 1 }}>
+                            <div style={{ width: '70%', height: '20px', borderRadius: '4px' }} className="loading-component-card"></div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        )
+    }
 
     if (choice == "list") {
         const swiper = useRef<SwiperRef>(null)
