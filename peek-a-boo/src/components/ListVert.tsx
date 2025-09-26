@@ -4,7 +4,7 @@ import DetailCard from "./DetailCard";
 
 const ListVert: React.FC<MovieSearchResult[]> = (list) => {
     return (
-        <IonList>
+        <IonList style={{ padding: "0.5rem" }}>
             {Object.values(list).map((item, index) => (
                 <DetailCard key={index} {...item} />
             ))}
