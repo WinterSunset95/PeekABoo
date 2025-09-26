@@ -79,7 +79,9 @@ router.get("/proxy", async (ctx) => {
 		if (!response.ok) {
 			throw new Error("failed to fetch " + response.statusText)
 		}
-		ctx.response.headers = response.headers
+		for (const [key, value] of response.headers) {
+			ctx.response.headers.set(key, value)
+		}
 		ctx.response.type = response.type
 		ctx.response.body = response.body
 	} catch (e: unknown) {
