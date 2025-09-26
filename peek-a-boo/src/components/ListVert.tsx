@@ -11,7 +11,9 @@ const ListVert: React.FC<MovieInfo[]> = (list) => {
                     imageUrl={item.Poster}
                     title={item.Title}
                     linkUrl={item.Type === "anime" ? `/anime/${item.Id}` : item.Type === "movie" ? `/movie/${item.Id}` : `/tv/${item.Id}`}
-                    subtitle={item.Type ? item.Type.charAt(0).toUpperCase() + item.Type.slice(1) : undefined}
+                    type={item.Type}
+                    year={item.Year}
+                    duration={item.Duration}
                 />
             ))}
         </IonList>

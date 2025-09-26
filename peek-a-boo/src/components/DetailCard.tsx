@@ -5,10 +5,18 @@ interface DetailCardProps {
     imageUrl: string;
     title: string;
     linkUrl: string;
-    subtitle?: string;
+    type?: string;
+    year?: string;
+    duration?: string;
 }
 
-const DetailCard: React.FC<DetailCardProps> = ({ imageUrl, title, linkUrl, subtitle }) => {
+const DetailCard: React.FC<DetailCardProps> = ({ imageUrl, title, linkUrl, type, year, duration }) => {
+    const subtitleParts = [
+        type ? type.charAt(0).toUpperCase() + type.slice(1) : undefined,
+        year,
+        duration
+    ].filter(Boolean);
+
     return (
         <IonCard
             routerLink={linkUrl}
@@ -21,7 +29,7 @@ const DetailCard: React.FC<DetailCardProps> = ({ imageUrl, title, linkUrl, subti
             <div>
                 <IonCardHeader>
                     <IonCardTitle>{title}</IonCardTitle>
-                    {subtitle && <IonCardSubtitle>{subtitle}</IonCardSubtitle>}
+                    {subtitleParts.length > 0 && <IonCardSubtitle>{subtitleParts.join(" • ")}</IonCardSubtitle>}
                 </IonCardHeader>
             </div>
           </div>
