@@ -1,8 +1,8 @@
 import { IonList } from "@ionic/react";
-import { MovieSearchResult } from "../lib/types";
+import { MovieSearchResult, MovieInfo } from "../lib/types";
 import DetailCard from "./DetailCard";
 
-const ListVert: React.FC<MovieSearchResult[]> = (list) => {
+const ListVert: React.FC<MovieInfo[]> = (list) => {
     return (
         <IonList style={{ padding: "0.5rem" }}>
             {Object.values(list).map((item, index) => (
