@@ -17,10 +17,10 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import { MediaInfo, MovieInfo, MovieSearchResult } from '../lib/types';
 import { getTrending, getTopAiring } from '../lib/anime';
 import List from '../components/List';
-import Featured from '../components/Featured'
 import './HomePage.css'
-import { getFeaturedMovie, getTrendingMovies, getTrendingTv } from '../lib/movies';
+import { getTrendingMovies, getTrendingTv } from '../lib/movies';
 import LoadingComponent from '../components/Loading';
+import FriendsListComponent from '../components/FriendsListComponent';
 import { UserContext } from '../App';
 import AuthComponent from '../components/Auth';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -32,7 +32,6 @@ const HomePage: React.FC = () => {
 	const [trending, setTrending] = useState<MovieSearchResult[]>([])
 	const [trendingMovies, setTrendingMovies] = useState<MovieSearchResult[]>([])
 	const [trendingTv, setTrendingTv] = useState<MovieSearchResult[]>([])
-	const [featured, setFeatured] = useState<MediaInfo>()
   const [favourites, setFavourites] = useState<Favourite[]>([]);
   const [friends, setFriend] = useState<Friend[]>([]);
 	const { user, setUser, name } = useContext(UserContext)
@@ -78,15 +77,6 @@ const HomePage: React.FC = () => {
 		setTrendingTv(res.boo)
 	}
 
-	const loadFeatured = async () => {
-		const response = await getFeaturedMovie();
-		if (response.peek == false || typeof response.boo == "string") {
-			showToast("Error loading top anime")
-			return
-		}
-		setFeatured(response.boo)
-	}
-
   const loadFavourites = async () => {
     if (!user) return;
     const db = getFirestore(app);
@@ -120,7 +110,6 @@ const HomePage: React.FC = () => {
 		loadTrending()
 		loadTrendingMovies()
 		loadTrendingTv()
-		loadFeatured()
 	}, [])
 
 	useEffect(() => {
@@ -184,11 +173,8 @@ const HomePage: React.FC = () => {
 				</IonToolbar>
 			</IonHeader>
 			<IonContent className='ion-padding'>
-				{
-					featured ?
-					<Featured {...featured} />
-					: <LoadingComponent choice='card_large' />
-				}
+				<h1>Friends</h1>
+				<FriendsListComponent friends={friends} />
 				<h1>Trending Shows</h1>
 				{
 					trendingTv.length > 0 ?
