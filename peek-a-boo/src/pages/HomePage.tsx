@@ -14,7 +14,6 @@ import {
     useIonRouter,
 	IonList,
 	IonSpinner,
-	IonIcon,
 	IonItem
 } from '@ionic/react';
 import { useContext, useEffect, useRef, useState } from 'react';
@@ -30,7 +29,7 @@ import AuthComponent from '../components/Auth';
 import { onAuthStateChanged } from 'firebase/auth';
 import { app, auth } from '../lib/firebase';
 import { Favourite, Friend, UserData } from '../lib/models';
-import { collection, getDocs, getFirestore, query, where, doc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { collection, getDocs, getFirestore, query, where, doc, updateDoc, deleteDoc, onSnapshot } from 'firebase/firestore';
 import { checkmark, close } from 'ionicons/icons';
 
 const HomePage: React.FC = () => {
@@ -68,7 +67,6 @@ const HomePage: React.FC = () => {
 		if (res.peek != true) {
 			errorMessage("Error loading trending movies")
 			return
-
 		}
 		setTrendingMovies(res.boo)
 	}
@@ -146,7 +144,6 @@ const HomePage: React.FC = () => {
 	}, [])
 
   useEffect(() => {
-    console.log(user, auth.currentUser)
     if (user != null && auth.currentUser != null) {
         router.push("/home", "root")
     } else {
@@ -205,19 +202,19 @@ const HomePage: React.FC = () => {
 	  
 		useEffect(() => {
 		  const fetchUserData = async () => {
-			setLoading(true);
-			try {
-			  const db = getFirestore(app);
-			  const userRef = doc(db, 'users', request.uid);
-			  const userSnap = await getDoc(userRef);
-			  if (userSnap.exists()) {
-				setUserData(userSnap.data() as UserData);
-			  }
-			} catch (error) {
-			  console.error("Error fetching user data for request:", error);
-			} finally {
-			  setLoading(false);
-			}
+        setLoading(true);
+        try {
+          const db = getFirestore(app);
+          const userRef = doc(db, 'users', request.uid);
+          const userSnap = await getDoc(userRef);
+          if (userSnap.exists()) {
+          setUserData(userSnap.data() as UserData);
+          }
+        } catch (error) {
+          console.error("Error fetching user data for request:", error);
+        } finally {
+          setLoading(false);
+        }
 		  };
 		  fetchUserData();
 		}, [request.uid]);
