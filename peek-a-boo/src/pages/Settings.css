@@ -1,7 +1,43 @@
-.setting {
-	display: flex;
-	gap: 1rem;
-	padding: 0.5rem;
-	justify-content: flex-start;
-	align-items: center;
+.settings-user-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1rem 0 2rem 0;
+}
+
+.settings-avatar {
+    width: 96px;
+    height: 96px;
+    margin-bottom: 1rem;
+    border: 3px solid var(--ion-color-primary);
+}
+
+.settings-user-header h2 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0.5rem 0 0.25rem 0;
+}
+
+.settings-user-header p {
+    color: var(--ion-color-medium-shade);
+    margin: 0;
+}
+
+.settings-login-prompt {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: 100%;
+}
+
+.settings-login-prompt h2 {
+    margin-bottom: 0.5rem;
+}
+
+.settings-login-prompt p {
+    margin-bottom: 1.5rem;
+    color: var(--ion-color-medium);
 }
