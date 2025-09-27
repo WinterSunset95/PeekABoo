@@ -9,7 +9,7 @@ import {
 	IonLabel,
 	IonList
 } from '@ionic/react'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { searchAnime } from '../lib/anime'
 import { MovieSearchResult, MovieInfo } from '../lib/types'
 import { searchMovie, searchTv } from '../lib/movies'
@@ -20,8 +20,10 @@ import { getFirestore, collection, query, where, getDocs } from 'firebase/firest
 import { app } from '../lib/firebase'
 import { UserData } from '../lib/models'
 import UserListItem from '../components/UserListItem'
+import { UserContext } from '../App'
 
 const Search: React.FC = () => {
+	const { user } = useContext(UserContext);
 	const [segment, setSegment] = useState('movies');
 	const [search, setSearch] = useState('')
 	const [anime, setAnime] = useState<MovieInfo[]>([])
@@ -41,7 +43,9 @@ const Search: React.FC = () => {
 						const querySnapshot = await getDocs(q);
 						const users: UserData[] = [];
 						querySnapshot.forEach((doc) => {
-							users.push({ uid: doc.id, ...doc.data() } as UserData);
+							if (doc.id !== user?.uid) {
+								users.push({ uid: doc.id, ...doc.data() } as UserData);
+							}
 						});
 						setPeople(users);
 					} else {
