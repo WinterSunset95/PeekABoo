@@ -10,7 +10,7 @@ import {
 } from '@ionic/react'
 import { useEffect, useState } from 'react'
 import { searchAnime } from '../lib/anime'
-import { MovieSearchResult } from '../lib/types'
+import { MovieSearchResult, MovieInfo } from '../lib/types'
 import { searchMovie, searchTv } from '../lib/movies'
 import LoadingComponent from '../components/Loading'
 import ListVert from '../components/ListVert'
@@ -18,9 +18,9 @@ import ListVert from '../components/ListVert'
 const Search: React.FC = () => {
 	const [segment, setSegment] = useState('movies');
 	const [search, setSearch] = useState('')
-	const [anime, setAnime] = useState<MovieSearchResult[]>([])
-	const [movie, setMovie] = useState<MovieSearchResult[]>([])
-	const [tv, setTv] = useState<MovieSearchResult[]>([])
+	const [anime, setAnime] = useState<MovieInfo[]>([])
+	const [movie, setMovie] = useState<MovieInfo[]>([])
+	const [tv, setTv] = useState<MovieInfo[]>([])
 
 	useEffect(() => {
 		const searchTimer = setTimeout(() => {
@@ -31,7 +31,7 @@ const Search: React.FC = () => {
 						searchMovie(search),
 						searchTv(search)
 					]);
-					if (animeRes.peek) setAnime(animeRes.boo);
+					//if (animeRes.peek) setAnime(animeRes.boo);
 					if (movieRes.peek) setMovie(movieRes.boo);
 					if (tvRes.peek) setTv(tvRes.boo);
 				}
@@ -75,7 +75,7 @@ const Search: React.FC = () => {
 					</IonInput>
 				</IonToolbar>
 				<IonToolbar>
-					<IonSegment value={segment} onIonChange={e => setSegment(e.detail.value!)}>
+					<IonSegment value={segment} onIonChange={e => setSegment(e.detail.value!.toString())}>
 						<IonSegmentButton value="people">
 							<IonLabel>People</IonLabel>
 						</IonSegmentButton>
