@@ -76,6 +76,7 @@ import {
 } from 'firebase/auth';
 import AuthComponent from './components/Auth';
 import PeoplePage from './pages/PeoplePage';
+import UserPage from './pages/UserPage';
 
 const getFirebaseAuth = async () => {
   if (Capacitor.isNativePlatform()) {
@@ -212,6 +213,7 @@ const App: React.FC = () => {
 						<Route exact path="/:type/:id" component={InfoMode}/>
 						<Route exact path="/room/:type/:id" component={RoomMode}/>
 						<Route exact path="/login" component={AuthComponent}/>
+            <Route exact path="/user/:id" component={UserPage} />
 						<IonTabs>
 							<IonRouterOutlet>
 								<Redirect exact path='/' to="/home" />

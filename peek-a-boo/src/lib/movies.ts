@@ -1,9 +1,9 @@
 import { IEpisodeServer, ISource, MOVIES } from "@consumet/extensions";
 import { TMDB } from "../lib/tmdb";
 
-import { 
-	PeekABoo, 
-	MovieSearchResult, 
+import {
+	PeekABoo,
+	MovieSearchResult,
 	MovieInfo,
   TvInfo,
   MediaInfo

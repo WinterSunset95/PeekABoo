@@ -26,7 +26,6 @@ const ChatMode: React.FC<ChatProps> = ({ match }) => {
 
     const initialLoad = async () => {
         const res = await getRoom({ RoomId: match.params.id, RequesterId: socket.id as string })
-		console.log(res)
         if (!res.boo) {
             alert("This room does not exist")
             // Should route back to /home

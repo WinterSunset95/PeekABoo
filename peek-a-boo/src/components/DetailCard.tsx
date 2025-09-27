@@ -35,9 +35,9 @@ const DetailCard: React.FC<DetailCardProps> = ({ imageUrl, title, linkUrl, type,
                     {subtitleParts.length > 0 && <IonCardSubtitle>{subtitleParts.join(" • ")}</IonCardSubtitle>}
                 </IonCardHeader>
                 {shortenedOverview &&
-                    <IonCardContent style={{ paddingTop: 0, fontSize: '0.9em' }}>
-                        {shortenedOverview}
-                    </IonCardContent>}
+                <IonCardContent style={{ paddingTop: 0, fontSize: '0.9em' }}>
+                    {shortenedOverview}
+                </IonCardContent>}
             </div>
           </div>
         </IonCard>
