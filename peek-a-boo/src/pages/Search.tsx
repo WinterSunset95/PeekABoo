@@ -6,7 +6,8 @@ import {
 	IonInput,
 	IonSegment,
 	IonSegmentButton,
-	IonLabel
+	IonLabel,
+	IonList
 } from '@ionic/react'
 import { useEffect, useState } from 'react'
 import { searchAnime } from '../lib/anime'
@@ -16,8 +17,8 @@ import LoadingComponent from '../components/Loading'
 import ListVert from '../components/ListVert'
 import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore'
 import { app } from '../lib/firebase'
-import { UserData, Friend } from '../lib/models'
-import FriendsListComponent from '../components/FriendsListComponent'
+import { UserData } from '../lib/models'
+import UserListItem from '../components/UserListItem'
 
 const Search: React.FC = () => {
 	const [segment, setSegment] = useState('movies');
@@ -69,12 +70,11 @@ const Search: React.FC = () => {
 	const renderContent = () => {
 		switch (segment) {
 			case 'people':
-				const friends: Friend[] = people.map(p => ({
-					uid: p.uid,
-					status: 'friend',
-					since: Date.now()
-				}));
-				return people.length > 0 ? <FriendsListComponent friends={friends} /> : (search ? <LoadingComponent choice='vert-list' /> : <p style={{ textAlign: 'center', marginTop: '20px' }}>Search for people.</p>);
+				return people.length > 0 ? (
+					<IonList>
+						{people.map(user => <UserListItem key={user.uid} user={user} />)}
+					</IonList>
+				) : (search ? <LoadingComponent choice='vert-list' /> : <p style={{ textAlign: 'center', marginTop: '20px' }}>Search for people.</p>);
 			case 'movies':
 				return movie.length > 0 ? <ListVert {...movie} /> : (search ? <LoadingComponent choice='vert-list' /> : <p style={{ textAlign: 'center', marginTop: '20px' }}>Search for movies.</p>);
 			case 'shows':
