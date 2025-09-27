@@ -15,6 +15,7 @@ import { MovieSearchResult, MovieInfo } from '../lib/types'
 import { searchMovie, searchTv } from '../lib/movies'
 import LoadingComponent from '../components/Loading'
 import ListVert from '../components/ListVert'
+import DetailCard from '../components/DetailCard'
 import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore'
 import { app } from '../lib/firebase'
 import { UserData } from '../lib/models'
@@ -71,16 +72,65 @@ const Search: React.FC = () => {
 		switch (segment) {
 			case 'people':
 				return people.length > 0 ? (
-					<IonList>
-						{people.map(user => <UserListItem key={user.uid} user={user} />)}
-					</IonList>
+					<ListVert
+						items={people}
+						renderItem={(user) => <UserListItem key={user.uid} user={user} />}
+					/>
 				) : (search ? <LoadingComponent choice='vert-list' /> : <p style={{ textAlign: 'center', marginTop: '20px' }}>Search for people.</p>);
 			case 'movies':
-				return movie.length > 0 ? <ListVert {...movie} /> : (search ? <LoadingComponent choice='vert-list' /> : <p style={{ textAlign: 'center', marginTop: '20px' }}>Search for movies.</p>);
+				return movie.length > 0 ? (
+					<ListVert
+						items={movie}
+						renderItem={(item) => (
+							<DetailCard
+								key={item.Id}
+								imageUrl={item.Poster}
+								title={item.Title}
+								linkUrl={item.Type === "anime" ? `/anime/${item.Id}` : item.Type === "movie" ? `/movie/${item.Id}` : `/tv/${item.Id}`}
+								type={item.Type}
+								year={item.Year}
+								duration={item.Duration}
+								overview={item.Overview}
+							/>
+						)}
+					/>
+				) : (search ? <LoadingComponent choice='vert-list' /> : <p style={{ textAlign: 'center', marginTop: '20px' }}>Search for movies.</p>);
 			case 'shows':
-				return tv.length > 0 ? <ListVert {...tv} /> : (search ? <LoadingComponent choice='vert-list' /> : <p style={{ textAlign: 'center', marginTop: '20px' }}>Search for TV shows.</p>);
+				return tv.length > 0 ? (
+					<ListVert
+						items={tv}
+						renderItem={(item) => (
+							<DetailCard
+								key={item.Id}
+								imageUrl={item.Poster}
+								title={item.Title}
+								linkUrl={item.Type === "anime" ? `/anime/${item.Id}` : item.Type === "movie" ? `/movie/${item.Id}` : `/tv/${item.Id}`}
+								type={item.Type}
+								year={item.Year}
+								duration={item.Duration}
+								overview={item.Overview}
+							/>
+						)}
+					/>
+				) : (search ? <LoadingComponent choice='vert-list' /> : <p style={{ textAlign: 'center', marginTop: '20px' }}>Search for TV shows.</p>);
 			case 'anime':
-				return anime.length > 0 ? <ListVert {...anime} /> : (search ? <LoadingComponent choice='vert-list' /> : <p style={{ textAlign: 'center', marginTop: '20px' }}>Search for anime.</p>);
+				return anime.length > 0 ? (
+					<ListVert
+						items={anime}
+						renderItem={(item) => (
+							<DetailCard
+								key={item.Id}
+								imageUrl={item.Poster}
+								title={item.Title}
+								linkUrl={item.Type === "anime" ? `/anime/${item.Id}` : item.Type === "movie" ? `/movie/${item.Id}` : `/tv/${item.Id}`}
+								type={item.Type}
+								year={item.Year}
+								duration={item.Duration}
+								overview={item.Overview}
+							/>
+						)}
+					/>
+				) : (search ? <LoadingComponent choice='vert-list' /> : <p style={{ textAlign: 'center', marginTop: '20px' }}>Search for anime.</p>);
 			default:
 				return null;
 		}
