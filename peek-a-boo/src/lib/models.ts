@@ -10,7 +10,7 @@ export interface UserData {
 // /users/{userId}/friends/{friendId}
 export interface Friend {
   uid: string,
-  status: "pending" | "friend",
+  status: "sent_pending" | "received_pending" | "friends",
   since: number
 }
 

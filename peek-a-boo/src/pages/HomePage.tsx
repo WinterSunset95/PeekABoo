@@ -11,7 +11,11 @@ import {
 	IonLabel,
 	useIonToast,
 	IonModal,
-    useIonRouter
+    useIonRouter,
+	IonList,
+	IonSpinner,
+	IonIcon,
+	IonItem
 } from '@ionic/react';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { MediaInfo, MovieInfo, MovieSearchResult } from '../lib/types';
@@ -25,8 +29,9 @@ import { UserContext } from '../App';
 import AuthComponent from '../components/Auth';
 import { onAuthStateChanged } from 'firebase/auth';
 import { app, auth } from '../lib/firebase';
-import { Favourite, Friend } from '../lib/models';
-import { collection, getDocs, getFirestore, query, where } from 'firebase/firestore';
+import { Favourite, Friend, UserData } from '../lib/models';
+import { collection, getDocs, getFirestore, query, where, doc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { checkmark, close } from 'ionicons/icons';
 
 const HomePage: React.FC = () => {
 	const [trending, setTrending] = useState<MovieSearchResult[]>([])
@@ -34,6 +39,7 @@ const HomePage: React.FC = () => {
 	const [trendingTv, setTrendingTv] = useState<MovieSearchResult[]>([])
   const [favourites, setFavourites] = useState<Favourite[]>([]);
   const [friends, setFriend] = useState<Friend[]>([]);
+  const [friendRequests, setFriendRequests] = useState<Friend[]>([]);
 	const { user, setUser, name } = useContext(UserContext)
 	const [ showToast ] = useIonToast()
 	const modalRef = useRef<HTMLIonModalElement>(null)
@@ -96,13 +102,22 @@ const HomePage: React.FC = () => {
     const db = getFirestore(app);
     try {
       const friendsRef = collection(db, 'users', user.uid, 'friends');
-      const q = query(friendsRef, where("status", "==", "friends"));
-      const querySnapshot = await getDocs(q);
-      const friendsList = querySnapshot.docs.map(doc => doc.data() as Friend);
+      
+      // Get actual friends
+      const friendsQuery = query(friendsRef, where("status", "==", "friends"));
+      const friendsSnapshot = await getDocs(friendsQuery);
+      const friendsList = friendsSnapshot.docs.map(doc => ({ uid: doc.id, ...doc.data() } as Friend));
       setFriend(friendsList);
+
+      // Get incoming friend requests
+      const requestsQuery = query(friendsRef, where("status", "==", "received_pending"));
+      const requestsSnapshot = await getDocs(requestsQuery);
+      const requestsList = requestsSnapshot.docs.map(doc => ({ uid: doc.id, ...doc.data() } as Friend));
+      setFriendRequests(requestsList);
+
     } catch (error) {
-      console.error("Error loading friends:", error)
-      errorMessage("Error loading friends")
+      console.error("Error loading friends and requests:", error)
+      errorMessage("Error loading social data")
     }
   }
 
@@ -139,6 +154,104 @@ const HomePage: React.FC = () => {
     }
   }, [user])
 
+	const handleAcceptRequest = async (friendUid: string) => {
+		if (!user) return;
+		try {
+			const db = getFirestore(app);
+			const now = Date.now();
+			
+			// Update current user's friend document
+			const currentUserFriendRef = doc(db, 'users', user.uid, 'friends', friendUid);
+			await updateDoc(currentUserFriendRef, { status: 'friends', since: now });
+	
+			// Update the other user's friend document
+			const otherUserFriendRef = doc(db, 'users', friendUid, 'friends', user.uid);
+			await updateDoc(otherUserFriendRef, { status: 'friends', since: now });
+	
+			// Refresh lists
+			loadFriends();
+	
+		} catch (error) {
+			console.error("Error accepting friend request:", error);
+			errorMessage("Failed to accept friend request.");
+		}
+	};
+	
+	const handleDeclineRequest = async (friendUid: string) => {
+		if (!user) return;
+		try {
+			const db = getFirestore(app);
+			
+			// Delete from current user's friend list
+			const currentUserFriendRef = doc(db, 'users', user.uid, 'friends', friendUid);
+			await deleteDoc(currentUserFriendRef);
+			
+			// Delete from the other user's friend list
+			const otherUserFriendRef = doc(db, 'users', friendUid, 'friends', user.uid);
+			await deleteDoc(otherUserFriendRef);
+	
+			// Refresh lists
+			loadFriends();
+	
+		} catch (error) {
+			console.error("Error declining friend request:", error);
+			errorMessage("Failed to decline friend request.");
+		}
+	};
+
+	const FriendRequestItem: React.FC<{ request: Friend; }> = ({ request }) => {
+		const [userData, setUserData] = useState<UserData | null>(null);
+		const [loading, setLoading] = useState(true);
+	  
+		useEffect(() => {
+		  const fetchUserData = async () => {
+			setLoading(true);
+			try {
+			  const db = getFirestore(app);
+			  const userRef = doc(db, 'users', request.uid);
+			  const userSnap = await getDoc(userRef);
+			  if (userSnap.exists()) {
+				setUserData(userSnap.data() as UserData);
+			  }
+			} catch (error) {
+			  console.error("Error fetching user data for request:", error);
+			} finally {
+			  setLoading(false);
+			}
+		  };
+		  fetchUserData();
+		}, [request.uid]);
+	  
+		if (loading) {
+		  return (
+			<IonItem>
+			  <IonSpinner name="crescent" slot="start"></IonSpinner>
+			  <IonLabel>Loading request...</IonLabel>
+			</IonItem>
+		  );
+		}
+	  
+		if (!userData) return null;
+	  
+		return (
+		  <IonItem>
+			<IonAvatar slot="start">
+			  <img src={userData.photoURL} alt={userData.displayName} />
+			</IonAvatar>
+			<IonLabel>
+			  <h2>{userData.displayName}</h2>
+			  <p>Wants to be your friend.</p>
+			</IonLabel>
+			<IonButton fill="clear" slot="end" onClick={() => handleAcceptRequest(request.uid)}>
+			  <IonIcon icon={checkmark} color="success" />
+			</IonButton>
+			<IonButton fill="clear" slot="end" onClick={() => handleDeclineRequest(request.uid)}>
+			  <IonIcon icon={close} color="danger" />
+			</IonButton>
+		  </IonItem>
+		);
+	};
+
 	return (
 		<IonPage>
 			<IonHeader
@@ -173,6 +286,19 @@ const HomePage: React.FC = () => {
 				</IonToolbar>
 			</IonHeader>
 			<IonContent className='ion-padding'>
+				{friendRequests.length > 0 && (
+				<>
+					<h1>Friend Requests</h1>
+					<IonList>
+					{friendRequests.map(req => (
+						<FriendRequestItem 
+						key={req.uid} 
+						request={req}
+						/>
+					))}
+					</IonList>
+				</>
+				)}
 				<h1>Friends</h1>
 				<FriendsListComponent friends={friends} />
 				<h1>Trending Shows</h1>

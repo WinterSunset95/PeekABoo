@@ -28,7 +28,7 @@ const UserPage: React.FC<UserPageProps> = ({ match }) => {
   const router = useIonRouter();
   const [profileUser, setProfileUser] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [friendStatus, setFriendStatus] = useState<'loading' | 'not_friends' | 'pending' | 'friends'>('loading');
+  const [friendStatus, setFriendStatus] = useState<'loading' | 'not_friends' | 'sent_pending' | 'received_pending' | 'friends'>('loading');
   const [isProcessing, setIsProcessing] = useState(false);
   const userId = match.params.id;
 
@@ -61,7 +61,7 @@ const UserPage: React.FC<UserPageProps> = ({ match }) => {
           const friendRef = doc(db, 'users', user.uid, 'friends', userId);
           const friendSnap = await getDoc(friendRef);
           if (friendSnap.exists()) {
-            setFriendStatus(friendSnap.data().status as 'pending' | 'friends');
+            setFriendStatus(friendSnap.data().status as 'sent_pending' | 'received_pending' | 'friends');
           } else {
             setFriendStatus('not_friends');
           }
@@ -85,20 +85,19 @@ const UserPage: React.FC<UserPageProps> = ({ match }) => {
     setIsProcessing(true);
     try {
       const db = getFirestore(app);
-      const friendRequestData = { status: 'pending', since: Date.now() };
+      const now = Date.now();
 
-      // This is a friend request, so it is marked as 'pending' on both sides.
-      // The recipient will have an option to accept it, changing status to 'friends'.
-
-      // Add to current user's friends list
+      // For the sender
+      const sentRequestData = { status: 'sent_pending', since: now, uid: profileUser.uid };
       const currentUserFriendRef = doc(db, 'users', user.uid, 'friends', profileUser.uid);
-      await setDoc(currentUserFriendRef, friendRequestData);
+      await setDoc(currentUserFriendRef, sentRequestData);
 
-      // Add to other user's friends list (as an incoming request)
+      // For the recipient
+      const receivedRequestData = { status: 'received_pending', since: now, uid: user.uid };
       const profileUserFriendRef = doc(db, 'users', profileUser.uid, 'friends', user.uid);
-      await setDoc(profileUserFriendRef, friendRequestData);
+      await setDoc(profileUserFriendRef, receivedRequestData);
 
-      setFriendStatus('pending');
+      setFriendStatus('sent_pending');
     } catch (error) {
       console.error("Error adding friend:", error);
     } finally {
@@ -134,7 +133,8 @@ const UserPage: React.FC<UserPageProps> = ({ match }) => {
           >
             {isProcessing ? <IonSpinner name="crescent" /> :
               !user ? 'Login to Add Friend' :
-              friendStatus === 'pending' ? 'Request Sent' :
+              friendStatus === 'sent_pending' ? 'Request Sent' :
+              friendStatus === 'received_pending' ? 'Incoming Request' :
               friendStatus === 'friends' ? 'Friends' :
               'Add Friend'
             }
