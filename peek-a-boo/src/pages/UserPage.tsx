@@ -15,7 +15,7 @@ import {
 import { useContext, useEffect, useState } from 'react';
 import './UserPage.css'
 import { UserData } from "../lib/models";
-import { getFirestore, doc, getDoc } from 'firebase/firestore';
+import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
 import { app, auth } from "../lib/firebase";
 import { UserContext } from "../App";
 
@@ -24,17 +24,27 @@ interface UserPageProps extends RouteComponentProps<{
 }> {}
 
 const UserPage: React.FC<UserPageProps> = ({ match }) => {
-  const { user, setUser } = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const router = useIonRouter();
   const [profileUser, setProfileUser] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [friendStatus, setFriendStatus] = useState<'loading' | 'not_friends' | 'pending' | 'friends'>('loading');
+  const [isProcessing, setIsProcessing] = useState(false);
   const userId = match.params.id;
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    if (!userId) return;
+
+    if (user?.uid === userId) {
+      router.push('/settings', 'root', 'replace');
+      return;
+    }
+
+    const fetchUserDataAndStatus = async () => {
       setLoading(true);
       try {
         const db = getFirestore(app);
+        // Fetch profile user data
         const userRef = doc(db, 'users', userId);
         const userSnap = await getDoc(userRef);
         if (userSnap.exists()) {
@@ -42,25 +52,59 @@ const UserPage: React.FC<UserPageProps> = ({ match }) => {
         } else {
           console.warn(`User document not found for uid: ${userId}`);
           setProfileUser(null);
+          setLoading(false);
+          return;
         }
+
+        // Fetch friendship status
+        if (user) {
+          const friendRef = doc(db, 'users', user.uid, 'friends', userId);
+          const friendSnap = await getDoc(friendRef);
+          if (friendSnap.exists()) {
+            setFriendStatus(friendSnap.data().status as 'pending' | 'friends');
+          } else {
+            setFriendStatus('not_friends');
+          }
+        } else {
+          setFriendStatus('not_friends'); // Not logged in, can't be friends
+        }
+
       } catch (error) {
-        console.error("Error fetching user data:", error);
+        console.error("Error fetching user data or friend status:", error);
       } finally {
         setLoading(false);
       }
     };
-    if (userId) {
-      fetchUserData();
+
+    fetchUserDataAndStatus();
+  }, [userId, user, router]);
+
+  const handleAddFriend = async () => {
+    if (!user || !profileUser || isProcessing) return;
+
+    setIsProcessing(true);
+    try {
+      const db = getFirestore(app);
+      const friendRequestData = { status: 'pending', since: Date.now() };
+
+      // This is a friend request, so it is marked as 'pending' on both sides.
+      // The recipient will have an option to accept it, changing status to 'friends'.
+
+      // Add to current user's friends list
+      const currentUserFriendRef = doc(db, 'users', user.uid, 'friends', profileUser.uid);
+      await setDoc(currentUserFriendRef, friendRequestData);
+
+      // Add to other user's friends list (as an incoming request)
+      const profileUserFriendRef = doc(db, 'users', profileUser.uid, 'friends', user.uid);
+      await setDoc(profileUserFriendRef, friendRequestData);
+
+      setFriendStatus('pending');
+    } catch (error) {
+      console.error("Error adding friend:", error);
+    } finally {
+      setIsProcessing(false);
     }
-  }, [userId]);
-
-  const handleLogout = async () => {
-    await auth.signOut();
-    setUser(null);
-    router.push('/home', 'root', 'replace');
   };
-
-  const isCurrentUser = user?.uid === userId;
 
   const renderContent = () => {
     if (loading) {
@@ -83,21 +127,21 @@ const UserPage: React.FC<UserPageProps> = ({ match }) => {
         </p>
 
         <div className="user-profile-actions">
-          {isCurrentUser ? (
-            <>
-              <IonButton expand="block" disabled>Edit Profile</IonButton>
-              <IonButton expand="block" color="danger" onClick={handleLogout}>
-                Logout
-              </IonButton>
-            </>
-          ) : (
-            <>
-              <IonButton expand="block" disabled>Add Friend</IonButton>
-              <IonButton expand="block" color="warning" disabled>
-                Block User
-              </IonButton>
-            </>
-          )}
+          <IonButton
+            expand="block"
+            onClick={handleAddFriend}
+            disabled={friendStatus !== 'not_friends' || isProcessing || !user}
+          >
+            {isProcessing ? <IonSpinner name="crescent" /> :
+              !user ? 'Login to Add Friend' :
+              friendStatus === 'pending' ? 'Request Sent' :
+              friendStatus === 'friends' ? 'Friends' :
+              'Add Friend'
+            }
+          </IonButton>
+          <IonButton expand="block" color="warning" disabled>
+            Block User
+          </IonButton>
         </div>
       </div>
     );
