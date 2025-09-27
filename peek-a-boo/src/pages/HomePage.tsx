@@ -95,30 +95,6 @@ const HomePage: React.FC = () => {
     }
   }
 
-  const loadFriends = async () => {
-    if (!user) return;
-    const db = getFirestore(app);
-    try {
-      const friendsRef = collection(db, 'users', user.uid, 'friends');
-      
-      // Get actual friends
-      const friendsQuery = query(friendsRef, where("status", "==", "friends"));
-      const friendsSnapshot = await getDocs(friendsQuery);
-      const friendsList = friendsSnapshot.docs.map(doc => ({ uid: doc.id, ...doc.data() } as Friend));
-      setFriend(friendsList);
-
-      // Get incoming friend requests
-      const requestsQuery = query(friendsRef, where("status", "==", "received_pending"));
-      const requestsSnapshot = await getDocs(requestsQuery);
-      const requestsList = requestsSnapshot.docs.map(doc => ({ uid: doc.id, ...doc.data() } as Friend));
-      setFriendRequests(requestsList);
-
-    } catch (error) {
-      console.error("Error loading friends and requests:", error)
-      errorMessage("Error loading social data")
-    }
-  }
-
 	useEffect(() => {
 		loadTrending()
 		loadTrendingMovies()
@@ -128,7 +104,39 @@ const HomePage: React.FC = () => {
 	useEffect(() => {
 		if (user) {
 			loadFavourites()
-			loadFriends()
+
+			const db = getFirestore(app);
+			const friendsRef = collection(db, 'users', user.uid, 'friends');
+
+			// Listener for friends
+			const friendsQuery = query(friendsRef, where("status", "==", "friends"));
+			const unsubscribeFriends = onSnapshot(friendsQuery, (snapshot) => {
+				const friendsList = snapshot.docs.map(doc => ({ uid: doc.id, ...doc.data() } as Friend));
+				setFriend(friendsList);
+			}, (error) => {
+				console.error("Error listening to friends:", error);
+				errorMessage("Error loading friends.");
+			});
+
+			// Listener for friend requests
+			const requestsQuery = query(friendsRef, where("status", "==", "received_pending"));
+			const unsubscribeRequests = onSnapshot(requestsQuery, (snapshot) => {
+				const requestsList = snapshot.docs.map(doc => ({ uid: doc.id, ...doc.data() } as Friend));
+				setFriendRequests(requestsList);
+			}, (error) => {
+				console.error("Error listening to friend requests:", error);
+				errorMessage("Error loading friend requests.");
+			});
+
+			// Cleanup listeners on component unmount or user change
+			return () => {
+				unsubscribeFriends();
+				unsubscribeRequests();
+			};
+		} else {
+			// Clear social data when user logs out
+			setFriend([]);
+			setFriendRequests([]);
 		}
 	}, [user])
 
@@ -165,9 +173,6 @@ const HomePage: React.FC = () => {
 			const otherUserFriendRef = doc(db, 'users', friendUid, 'friends', user.uid);
 			await updateDoc(otherUserFriendRef, { status: 'friends', since: now });
 	
-			// Refresh lists
-			loadFriends();
-	
 		} catch (error) {
 			console.error("Error accepting friend request:", error);
 			errorMessage("Failed to accept friend request.");
@@ -186,9 +191,6 @@ const HomePage: React.FC = () => {
 			// Delete from the other user's friend list
 			const otherUserFriendRef = doc(db, 'users', friendUid, 'friends', user.uid);
 			await deleteDoc(otherUserFriendRef);
-	
-			// Refresh lists
-			loadFriends();
 	
 		} catch (error) {
 			console.error("Error declining friend request:", error);
