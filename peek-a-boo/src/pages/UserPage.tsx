@@ -15,7 +15,7 @@ import {
 import { useContext, useEffect, useState } from 'react';
 import './UserPage.css'
 import { UserData } from "../lib/models";
-import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
+import { getFirestore, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { app, auth } from "../lib/firebase";
 import { UserContext } from "../App";
 
@@ -106,6 +106,31 @@ const UserPage: React.FC<UserPageProps> = ({ match }) => {
     }
   };
 
+  const handleAcceptFriend = async () => {
+    if (!user || !profileUser || isProcessing) return;
+
+    setIsProcessing(true);
+    try {
+      const db = getFirestore(app);
+      const now = Date.now();
+      const friendData = { status: 'friends', since: now };
+
+      // Update current user's friend document
+      const currentUserFriendRef = doc(db, 'users', user.uid, 'friends', profileUser.uid);
+      await updateDoc(currentUserFriendRef, friendData);
+
+      // Update the other user's friend document
+      const otherUserFriendRef = doc(db, 'users', profileUser.uid, 'friends', user.uid);
+      await updateDoc(otherUserFriendRef, friendData);
+      
+      setFriendStatus('friends');
+    } catch (error) {
+      console.error("Error accepting friend:", error);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   const renderContent = () => {
     if (loading) {
       return <div className="spinner-container"><IonSpinner /></div>;
@@ -129,13 +154,20 @@ const UserPage: React.FC<UserPageProps> = ({ match }) => {
         <div className="user-profile-actions">
           <IonButton
             expand="block"
-            onClick={handleAddFriend}
-            disabled={friendStatus !== 'not_friends' || isProcessing || !user}
+            onClick={() => {
+              if (friendStatus === 'not_friends') handleAddFriend();
+              else if (friendStatus === 'received_pending') handleAcceptFriend();
+            }}
+            disabled={
+              (friendStatus !== 'not_friends' && friendStatus !== 'received_pending') ||
+              isProcessing ||
+              !user
+            }
           >
             {isProcessing ? <IonSpinner name="crescent" /> :
               !user ? 'Login to Add Friend' :
               friendStatus === 'sent_pending' ? 'Request Sent' :
-              friendStatus === 'received_pending' ? 'Incoming Request' :
+              friendStatus === 'received_pending' ? 'Accept Request' :
               friendStatus === 'friends' ? 'Friends' :
               'Add Friend'
             }
