@@ -62,6 +62,7 @@ const UserPage: React.FC<UserPageProps> = ({ match }) => {
           const friendSnap = await getDoc(friendRef);
           if (friendSnap.exists()) {
             setFriendStatus(friendSnap.data().status as 'sent_pending' | 'received_pending' | 'friends');
+            console.log(friendSnap.data().status)
           } else {
             setFriendStatus('not_friends');
           }
