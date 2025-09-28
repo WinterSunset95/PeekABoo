@@ -5,6 +5,7 @@ import { connectAuthEmulator, getAuth } from "firebase/auth";
 import { FirebaseAuthentication, UseEmulatorOptions } from "@capacitor-firebase/authentication";
 import { FirebaseFirestore } from "@capacitor-firebase/firestore";
 import { FirebaseFunctions } from "@capacitor-firebase/functions";
+import { FirebaseStorage } from "@capacitor-firebase/storage";
 import { connectFirestoreEmulator, getFirestore } from "firebase/firestore";
 import { connectFunctionsEmulator, getFunctions } from "firebase/functions";
 import { connectStorageEmulator, getStorage } from "firebase/storage";
@@ -49,6 +50,7 @@ if (process.env.NODE_ENV === "development") {
     FirebaseAuthentication.useEmulator({ host: host, port: 9099 })
     FirebaseFirestore.useEmulator({ host: host, port: 8080 })
     FirebaseFunctions.useEmulator({ host: host, port: 5001 })
+    FirebaseStorage.useEmulator({ host: host, port: 9199 })
     connectAuthEmulator(getAuth(app), `http://${host}:9099`);
     connectFirestoreEmulator(getFirestore(app), host, 8080);
     connectFunctionsEmulator(functions, host, 5001);

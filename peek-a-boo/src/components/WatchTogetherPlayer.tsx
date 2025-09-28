@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { IonButton, IonIcon, IonProgressBar, IonSpinner } from '@ionic/react';
 import { closeCircleOutline } from 'ionicons/icons';
 import { database } from '../lib/firebase';
-import { ref, onValue, set, serverTimestamp, remove, off } from 'firebase/database';
+import { ref, onValue, set, serverTimestamp, remove, off, update } from 'firebase/database';
 import { PlaybackState } from '../lib/models';
 import { UserContext } from '../App';
 import './WatchTogetherPlayer.css';
@@ -16,6 +16,7 @@ const WatchTogetherPlayer: React.FC<WatchTogetherPlayerProps> = ({ convoId }) =>
   const [playbackState, setPlaybackState] = useState<PlaybackState | null>(null);
   const playerRef = useRef<HTMLVideoElement | HTMLAudioElement>(null);
   const isUpdatingFromRemote = useRef(false);
+  const lastTimeUpdateSent = useRef(0);
   const sessionRef = ref(database, `playback_sessions/${convoId}`);
 
   useEffect(() => {
@@ -51,8 +52,7 @@ const WatchTogetherPlayer: React.FC<WatchTogetherPlayerProps> = ({ convoId }) =>
 
   const updateRtdbState = (updates: Partial<PlaybackState>) => {
     if (!user) return;
-    set(sessionRef, {
-      ...playbackState,
+    update(sessionRef, {
       ...updates,
       lastUpdatedBy: user.uid,
       timestamp: serverTimestamp(),
@@ -63,7 +63,13 @@ const WatchTogetherPlayer: React.FC<WatchTogetherPlayerProps> = ({ convoId }) =>
   const handlePause = () => !isUpdatingFromRemote.current && updateRtdbState({ isPlaying: false });
   const handleTimeUpdate = () => {
     if (playerRef.current && !isUpdatingFromRemote.current) {
-      updateRtdbState({ progress: playerRef.current.currentTime });
+      const currentTime = playerRef.current.currentTime;
+      const now = Date.now();
+      // Throttle updates to every 1 second
+      if (now - lastTimeUpdateSent.current > 1000) {
+        lastTimeUpdateSent.current = now;
+        updateRtdbState({ progress: currentTime });
+      }
     }
   };
   

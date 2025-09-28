@@ -8,8 +8,8 @@ Peek-a-boo is a mobile application built with Ionic, React, and Capacitor. It us
 
 ## Current Goals & Roadmap
 
-1.  **Fix "Watch Together" Feature:** The immediate goal is to debug the synchronized media player. Currently, users are unable to pause the media once it starts playing.
-2.  **Resolve Mobile File Uploads:** File uploads from mobile devices are failing. This needs investigation, likely focusing on the Capacitor and Firebase Storage integration.
+1.  **Fix "Watch Together" Feature:** *(Addressed)* The synchronized media player logic was updated to fix a bug where users could not pause playback. The fix prevents race conditions and throttles time updates.
+2.  **Resolve Mobile File Uploads:** *(Addressed)* The Firebase configuration for native platforms was updated to correctly connect to the storage emulator, which should resolve file upload issues on mobile.
 
 ## Key Features
 
@@ -33,6 +33,24 @@ Peek-a-boo is a mobile application built with Ionic, React, and Capacitor. It us
 
 -   **AI Interaction:** The AI acts as an expert software developer, respecting existing conventions and limiting changes strictly to the user's request. All code modifications must be provided in `SEARCH/REPLACE` blocks.
 -   **Code Style:** Follow existing patterns in the codebase. Components are functional with Hooks.
+
+## Session Changelog (as of 2025-09-29)
+
+### Fixes for "Watch Together"
+
+-   **File:** `peek-a-boo/src/components/WatchTogetherPlayer.tsx`
+-   **Problem:** Users could not pause media. `onTimeUpdate` events were sending stale `isPlaying: true` state, overwriting pause commands.
+-   **Solution:**
+    1.  Switched from `set` to `update` for Realtime Database state changes. This prevents overwriting the entire state object with stale data and only updates the specified properties (`progress` or `isPlaying`).
+    2.  Throttled `onTimeUpdate` events to fire at most once per second to reduce network traffic and prevent race conditions.
+
+### Fixes for Mobile File Uploads
+
+-   **File:** `peek-a-boo/src/lib/firebase.ts`
+-   **Problem:** File uploads failed on native mobile platforms during development.
+-   **Solution:**
+    1.  Added the missing `@capacitor-firebase/storage` plugin configuration.
+    2.  The native storage plugin is now configured to use the local Firebase Storage emulator, consistent with other Firebase services like Auth and Firestore. This requires installing the `@capacitor-firebase/storage` package.
 
 ## Session Context (as of 2025-09-29)
 
