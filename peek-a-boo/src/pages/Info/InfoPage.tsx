@@ -32,6 +32,7 @@ import {
     IonModal,
     IonSelect,
     IonSelectOption,
+	IonSpinner,
 } from "@ionic/react"
 
 import './AnimeInfo.css'
@@ -51,18 +52,21 @@ import { proxyThisLink } from "../../lib/backendconnection"
 import { getSettings, resetSettings } from "../../lib/storage"
 import LoadingComponent from "../../components/Loading"
 import { UserContext } from "../../App"
-import Room from "../../components/Room"
-import { createRoom } from "../../lib/rooms"
-import { getMovieEmbeds, getMovieSources, getTvEpisodeEmbeds, getTvEpisodeSources } from "../../lib/movies"
-import { play } from "ionicons/icons"
+import { getMovieEmbeds, getMovieSources, getTvEpisodeEmbeds, getTvEpisodeSources, getSimilarMovies, getSimilarTvShows } from "../../lib/movies"
+import { play, star, starOutline } from "ionicons/icons"
 import "./InfoPage.css"
+import { getFirestore, doc, setDoc, getDoc, deleteDoc } from "firebase/firestore"
+import { app } from "../../lib/firebase"
+import { Favourite } from "../../lib/models"
+import { MovieInfo } from "../../lib/types"
+import ListVert from "../../components/ListVert"
+import DetailCard from "../../components/DetailCard"
 
 interface InfoProps {
 	info: MediaInfo,
-	openRoom?: OpenRoom
 }
 
-const InfoPage: React.FC<InfoProps> = ({ info, openRoom }) => {
+const InfoPage: React.FC<InfoProps> = ({ info }) => {
 	const [season, setSeason] = useState<TvSeason>()
 	const [tvEpisode, setTvEpisode] = useState<number>()
 	const [episode, setEpisode] = useState<IAnimeEpisode>();
@@ -75,9 +79,11 @@ const InfoPage: React.FC<InfoProps> = ({ info, openRoom }) => {
 
 	const [playeroptions, setPlayeroptions] = useState<PlayerOptions>();
 	const [settings, setSettings] = useState<Settings>()
-	const [topH, setTopH] = useState(50)
-	const userContext = useContext(UserContext)
+	const { user } = useContext(UserContext)
 	const router = useIonRouter()
+	const [isFavorited, setIsFavorited] = useState(false);
+	const [isFavoriteLoading, setIsFavoriteLoading] = useState(true);
+	const [similarMedia, setSimilarMedia] = useState<MovieInfo[]>([]);
 	const [ showAlert ] = useIonAlert()
 	const [ showToast ] = useIonToast()
 	
@@ -187,47 +193,70 @@ const InfoPage: React.FC<InfoProps> = ({ info, openRoom }) => {
 		}
 	}
 
-	const roomCreate = async () => {
-		if (!userContext || !info) return
-
-		if (!userContext.user) {
-			router.push(`/login?return=/${info.Type}/${info.Id}`)
-			return
-		}
-
-		const { user, setUser, name } = userContext
-
-        let roomId = info.Id.toString()
-        roomId = roomId.toLowerCase()
-        const randomNum = Math.floor(100000 + Math.random() * 900000)
-        const randomNum2 = Math.floor(100000 + Math.random() * 900000)
-        roomId = roomId + "-" + randomNum.toString() + "-" + randomNum2.toString()
-
-		const room: OpenRoom = {
-			...user,
-			Participants: [user],
-			RoomId: roomId,
-			RoomName: info.Title,
-			CurrentMedia: {
-				Id: info.Id,
-				Title: info.Title,
-				Poster: info.Poster,
-				Type: info.Type
-			},
-			Messages: []
-		}
-		const res = await createRoom(room)
-		if (res.peek == false) {
-			showAlert("Failed to create room")
-			return
-		} else {
-			router.push(`/room/${info.Type}/${res.boo.RoomId}`)
-		}
-	}
-
 	useEffect(() => {
 		loadSettings()
 	}, [])
+
+	useEffect(() => {
+		const checkFavoriteStatus = async () => {
+			if (!user) {
+				setIsFavorited(false);
+				setIsFavoriteLoading(false);
+				return;
+			}
+			setIsFavoriteLoading(true);
+			const db = getFirestore(app);
+			const favRef = doc(db, 'users', user.uid, 'favorites', info.Id);
+			const docSnap = await getDoc(favRef);
+			setIsFavorited(docSnap.exists());
+			setIsFavoriteLoading(false);
+		};
+		checkFavoriteStatus();
+
+		const loadSimilar = async () => {
+			let res;
+			if (info.Type === 'movie') {
+				res = await getSimilarMovies(info.Id);
+			} else if (info.Type === 'tv') {
+				res = await getSimilarTvShows(info.Id);
+			} else {
+				// No similar API for anime yet
+				return;
+			}
+			if (res.peek) {
+				setSimilarMedia(res.boo);
+			}
+		}
+		loadSimilar();
+	}, [user, info.Id]);
+
+	const handleToggleFavorite = async () => {
+		if (!user) {
+			router.push(`/login?return=/${info.Type}/${info.Id}`);
+			return;
+		}
+		setIsFavoriteLoading(true);
+		const db = getFirestore(app);
+		const favRef = doc(db, 'users', user.uid, 'favorites', info.Id);
+		
+		if (isFavorited) {
+			await deleteDoc(favRef);
+			setIsFavorited(false);
+			showToast({ message: 'Removed from favorites', duration: 2000, position: 'top' });
+		} else {
+			const favoriteData: Favourite = {
+				mediaId: info.Id,
+				mediaType: info.Type,
+				title: info.Title,
+				posterUrl: info.Poster,
+				addedAt: Date.now()
+			};
+			await setDoc(favRef, favoriteData);
+			setIsFavorited(true);
+			showToast({ message: 'Added to favorites', duration: 2000, position: 'top' });
+		}
+		setIsFavoriteLoading(false);
+	};
 
 	useEffect(() => {
 		loadEpisodeInfo()
@@ -391,13 +420,40 @@ const InfoPage: React.FC<InfoProps> = ({ info, openRoom }) => {
 	
 	const Details = () => {
 		return (
-			<div>
+			<div className="info-details-container">
+				<div className="info-actions">
+					<IonButton onClick={handleToggleFavorite} fill="outline" disabled={isFavoriteLoading}>
+						{isFavoriteLoading ? <IonSpinner name="crescent" /> : (
+							<>
+								<IonIcon slot="start" icon={isFavorited ? star : starOutline} />
+								{isFavorited ? 'Favorited' : 'Add to Favorites'}
+							</>
+						)}
+					</IonButton>
+				</div>
+
 				<p>{info.Overview}</p>
-				<IonButton 
-					onClick={roomCreate}
-				>
-					{userContext?.user ? "Create Room" : "Login first to create room"}
-				</IonButton>
+
+				{similarMedia.length > 0 && (
+					<div className="similar-media-section">
+						<h2>Similar Titles</h2>
+						<ListVert
+							items={similarMedia}
+							renderItem={(item) => (
+								<DetailCard
+									key={item.Id}
+									imageUrl={item.Poster}
+									title={item.Title}
+									linkUrl={`/${item.Type}/${item.Id}`}
+									type={item.Type}
+									year={item.Year}
+									duration={item.Duration}
+									overview={item.Overview}
+								/>
+							)}
+						/>
+					</div>
+				)}
 			</div>
 		)
 	}
@@ -406,58 +462,24 @@ const InfoPage: React.FC<InfoProps> = ({ info, openRoom }) => {
 		<IonPage>
 
 			<IonHeader translucent={true}>
-				<IonToolbar
-					style={{
-						paddingRight: "1rem"
-					}}
-				>
+				<IonToolbar>
+					<IonButtons slot="start">
+						<IonBackButton defaultHref="/media" />
+					</IonButtons>
 					<IonTitle>{info.Title}</IonTitle>
-					{userContext ? userContext.user 
-					? 
-						<IonChip slot='end'
-							onClick={() => {
-								showToast({
-									message: `UserID: ${userContext.user?.UserId}`,
-									duration: 3000,
-									position: "top",
-									swipeGesture: "vertical"
-								})
-							}}
-						>
-							<IonAvatar>
-								<img src={userContext.user.UserImage} alt="" />
-							</IonAvatar>
-							<IonLabel>{userContext.user.UserName}</IonLabel>
-						</IonChip>
-					: <IonButton routerLink='/login' slot='end'>Login</IonButton>
-					: <IonButton routerLink='/login' slot='end'>Login</IonButton>
-					}
 				</IonToolbar>
 			</IonHeader>
 
 			<IonContent className="ion-padding">
-				<div className="info-content-half"
-					style={openRoom ?{
-						maxHeight: `${topH}%`,
-						overflow: `scroll`
-					}:{}}
-				>
-					
+				<div className="info-top-section">
 					<PlayerAndBanner />
 					<div className="infopage-selectors">
 						<Selectors />
 					</div>
-
-
 				</div>
 
-				<div className="info-content-half"
-				style={openRoom ? {
-					maxHeight: `${topH}%`,
-				}:{}} >
-
-					{openRoom ? <Room {...openRoom} /> : <Details />}
-
+				<div className="info-bottom-section">
+					<Details />
 				</div>
 			</IonContent>
 

@@ -13,11 +13,13 @@ import { MovieSearchResult, MovieInfo } from '../lib/types';
 import List from '../components/List';
 import LoadingComponent from '../components/Loading';
 import './HomePage.css'
+import FeaturedCard from '../components/FeaturedCard';
 
 const MediaPage: React.FC = () => {
   const [trending, setTrending] = useState<MovieSearchResult[]>([]);
   const [trendingMovies, setTrendingMovies] = useState<MovieInfo[]>([]);
   const [trendingTv, setTrendingTv] = useState<MovieInfo[]>([]);
+  const [featuredItem, setFeaturedItem] = useState<MovieInfo | null>(null);
   const [showToast] = useIonToast();
 
   const errorMessage = (msg: string) => {
@@ -45,6 +47,9 @@ const MediaPage: React.FC = () => {
       return;
     }
     setTrendingMovies(res.boo);
+    if (res.boo.length > 0) {
+      setFeaturedItem(res.boo[0]);
+    }
   };
 
   const loadTrendingTv = async () => {
@@ -71,6 +76,12 @@ const MediaPage: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent className='ion-padding'>
+        {featuredItem ? (
+          <>
+            <h1>Featured</h1>
+            <FeaturedCard item={featuredItem} />
+          </>
+        ) : <LoadingComponent choice='list' />}
         <h1>Trending Shows</h1>
         {
           trendingTv.length > 0 ?
