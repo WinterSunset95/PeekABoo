@@ -25,9 +25,9 @@ const WatchTogetherPlayer: React.FC<WatchTogetherPlayerProps> = ({ convoId }) =>
       setPlaybackState(data);
 
       if (data && playerRef.current && user) {
-        isUpdatingFromRemote.current = true;
-        
         if (data.lastUpdatedBy !== user.uid) {
+          isUpdatingFromRemote.current = true;
+
           const player = playerRef.current;
           // Sync play/pause state
           if (data.isPlaying && player.paused) {
@@ -41,9 +41,9 @@ const WatchTogetherPlayer: React.FC<WatchTogetherPlayerProps> = ({ convoId }) =>
           if (timeDiff > 2) { // 2-second tolerance
             player.currentTime = data.progress;
           }
+          
+          setTimeout(() => { isUpdatingFromRemote.current = false; }, 100);
         }
-        
-        setTimeout(() => { isUpdatingFromRemote.current = false; }, 100);
       }
     });
 
