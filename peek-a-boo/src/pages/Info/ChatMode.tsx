@@ -39,8 +39,8 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
   const { user } = useContext(UserContext);
   const chatId = match.params.id;
   
-  const [otherUserId, setOtherUserId] = useState<string | null>(null);
-  const { userData: otherUser, loading: userLoading } = useUserData(otherUserId);
+  const { userData: otherUser, loading: userLoading } = useUserData(chatId);
+  const [convoId, setConvoId] = useState<string | null>(null);
   
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState("");
@@ -48,18 +48,16 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
 
   useEffect(() => {
     if (!user || !chatId) return;
-    // Derive the other user's ID from the chat ID.
-    // Assumes chat ID is a composite of two sorted UIDs.
-    const participants = chatId.split('-');
-    const otherId = participants.find(p => p !== user.uid);
-    setOtherUserId(otherId || null);
+    // Derive the conversation id from the id's of both users AI!
+    // it should be <one user's id>-<other user's id> AI!
+    // which user comes first should be decided alphabetically AI!
   }, [chatId, user]);
 
   useEffect(() => {
-    if (!chatId) return;
+    if (!convoId) return;
 
     const db = getFirestore(app);
-    const messagesRef = collection(db, "chats", chatId, "messages");
+    const messagesRef = collection(db, "chats", convoId, "messages");
     const q = query(messagesRef, orderBy("timestamp", "asc"));
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -69,7 +67,7 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
     });
 
     return () => unsubscribe();
-  }, [chatId]);
+  }, [convoId]);
 
   const handleSendMessage = async () => {
     if (newMessage.trim() === "" || !user || !chatId) return;
