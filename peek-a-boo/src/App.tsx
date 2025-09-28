@@ -44,7 +44,7 @@ import '@ionic/react/css/palettes/dark.system.css';
 /* Theme variables */
 import './theme/variables.css';
 import { Redirect, Route, Switch } from 'react-router';
-import { home, radio, search, settings } from 'ionicons/icons';
+import { home, radio, search, settings, chatbubbleEllipsesOutline, personOutline, filmOutline } from 'ionicons/icons';
 import { IonReactRouter } from '@ionic/react-router';
 import { socket } from './lib/socket';
 import { appVersion, Settings } from './lib/types';
@@ -210,10 +210,10 @@ const App: React.FC = () => {
 				<IonRouterOutlet>
 					<Switch>
 						<Route exact path="/chat/:id" component={ChatMode}/>
+            <Route exact path="/user/:id" component={UserPage} />
 						<Route exact path="/:type/:id" component={InfoMode}/>
 						<Route exact path="/room/:type/:id" component={RoomMode}/>
 						<Route exact path="/login" component={AuthComponent}/>
-            <Route exact path="/user/:id" component={UserPage} />
 						<IonTabs>
 							<IonRouterOutlet>
 								<Redirect exact path='/' to="/home" />
@@ -234,7 +234,7 @@ const App: React.FC = () => {
 							<IonTabBar slot='bottom'>
 
 								<IonTabButton tab='home' href='/home'>
-									<IonIcon icon={home}></IonIcon>
+									<IonIcon icon={chatbubbleEllipsesOutline}></IonIcon>
 									<IonLabel>Home</IonLabel>
 								</IonTabButton>
 								<IonTabButton tab='search' href='/search'>
@@ -242,11 +242,11 @@ const App: React.FC = () => {
 									<IonLabel>Search</IonLabel>
 								</IonTabButton>
 								<IonTabButton tab='rooms' href='/rooms'>
-									<IonIcon icon={radio}></IonIcon>
-									<IonLabel>Room</IonLabel>
+									<IonIcon icon={filmOutline}></IonIcon>
+									<IonLabel>Media</IonLabel>
 								</IonTabButton>
 								<IonTabButton tab='settings' href='/settings'>
-									<IonIcon icon={settings}></IonIcon>
+									<IonIcon icon={personOutline}></IonIcon>
 									<IonLabel>Settings</IonLabel>
 								</IonTabButton>
 
