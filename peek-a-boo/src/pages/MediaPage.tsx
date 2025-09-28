@@ -9,15 +9,15 @@ import {
 import { useEffect, useState } from 'react';
 import { getTrending } from '../lib/anime';
 import { getTrendingMovies, getTrendingTv } from '../lib/movies';
-import { MovieSearchResult } from '../lib/types';
+import { MovieSearchResult, MovieInfo } from '../lib/types';
 import List from '../components/List';
 import LoadingComponent from '../components/Loading';
 import './HomePage.css'
 
 const MediaPage: React.FC = () => {
   const [trending, setTrending] = useState<MovieSearchResult[]>([]);
-  const [trendingMovies, setTrendingMovies] = useState<MovieSearchResult[]>([]);
-  const [trendingTv, setTrendingTv] = useState<MovieSearchResult[]>([]);
+  const [trendingMovies, setTrendingMovies] = useState<MovieInfo[]>([]);
+  const [trendingTv, setTrendingTv] = useState<MovieInfo[]>([]);
   const [showToast] = useIonToast();
 
   const errorMessage = (msg: string) => {
@@ -49,6 +49,7 @@ const MediaPage: React.FC = () => {
 
   const loadTrendingTv = async () => {
     const res = await getTrendingTv();
+    console.log(res)
     if (res.peek != true) {
       errorMessage("Error loading trending TV");
       return;
