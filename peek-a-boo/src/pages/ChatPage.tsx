@@ -30,7 +30,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { app } from "../lib/firebase";
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { useUserData } from "../hooks/useUserData";
 import ChatMessageItem from "../components/ChatMessageItem";
 import { attachOutline, closeCircleOutline, sendOutline } from "ionicons/icons";
@@ -150,8 +150,8 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
     setIsUploading(true);
     const storage = getStorage(app);
     const filePath = `chats/${convoId}/${Date.now()}-${file.name}`;
-    const storageRef = ref(storage, filePath);
-    const uploadTask = uploadBytesResumable(storageRef, file);
+    const fileStorageRef = storageRef(storage, filePath);
+    const uploadTask = uploadBytesResumable(fileStorageRef, file);
 
     uploadTask.on('state_changed', 
       null, 
