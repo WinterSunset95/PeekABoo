@@ -100,22 +100,8 @@ const HomePage: React.FC = () => {
 
   useEffect(() => {
     document.title = "PeekABoo"
-    onAuthStateChanged(auth, (newLoginUser) => {
-      if (newLoginUser != null) {
-        setUser(newLoginUser)
-      } else {
-        setUser(null)
-      }
-    })
   }, [])
 
-  useEffect(() => {
-    if (user != null && auth.currentUser != null) {
-        router.push("/home", "root")
-    } else {
-        router.push("/login", "root")
-    }
-  }, [user])
 
   const handleAcceptRequest = async (friendUid: string) => {
     if (!user) return;

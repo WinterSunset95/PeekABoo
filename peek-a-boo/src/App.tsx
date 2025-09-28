@@ -1,9 +1,11 @@
 import {
   IonApp,
+  IonContent,
   IonIcon,
   IonLabel,
   IonPage,
   IonRouterOutlet,
+  IonSpinner,
   IonTabBar,
   IonTabButton,
   IonTabs,
@@ -103,6 +105,7 @@ export const UserContext = createContext<{
 const App: React.FC = () => {
   const name = useRef<string>("")
   const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(true)
   const [showAlert, controls] = useIonAlert()
 
   if (Capacitor.getPlatform() != 'web') {
@@ -201,6 +204,14 @@ const App: React.FC = () => {
     document.title = "PeekABoo"
     checkPermissions()
     loadUpdates()
+
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+      setLoading(false);
+    });
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
   }, [])
 
   return (
@@ -208,51 +219,68 @@ const App: React.FC = () => {
     <IonApp>
       <IonReactRouter>
         <IonRouterOutlet>
-          <Switch>
-            <Route exact path="/chat/:id" component={ChatMode}/>
-            <Route exact path="/user/:id" component={UserPage} />
-            <Route exact path="/:type/:id" component={InfoMode}/>
-            <Route exact path="/room/:type/:id" component={RoomMode}/>
-            <Route exact path="/login" component={AuthComponent}/>
-            <IonTabs>
-              <IonRouterOutlet>
-                <Redirect exact path='/' to="/home" />
-                <Route exact path="/home">
-                  <HomePage />
-                </Route>
-                <Route exact path="/search">
-                  <Search />
-                </Route>
-                <Route exact path="/media">
-                  <MediaPage />
-                </Route>
-                <Route exact path="/settings">
-                  <SettingsPage />
-                </Route>
-              </IonRouterOutlet>
+          {loading ? (
+            <IonPage>
+              <IonContent fullscreen>
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                  <IonSpinner />
+                </div>
+              </IonContent>
+            </IonPage>
+          ) : user ? (
+            <Switch>
+              <Route exact path="/login">
+                <Redirect to="/home" />
+              </Route>
+              <Route exact path="/chat/:id" component={ChatMode}/>
+              <Route exact path="/user/:id" component={UserPage} />
+              <Route exact path="/:type/:id" component={InfoMode}/>
+              <Route exact path="/room/:type/:id" component={RoomMode}/>
+              <IonTabs>
+                <IonRouterOutlet>
+                  <Redirect exact path='/' to="/home" />
+                  <Route exact path="/home">
+                    <HomePage />
+                  </Route>
+                  <Route exact path="/search">
+                    <Search />
+                  </Route>
+                  <Route exact path="/media">
+                    <MediaPage />
+                  </Route>
+                  <Route exact path="/settings">
+                    <SettingsPage />
+                  </Route>
+                </IonRouterOutlet>
 
-              <IonTabBar slot='bottom'>
+                <IonTabBar slot='bottom'>
 
-                <IonTabButton tab='home' href='/home'>
-                  <IonIcon icon={chatbubbleEllipsesOutline}></IonIcon>
-                  <IonLabel>Home</IonLabel>
-                </IonTabButton>
-                <IonTabButton tab='search' href='/search'>
-                  <IonIcon icon={search}></IonIcon>
-                  <IonLabel>Search</IonLabel>
-                </IonTabButton>
-                <IonTabButton tab='media' href='/media'>
-                  <IonIcon icon={filmOutline}></IonIcon>
-                  <IonLabel>Media</IonLabel>
-                </IonTabButton>
-                <IonTabButton tab='settings' href='/settings'>
-                  <IonIcon icon={personOutline}></IonIcon>
-                  <IonLabel>Settings</IonLabel>
-                </IonTabButton>
+                  <IonTabButton tab='home' href='/home'>
+                    <IonIcon icon={chatbubbleEllipsesOutline}></IonIcon>
+                    <IonLabel>Home</IonLabel>
+                  </IonTabButton>
+                  <IonTabButton tab='search' href='/search'>
+                    <IonIcon icon={search}></IonIcon>
+                    <IonLabel>Search</IonLabel>
+                  </IonTabButton>
+                  <IonTabButton tab='media' href='/media'>
+                    <IonIcon icon={filmOutline}></IonIcon>
+                    <IonLabel>Media</IonLabel>
+                  </IonTabButton>
+                  <IonTabButton tab='settings' href='/settings'>
+                    <IonIcon icon={personOutline}></IonIcon>
+                    <IonLabel>Settings</IonLabel>
+                  </IonTabButton>
 
-              </IonTabBar>
-            </IonTabs>
-          </Switch>
+                </IonTabBar>
+              </IonTabs>
+            </Switch>
+          ) : (
+            <Switch>
+              <Route exact path="/login" component={AuthComponent} />
+              <Redirect to="/login" />
+            </Switch>
+          )}
         </IonRouterOutlet>
       </IonReactRouter>
     </IonApp>
