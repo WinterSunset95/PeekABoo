@@ -218,7 +218,7 @@ const App: React.FC = () => {
                   </Route>
                   <Route exact path="/user/:id" component={UserPage} />
                   <Route exact path="/chat/:id" component={ChatPage}/>
-                  <Route exact path="/:type/:id" component={InfoMode}/>
+                  <Route exact path="/:type(movie|tv|anime)/:id" component={InfoMode}/>
                   <Route path="/">
                     <IonTabs>
                       <IonRouterOutlet>
