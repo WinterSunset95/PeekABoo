@@ -1,76 +1,132 @@
 import { RouteComponentProps } from "react-router";
-import AnimeInfoPage from "./AnimeInfo";
-import Room from "../../components/Room";
-import { useContext, useEffect, useState } from "react";
-import { OpenRoom } from "../../lib/types";
-import { getRoom } from "../../lib/rooms";
-import { socket } from "../../lib/socket";
-import { IonAvatar, IonContent, IonHeader, IonLabel, IonPage, IonText, IonTitle, IonToolbar, useIonRouter } from "@ionic/react";
-import LoadingComponent from "../../components/Loading";
+import { useContext, useEffect, useRef, useState } from "react";
+import {
+  IonAvatar,
+  IonBackButton,
+  IonButton,
+  IonButtons,
+  IonContent,
+  IonFooter,
+  IonHeader,
+  IonIcon,
+  IonInput,
+  IonPage,
+  IonSpinner,
+  IonTitle,
+  IonToolbar,
+} from "@ionic/react";
 import { UserContext } from "../../App";
-import "./ChatMode.css"
+import "./ChatMode.css";
+import { ChatMessage } from "../../lib/models";
+import {
+  addDoc,
+  collection,
+  getFirestore,
+  onSnapshot,
+  orderBy,
+  query,
+} from "firebase/firestore";
+import { app } from "../../lib/firebase";
+import { useUserData } from "../../hooks/useUserData";
+import ChatMessageItem from "../../components/ChatMessageItem";
+import { sendOutline } from "ionicons/icons";
 
 interface ChatProps extends RouteComponentProps<{
-    id: string
+  id: string; // This will be the chat ID
 }> {}
 
-const ChatMode: React.FC<ChatProps> = ({ match }) => {
-    const [openRoom, setOpenRoom] = useState<OpenRoom>()
-    const router = useIonRouter()
-    const userContext = useContext(UserContext)
-    if (!userContext || !userContext.setUser || !userContext.user) {
-        router.push("/login", "forward", "push")
-        return
-    }
-    const { user, setUser } = userContext;
+const ChatPage: React.FC<ChatProps> = ({ match }) => {
+  const { user } = useContext(UserContext);
+  const chatId = match.params.id;
+  
+  const [otherUserId, setOtherUserId] = useState<string | null>(null);
+  const { userData: otherUser, loading: userLoading } = useUserData(otherUserId);
+  
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [newMessage, setNewMessage] = useState("");
+  const contentRef = useRef<HTMLIonContentElement>(null);
 
-    const initialLoad = async () => {
-        const res = await getRoom({ RoomId: match.params.id, RequesterId: socket.id as string })
-        if (!res.boo) {
-            alert("This room does not exist")
-            // Should route back to /home
-            router.push("/home", "root", "replace")
-            return
-        }
-        setOpenRoom(res.boo)
-    }
+  useEffect(() => {
+    if (!user || !chatId) return;
+    // Derive the other user's ID from the chat ID.
+    // Assumes chat ID is a composite of two sorted UIDs.
+    const participants = chatId.split('-');
+    const otherId = participants.find(p => p !== user.uid);
+    setOtherUserId(otherId || null);
+  }, [chatId, user]);
 
-    useEffect(() => {
-        initialLoad()
-    }, [])
+  useEffect(() => {
+    if (!chatId) return;
 
-    if (!openRoom) return <LoadingComponent choice="full_page" />
+    const db = getFirestore(app);
+    const messagesRef = collection(db, "chats", chatId, "messages");
+    const q = query(messagesRef, orderBy("timestamp", "asc"));
 
-    return (
-        <IonPage>
-            <IonHeader>
-                <IonToolbar>
-                    <IonAvatar slot="start"
-                        style={{
-                            width: "2.5rem",
-                            height: "2.5rem",
-                            margin: "0.5rem"
-                        }}
-                    >
-                        <img src={openRoom.UserImage} alt="" />
-                    </IonAvatar>
-                    <IonLabel>
-                        {openRoom.RoomName} <br />
-                        <span style={{
-                            fontSize: "0.7rem"
-                        }}>
-                            ID: {user ? user.UserId : openRoom.RoomId}
-                        </span>
-                    </IonLabel>
-                </IonToolbar>
-            </IonHeader>
-            <IonContent>
-				<div className="room-container">
-					<Room {...openRoom} />
-				</div>
-            </IonContent>
-        </IonPage>
-    )
-}
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const msgs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ChatMessage));
+      setMessages(msgs);
+      setTimeout(() => contentRef.current?.scrollToBottom(300), 100);
+    });
 
-export default ChatMode
+    return () => unsubscribe();
+  }, [chatId]);
+
+  const handleSendMessage = async () => {
+    if (newMessage.trim() === "" || !user || !chatId) return;
+
+    const db = getFirestore(app);
+    const messagesRef = collection(db, "chats", chatId, "messages");
+
+    await addDoc(messagesRef, {
+      senderId: user.uid,
+      text: newMessage,
+      timestamp: Date.now(), // Using client time for simplicity, serverTimestamp is better
+      type: 'text',
+    });
+
+    setNewMessage("");
+  };
+
+  return (
+    <IonPage>
+      <IonHeader>
+        <IonToolbar>
+          <IonButtons slot="start">
+            <IonBackButton defaultHref="/home" />
+          </IonButtons>
+          {userLoading ? <IonSpinner slot="start" /> : (
+            <>
+              <IonAvatar slot="start" className="chat-header-avatar">
+                <img src={otherUser?.photoURL} alt={otherUser?.displayName} />
+              </IonAvatar>
+              <IonTitle>{otherUser?.displayName || 'Chat'}</IonTitle>
+            </>
+          )}
+        </IonToolbar>
+      </IonHeader>
+      <IonContent ref={contentRef} className="ion-padding">
+        <div className="chat-messages-container">
+          {messages.map((msg) => (
+            <ChatMessageItem key={msg.id} message={msg} currentUserId={user!.uid} />
+          ))}
+        </div>
+      </IonContent>
+      <IonFooter>
+        <IonToolbar className="chat-input-toolbar">
+          <IonInput
+            value={newMessage}
+            onIonChange={(e) => setNewMessage(e.detail.value!)}
+            placeholder="Type a message..."
+            className="chat-input"
+            onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+          />
+          <IonButton fill="clear" slot="end" onClick={handleSendMessage} disabled={newMessage.trim() === ''}>
+            <IonIcon icon={sendOutline} />
+          </IonButton>
+        </IonToolbar>
+      </IonFooter>
+    </IonPage>
+  );
+};
+
+export default ChatPage;

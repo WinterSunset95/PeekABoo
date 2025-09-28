@@ -1,8 +1,22 @@
-.room-container {
-	width: 100%;
-	height: 100%;
-	gap: 0.5rem;
-	padding: 0.5rem;
-	display: flex;
-	flex-direction: column;
+.chat-header-avatar {
+  width: 36px;
+  height: 36px;
+  margin-left: 8px;
+}
+
+.chat-messages-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-input-toolbar {
+  --padding-start: 8px;
+  --padding-end: 8px;
+}
+
+.chat-input {
+  --background: var(--ion-color-light-tint);
+  border-radius: 20px;
+  --padding-start: 16px;
+  --padding-end: 16px;
 }

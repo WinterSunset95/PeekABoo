@@ -54,8 +54,7 @@ import HomePage from './pages/HomePage';
 import Search from './pages/Search';
 import MediaPage from './pages/MediaPage';
 import InfoMode from './pages/Info/InfoMode';
-import RoomMode from './pages/Info/RoomMode';
-import ChatMode from './pages/Info/ChatMode';
+import ChatPage from './pages/Info/ChatMode';
 import { getUpdates } from './lib/backendconnection';
 import { Directory, Filesystem } from '@capacitor/filesystem';
 import { getSettings } from './lib/storage';
@@ -189,9 +188,8 @@ const App: React.FC = () => {
     loadUpdates()
 
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setLoading(false);
-      console.log(user)
       setUser(user);
+      setLoading(false);
     });
 
     // Cleanup subscription on unmount
@@ -201,69 +199,74 @@ const App: React.FC = () => {
   return (
     <UserContext.Provider value={{ user, setUser, name }}>
     <IonApp>
-      {loading ? (
-        <IonPage>
-          <IonContent fullscreen>
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-              <IonSpinner />
-            </div>
-          </IonContent>
-        </IonPage>
-      ) : user ? (
-        <IonReactRouter>
-          <IonRouterOutlet>
+      <IonReactRouter>
+        <IonRouterOutlet>
+          {loading ? (
+            <IonPage>
+              <IonContent fullscreen>
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                  <IonSpinner />
+                </div>
+              </IonContent>
+            </IonPage>
+          ) : (
             <Switch>
-                <Route exact path="/login">
-                  <Redirect to="/home" />
-                </Route>
-                <Route exact path="/chat/:id" component={ChatMode}/>
-                <Route exact path="/user/:id" component={UserPage} />
-                <Route exact path="/:type/:id" component={InfoMode}/>
-                <Route exact path="/room/:type/:id" component={RoomMode}/>
-                <IonTabs>
-                  <IonRouterOutlet>
-                    <Redirect exact path='/' to="/home" />
-                    <Route exact path="/home">
-                      <HomePage />
-                    </Route>
-                    <Route exact path="/search">
-                      <Search />
-                    </Route>
-                    <Route exact path="/media">
-                      <MediaPage />
-                    </Route>
-                    <Route exact path="/settings">
-                      <SettingsPage />
-                    </Route>
-                  </IonRouterOutlet>
-
-                  <IonTabBar slot='bottom'>
-
-                    <IonTabButton tab='home' href='/home'>
-                      <IonIcon icon={chatbubbleEllipsesOutline}></IonIcon>
-                      <IonLabel>Home</IonLabel>
-                    </IonTabButton>
-                    <IonTabButton tab='search' href='/search'>
-                      <IonIcon icon={search}></IonIcon>
-                      <IonLabel>Search</IonLabel>
-                    </IonTabButton>
-                    <IonTabButton tab='media' href='/media'>
-                      <IonIcon icon={filmOutline}></IonIcon>
-                      <IonLabel>Media</IonLabel>
-                    </IonTabButton>
-                    <IonTabButton tab='settings' href='/settings'>
-                      <IonIcon icon={personOutline}></IonIcon>
-                      <IonLabel>Settings</IonLabel>
-                    </IonTabButton>
-
-                  </IonTabBar>
-                </IonTabs>
-              </Switch>
-          </IonRouterOutlet>
-        </IonReactRouter>
-      ) : (
-        <AuthComponent />
-      )}
+              {user ? (
+                <>
+                  <Route exact path="/login">
+                    <Redirect to="/home" />
+                  </Route>
+                  <Route exact path="/chat/:id" component={ChatPage}/>
+                  <Route exact path="/user/:id" component={UserPage} />
+                  <Route exact path="/:type/:id" component={InfoMode}/>
+                  <Route path="/">
+                    <IonTabs>
+                      <IonRouterOutlet>
+                        <Redirect exact path="/" to="/home" />
+                        <Route exact path="/home">
+                          <HomePage />
+                        </Route>
+                        <Route exact path="/search">
+                          <Search />
+                        </Route>
+                        <Route exact path="/media">
+                          <MediaPage />
+                        </Route>
+                        <Route exact path="/settings">
+                          <SettingsPage />
+                        </Route>
+                      </IonRouterOutlet>
+                      <IonTabBar slot="bottom">
+                        <IonTabButton tab="home" href="/home">
+                          <IonIcon icon={chatbubbleEllipsesOutline} />
+                          <IonLabel>Home</IonLabel>
+                        </IonTabButton>
+                        <IonTabButton tab="search" href="/search">
+                          <IonIcon icon={search} />
+                          <IonLabel>Search</IonLabel>
+                        </IonTabButton>
+                        <IonTabButton tab="media" href="/media">
+                          <IonIcon icon={filmOutline} />
+                          <IonLabel>Media</IonLabel>
+                        </IonTabButton>
+                        <IonTabButton tab="settings" href="/settings">
+                          <IonIcon icon={personOutline} />
+                          <IonLabel>Settings</IonLabel>
+                        </IonTabButton>
+                      </IonTabBar>
+                    </IonTabs>
+                  </Route>
+                </>
+              ) : (
+                <>
+                  <Route exact path="/login" component={AuthComponent} />
+                  <Redirect to="/login" />
+                </>
+              )}
+            </Switch>
+          )}
+        </IonRouterOutlet>
+      </IonReactRouter>
     </IonApp>
     </UserContext.Provider>
   )

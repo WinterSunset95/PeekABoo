@@ -38,3 +38,21 @@ export interface Upload {
   uploadedAt: number
 }
 
+// /chats/{chatId}
+export interface Chat {
+  id: string,
+  participants: string[], // array of user uids
+  lastMessage?: ChatMessage
+}
+
+// /chats/{chatId}/messages/{messageId}
+export interface ChatMessage {
+  id: string,
+  senderId: string,
+  text: string,
+  timestamp: number,
+  type: "text" | "image" | "video", // extendable
+  mediaUrl?: string,
+  replyingTo?: string // messageId of message being replied to
+}
+
