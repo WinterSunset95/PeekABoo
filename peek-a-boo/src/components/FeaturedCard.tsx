@@ -9,12 +9,10 @@ interface FeaturedCardProps {
 }
 
 const FeaturedCard: React.FC<FeaturedCardProps> = ({ item }) => {
-  const backgroundStyle = {
-    backgroundImage: `linear-gradient(to top, rgba(0, 0, 0, 0.9) 10%, transparent 90%), url(${item.Poster})`,
-  };
-
   return (
-    <IonCard className="featured-card" style={backgroundStyle} routerLink={`/${item.Type}/${item.Id}`}>
+    <IonCard className="featured-card" routerLink={`/${item.Type}/${item.Id}`}>
+      <IonImg src={item.Poster} className="featured-card-image" />
+      <div className="featured-card-gradient" />
       <div className="featured-card-content">
         <IonCardHeader>
           <IonCardTitle>{item.Title}</IonCardTitle>
