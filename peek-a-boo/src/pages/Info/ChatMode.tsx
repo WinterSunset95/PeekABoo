@@ -15,9 +15,9 @@ import {
   IonTitle,
   IonToolbar,
 } from "@ionic/react";
-import { UserContext } from "../../App";
-import "./ChatMode.css";
-import { ChatMessage } from "../../lib/models";
+import { UserContext } from "../App";
+import "./ChatPage.css";
+import { ChatMessage } from "../lib/models";
 import {
   addDoc,
   collection,
@@ -26,9 +26,9 @@ import {
   orderBy,
   query,
 } from "firebase/firestore";
-import { app } from "../../lib/firebase";
-import { useUserData } from "../../hooks/useUserData";
-import ChatMessageItem from "../../components/ChatMessageItem";
+import { app } from "../lib/firebase";
+import { useUserData } from "../hooks/useUserData";
+import ChatMessageItem from "../components/ChatMessageItem";
 import { sendOutline } from "ionicons/icons";
 
 interface ChatProps extends RouteComponentProps<{
@@ -68,7 +68,8 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
     return () => unsubscribe();
   }, [convoId]);
 
-  const handleSendMessage = async () => {
+  const handleSendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
     if (newMessage.trim() === "" || !user || !convoId) return;
 
     const db = getFirestore(app);
@@ -110,16 +111,17 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
       </IonContent>
       <IonFooter>
         <IonToolbar className="chat-input-toolbar">
-          <IonInput
-            value={newMessage}
-            onIonChange={(e) => setNewMessage(e.detail.value!)}
-            placeholder="Type a message..."
-            className="chat-input"
-            onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-          />
-          <IonButton fill="clear" slot="end" onClick={handleSendMessage} disabled={newMessage.trim() === ''}>
-            <IonIcon icon={sendOutline} />
-          </IonButton>
+          <form className="chat-form" onSubmit={handleSendMessage}>
+            <IonInput
+              value={newMessage}
+              onIonChange={(e) => setNewMessage(e.detail.value!)}
+              placeholder="Type a message..."
+              className="chat-input"
+            />
+            <IonButton type="submit" fill="clear" slot="end" disabled={newMessage.trim() === ''}>
+              <IonIcon icon={sendOutline} />
+            </IonButton>
+          </form>
         </IonToolbar>
       </IonFooter>
     </IonPage>

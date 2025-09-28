@@ -54,7 +54,7 @@ import HomePage from './pages/HomePage';
 import Search from './pages/Search';
 import MediaPage from './pages/MediaPage';
 import InfoMode from './pages/Info/InfoMode';
-import ChatPage from './pages/Info/ChatMode';
+import ChatPage from './pages/ChatPage';
 import { getUpdates } from './lib/backendconnection';
 import { Directory, Filesystem } from '@capacitor/filesystem';
 import { getSettings } from './lib/storage';
