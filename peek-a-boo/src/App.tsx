@@ -91,9 +91,9 @@ const getFirebaseAuth = async () => {
 setupIonicReact();
 
 export const UserContext = createContext<{
-	user: User | null,
-	setUser: React.Dispatch<React.SetStateAction<User | null>>,
-	name: React.MutableRefObject<string>
+  user: User | null,
+  setUser: React.Dispatch<React.SetStateAction<User | null>>,
+  name: React.MutableRefObject<string>
 }>({
   user: null,
   setUser: () => {},
@@ -101,163 +101,163 @@ export const UserContext = createContext<{
 })
 
 const App: React.FC = () => {
-	const name = useRef<string>("")
-	const [user, setUser] = useState<User | null>(null)
-	const [showAlert, controls] = useIonAlert()
+  const name = useRef<string>("")
+  const [user, setUser] = useState<User | null>(null)
+  const [showAlert, controls] = useIonAlert()
 
-	if (Capacitor.getPlatform() != 'web') {
-		StatusBar.setOverlaysWebView({ overlay: false })
-	}
+  if (Capacitor.getPlatform() != 'web') {
+    StatusBar.setOverlaysWebView({ overlay: false })
+  }
 
-	const checkPermissions = async () => {
-		const res = await Filesystem.checkPermissions()
-		if (res.publicStorage != 'granted') {
-			const data = await Filesystem.requestPermissions()
-			if (data.publicStorage != 'granted') {
-				showAlert("Storage permissions are necessary for automatic updates and file downloads!!")
-			}
-		}
-	}
+  const checkPermissions = async () => {
+    const res = await Filesystem.checkPermissions()
+    if (res.publicStorage != 'granted') {
+      const data = await Filesystem.requestPermissions()
+      if (data.publicStorage != 'granted') {
+        showAlert("Storage permissions are necessary for automatic updates and file downloads!!")
+      }
+    }
+  }
 
-	const loadUpdates = async () => {
-		const res = await getUpdates()
-		if (appVersion != res.latest.Version) {
-			showAlert({
-				header: `A new version (${res.latest.Version}) is available`,
-				message: `
-				ChangeLogs: \n\n
-				${res.latest.ChangeLogs}
-				`,
-				buttons: [
-					{
-						text: 'Ignore',
-						role: 'cancel',
-						handler: () => {
-							console.log("Cancelled")
-						}
-					},
-					{
-						text: 'Update',
-						role: 'accept',
-						handler: () => {
-							downloadUpdate(res.latest.Apk)
-						}
-					}
-				]
-			})
-		}
-	}
+  const loadUpdates = async () => {
+    const res = await getUpdates()
+    if (appVersion != res.latest.Version) {
+      showAlert({
+        header: `A new version (${res.latest.Version}) is available`,
+        message: `
+        ChangeLogs: \n\n
+        ${res.latest.ChangeLogs}
+        `,
+        buttons: [
+          {
+            text: 'Ignore',
+            role: 'cancel',
+            handler: () => {
+              console.log("Cancelled")
+            }
+          },
+          {
+            text: 'Update',
+            role: 'accept',
+            handler: () => {
+              downloadUpdate(res.latest.Apk)
+            }
+          }
+        ]
+      })
+    }
+  }
 
-	const downloadUpdate = async (filepath: string) => {
-		const filenameArray = filepath.split("/")
-		const filename = filenameArray[filenameArray.length-1]
-		let url = ""
-		const { boo } = await getSettings()
-		if (filepath.includes("http")) {
-			url = filepath
-		} else {
-			url = `${boo.Server}${filepath}`
-		}
-		console.log(filename)
-		const res = await Filesystem.downloadFile({
-			method: 'GET',
-			url: url,
-			directory: Directory.ExternalStorage,
-			path: `Download/${filename}`
-		})
-		if (res.path) {
-			showAlert({
-				header: "Download successful!",
-				message: `File was successfully downloaded to: ${res.path}. Install now?`,
-				buttons: [
-					{
-						text: 'Later',
-						role: 'cancel',
-						handler: () => {
-							console.log("Will install later")
-						}
-					},
-					{
-						text: 'Install',
-						role: 'accept',
-						handler: async () => {
-							try {
-								await FileOpener.open({
-									filePath: res.path as string
-								})
-							} catch (e) {
-								console.log(e)
-							}
-						}
-					},
-				]
-			})
-		} else {
-			showAlert("Failed to download file")
-		}
-	}
+  const downloadUpdate = async (filepath: string) => {
+    const filenameArray = filepath.split("/")
+    const filename = filenameArray[filenameArray.length-1]
+    let url = ""
+    const { boo } = await getSettings()
+    if (filepath.includes("http")) {
+      url = filepath
+    } else {
+      url = `${boo.Server}${filepath}`
+    }
+    console.log(filename)
+    const res = await Filesystem.downloadFile({
+      method: 'GET',
+      url: url,
+      directory: Directory.ExternalStorage,
+      path: `Download/${filename}`
+    })
+    if (res.path) {
+      showAlert({
+        header: "Download successful!",
+        message: `File was successfully downloaded to: ${res.path}. Install now?`,
+        buttons: [
+          {
+            text: 'Later',
+            role: 'cancel',
+            handler: () => {
+              console.log("Will install later")
+            }
+          },
+          {
+            text: 'Install',
+            role: 'accept',
+            handler: async () => {
+              try {
+                await FileOpener.open({
+                  filePath: res.path as string
+                })
+              } catch (e) {
+                console.log(e)
+              }
+            }
+          },
+        ]
+      })
+    } else {
+      showAlert("Failed to download file")
+    }
+  }
 
-	useEffect(() => {
-		document.title = "PeekABoo"
-		checkPermissions()
-		loadUpdates()
-	}, [])
+  useEffect(() => {
+    document.title = "PeekABoo"
+    checkPermissions()
+    loadUpdates()
+  }, [])
 
-	return (
-		<UserContext.Provider value={{ user, setUser, name }}>
-		<IonApp>
-			<IonReactRouter>
-				<IonRouterOutlet>
-					<Switch>
-						<Route exact path="/chat/:id" component={ChatMode}/>
+  return (
+    <UserContext.Provider value={{ user, setUser, name }}>
+    <IonApp>
+      <IonReactRouter>
+        <IonRouterOutlet>
+          <Switch>
+            <Route exact path="/chat/:id" component={ChatMode}/>
             <Route exact path="/user/:id" component={UserPage} />
-						<Route exact path="/:type/:id" component={InfoMode}/>
-						<Route exact path="/room/:type/:id" component={RoomMode}/>
-						<Route exact path="/login" component={AuthComponent}/>
-						<IonTabs>
-							<IonRouterOutlet>
-								<Redirect exact path='/' to="/home" />
-								<Route exact path="/home">
-									<HomePage />
-								</Route>
-								<Route exact path="/search">
-									<Search />
-								</Route>
-								<Route exact path="/media">
-									<MediaPage />
-								</Route>
-								<Route exact path="/settings">
-									<SettingsPage />
-								</Route>
-							</IonRouterOutlet>
+            <Route exact path="/:type/:id" component={InfoMode}/>
+            <Route exact path="/room/:type/:id" component={RoomMode}/>
+            <Route exact path="/login" component={AuthComponent}/>
+            <IonTabs>
+              <IonRouterOutlet>
+                <Redirect exact path='/' to="/home" />
+                <Route exact path="/home">
+                  <HomePage />
+                </Route>
+                <Route exact path="/search">
+                  <Search />
+                </Route>
+                <Route exact path="/media">
+                  <MediaPage />
+                </Route>
+                <Route exact path="/settings">
+                  <SettingsPage />
+                </Route>
+              </IonRouterOutlet>
 
-							<IonTabBar slot='bottom'>
+              <IonTabBar slot='bottom'>
 
-								<IonTabButton tab='home' href='/home'>
-									<IonIcon icon={chatbubbleEllipsesOutline}></IonIcon>
-									<IonLabel>Home</IonLabel>
-								</IonTabButton>
-								<IonTabButton tab='search' href='/search'>
-									<IonIcon icon={search}></IonIcon>
-									<IonLabel>Search</IonLabel>
-								</IonTabButton>
-								<IonTabButton tab='media' href='/media'>
-									<IonIcon icon={filmOutline}></IonIcon>
-									<IonLabel>Media</IonLabel>
-								</IonTabButton>
-								<IonTabButton tab='settings' href='/settings'>
-									<IonIcon icon={personOutline}></IonIcon>
-									<IonLabel>Settings</IonLabel>
-								</IonTabButton>
+                <IonTabButton tab='home' href='/home'>
+                  <IonIcon icon={chatbubbleEllipsesOutline}></IonIcon>
+                  <IonLabel>Home</IonLabel>
+                </IonTabButton>
+                <IonTabButton tab='search' href='/search'>
+                  <IonIcon icon={search}></IonIcon>
+                  <IonLabel>Search</IonLabel>
+                </IonTabButton>
+                <IonTabButton tab='media' href='/media'>
+                  <IonIcon icon={filmOutline}></IonIcon>
+                  <IonLabel>Media</IonLabel>
+                </IonTabButton>
+                <IonTabButton tab='settings' href='/settings'>
+                  <IonIcon icon={personOutline}></IonIcon>
+                  <IonLabel>Settings</IonLabel>
+                </IonTabButton>
 
-							</IonTabBar>
-						</IonTabs>
-					</Switch>
-				</IonRouterOutlet>
-			</IonReactRouter>
-		</IonApp>
-		</UserContext.Provider>
-	)
+              </IonTabBar>
+            </IonTabs>
+          </Switch>
+        </IonRouterOutlet>
+      </IonReactRouter>
+    </IonApp>
+    </UserContext.Provider>
+  )
 }
 
 export default App;
