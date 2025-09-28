@@ -50,7 +50,7 @@ export interface ChatMessage {
   id: string,
   senderId: string,
   text: string,
-  timestamp: number,
+  timestamp: any, // Firebase server timestamp
   type: "text" | "image" | "video", // extendable
   mediaUrl?: string,
   replyingTo?: string // messageId of message being replied to
