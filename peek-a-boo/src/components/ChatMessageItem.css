@@ -49,9 +49,6 @@
 .chat-timestamp {
   font-size: 0.7rem;
   color: rgba(255, 255, 255, 0.7);
-  position: absolute;
-  bottom: 4px;
-  right: 12px;
   margin: 0;
 }
 
