@@ -25,6 +25,7 @@ import {
   onSnapshot,
   orderBy,
   query,
+  serverTimestamp,
 } from "firebase/firestore";
 import { app } from "../lib/firebase";
 import { useUserData } from "../hooks/useUserData";
@@ -78,7 +79,7 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
     await addDoc(messagesRef, {
       senderId: user.uid,
       text: newMessage,
-      timestamp: Date.now(), // Using client time for simplicity, serverTimestamp is better
+      timestamp: serverTimestamp(),
       type: 'text',
     });
 
@@ -117,8 +118,9 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
               onIonChange={(e) => setNewMessage(e.detail.value!)}
               placeholder="Type a message..."
               className="chat-input"
+              disabled={!convoId}
             />
-            <IonButton type="submit" fill="clear" slot="end" disabled={newMessage.trim() === ''}>
+            <IonButton type="submit" fill="clear" slot="end" disabled={newMessage.trim() === '' || !convoId}>
               <IonIcon icon={sendOutline} />
             </IonButton>
           </form>
