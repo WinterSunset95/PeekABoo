@@ -3,6 +3,7 @@
   align-items: flex-end;
   margin-bottom: 0.5rem;
   max-width: 80%;
+  user-select: none; /* Prevent text selection during swipe */
 }
 
 .chat-message-wrapper.sent {
@@ -52,4 +53,29 @@
   bottom: 4px;
   right: 12px;
   margin: 0;
+}
+
+.reply-context {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-left: 3px solid var(--ion-color-secondary);
+  border-radius: 4px;
+  padding: 4px 8px;
+  margin-bottom: 6px;
+  max-width: 100%;
+}
+
+.reply-sender {
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: var(--ion-color-secondary);
+  margin: 0;
+}
+
+.reply-text {
+  font-size: 0.9rem;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0.9;
 }

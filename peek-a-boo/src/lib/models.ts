@@ -48,6 +48,13 @@ export interface Chat {
 }
 
 // /chats/{chatId}/messages/{messageId}
+export interface ReplyContext {
+  messageId: string;
+  senderId: string;
+  senderName: string;
+  text: string;
+}
+
 export interface ChatMessage {
   id: string,
   senderId: string,
@@ -55,6 +62,6 @@ export interface ChatMessage {
   timestamp: Timestamp | number | null,
   type: "text" | "image" | "video", // extendable
   mediaUrl?: string,
-  replyingTo?: string // messageId of message being replied to
+  replyContext?: ReplyContext
 }
 
