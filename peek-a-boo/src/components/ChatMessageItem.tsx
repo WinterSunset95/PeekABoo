@@ -1,5 +1,5 @@
 import React from 'react';
-import { IonAvatar, useIonGesture } from '@ionic/react';
+import { IonAvatar, createGesture } from '@ionic/react';
 import { ChatMessage } from '../lib/models';
 import './ChatMessageItem.css';
 import { useUserData } from '../hooks/useUserData';
@@ -15,32 +15,40 @@ const ChatMessageItem: React.FC<ChatMessageItemProps> = ({ message, currentUserI
   const { userData, loading } = useUserData(isSender ? null : message.senderId);
   const itemRef = React.useRef<HTMLDivElement>(null);
 
-  const gesture = useIonGesture(itemRef, {
-    gestureName: 'swipe-to-reply',
-    direction: 'x',
-    onMove: (ev) => {
-      if (itemRef.current && ev.deltaX > 0) { // Only track right-swipes
-        itemRef.current.style.transform = `translateX(${ev.deltaX}px)`;
-      }
-    },
-    onEnd: (ev) => {
-      if (itemRef.current) {
-        itemRef.current.style.transition = 'transform 0.2s ease-out';
-        if (ev.deltaX > 80) { // Threshold met
-          onReply(message);
-        }
-        // Reset position
-        itemRef.current.style.transform = 'translateX(0px)';
-        setTimeout(() => {
-          if(itemRef.current) itemRef.current.style.transition = '';
-        }, 200)
-      }
-    },
-  });
-
   React.useEffect(() => {
+    if (!itemRef.current) return;
+
+    const gesture = createGesture({
+      el: itemRef.current,
+      gestureName: 'swipe-to-reply',
+      direction: 'x',
+      onMove: (ev) => {
+        // Only track right-swipes with a reasonable limit
+        if (itemRef.current && ev.deltaX > 0) {
+          itemRef.current.style.transform = `translateX(${Math.min(ev.deltaX, 150)}px)`;
+        }
+      },
+      onEnd: (ev) => {
+        if (itemRef.current) {
+          itemRef.current.style.transition = 'transform 0.2s ease-out';
+          if (ev.deltaX > 80) { // Threshold met
+            onReply(message);
+          }
+          // Reset position
+          itemRef.current.style.transform = 'translateX(0px)';
+          setTimeout(() => {
+            if (itemRef.current) itemRef.current.style.transition = '';
+          }, 200);
+        }
+      },
+    });
+
     gesture.enable(true);
-  }, []);
+
+    return () => {
+      gesture.destroy();
+    };
+  }, [message, onReply]);
 
   return (
     <div ref={itemRef} className={`chat-message-wrapper ${isSender ? 'sent' : 'received'}`}>
