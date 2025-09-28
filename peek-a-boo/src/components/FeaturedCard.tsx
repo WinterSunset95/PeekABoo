@@ -1,5 +1,5 @@
 import React from 'react';
-import { IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonButton, IonIcon } from '@ionic/react';
+import { IonCard, IonImg, IonCardContent, IonCardHeader, IonCardTitle, IonButton, IonIcon } from '@ionic/react';
 import { MovieInfo } from '../lib/types';
 import './FeaturedCard.css';
 import { playCircleOutline } from 'ionicons/icons';
