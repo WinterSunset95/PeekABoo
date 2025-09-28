@@ -1,5 +1,5 @@
 import React from 'react';
-import { IonAvatar, createGesture } from '@ionic/react';
+import { IonAvatar, createGesture, IonImg } from '@ionic/react';
 import { ChatMessage } from '../lib/models';
 import './ChatMessageItem.css';
 import { useUserData } from '../hooks/useUserData';
@@ -64,12 +64,24 @@ const ChatMessageItem: React.FC<ChatMessageItemProps> = ({ message, currentUserI
             <p className="reply-text">{message.replyContext.text}</p>
           </div>
         )}
-        <p className="chat-text">{message.text}</p>
-        <p className="chat-timestamp">
-          {message.timestamp ? new Date(
-            message.timestamp.toMillis ? message.timestamp.toMillis() : message.timestamp
-          ).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
-        </p>
+        <div className="chat-content">
+          {message.type === 'image' && message.mediaUrl && (
+            <IonImg src={message.mediaUrl} className="chat-media-image" />
+          )}
+          {message.type === 'video' && message.mediaUrl && (
+            <video src={message.mediaUrl} controls className="chat-media-video" />
+          )}
+          {message.type === 'audio' && message.mediaUrl && (
+            <audio src={message.mediaUrl} controls className="chat-media-audio" />
+          )}
+          {message.type === 'text' && <p className="chat-text">{message.text}</p>}
+
+          <span className="chat-timestamp">
+            {message.timestamp ? new Date(
+              message.timestamp.toMillis ? message.timestamp.toMillis() : message.timestamp
+            ).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+          </span>
+        </div>
       </div>
     </div>
   );

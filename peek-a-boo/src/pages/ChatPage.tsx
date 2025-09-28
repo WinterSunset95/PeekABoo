@@ -1,6 +1,7 @@
 import { RouteComponentProps } from "react-router";
 import { useContext, useEffect, useRef, useState } from "react";
 import {
+  IonActionSheet,
   IonAvatar,
   IonBackButton,
   IonButton,
@@ -14,6 +15,7 @@ import {
   IonSpinner,
   IonTitle,
   IonToolbar,
+  useIonToast,
 } from "@ionic/react";
 import { UserContext } from "../App";
 import "./ChatPage.css";
@@ -28,9 +30,10 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { app } from "../lib/firebase";
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { useUserData } from "../hooks/useUserData";
 import ChatMessageItem from "../components/ChatMessageItem";
-import { closeCircleOutline, sendOutline } from "ionicons/icons";
+import { attachOutline, closeCircleOutline, sendOutline } from "ionicons/icons";
 
 interface ChatProps extends RouteComponentProps<{
   id: string; // This will be the chat ID
@@ -46,7 +49,10 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [replyingTo, setReplyingTo] = useState<ChatMessage | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [showToast] = useIonToast();
   const contentRef = useRef<HTMLIonContentElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!user || !chatId) return;
@@ -70,20 +76,19 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
     return () => unsubscribe();
   }, [convoId]);
 
-  const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const sendTextMessage = async () => {
     if (newMessage.trim() === "" || !user || !convoId) return;
-
+    
     const db = getFirestore(app);
     const messagesRef = collection(db, "chats", convoId, "messages");
-
+    
     const messageData: Partial<ChatMessage> = {
       senderId: user.uid,
       text: newMessage,
       timestamp: serverTimestamp(),
       type: 'text',
     };
-
+    
     if (replyingTo) {
       messageData.replyContext = {
         messageId: replyingTo.id,
@@ -92,11 +97,62 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
         text: replyingTo.text.length > 100 ? `${replyingTo.text.substring(0, 97)}...` : replyingTo.text
       };
     }
-
+    
     await addDoc(messagesRef, messageData);
+  }
 
+  const sendMediaMessage = async (url: string, type: 'image' | 'video' | 'audio', fileName: string) => {
+    if (!user || !convoId) return;
+
+    const db = getFirestore(app);
+    const messagesRef = collection(db, "chats", convoId, "messages");
+
+    await addDoc(messagesRef, {
+      senderId: user.uid,
+      text: fileName,
+      timestamp: serverTimestamp(),
+      type: type,
+      mediaUrl: url,
+    });
+  };
+
+  const handleSendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await sendTextMessage();
     setNewMessage("");
     setReplyingTo(null);
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user || !convoId) return;
+
+    const fileType = file.type.split('/')[0] as 'image' | 'video' | 'audio';
+    if (!['image', 'video', 'audio'].includes(fileType)) {
+      showToast({ message: 'Unsupported file type.', duration: 3000, color: 'danger' });
+      return;
+    }
+
+    setIsUploading(true);
+    const storage = getStorage(app);
+    const filePath = `chats/${convoId}/${Date.now()}-${file.name}`;
+    const storageRef = ref(storage, filePath);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    uploadTask.on('state_changed', 
+      null, 
+      (error) => {
+        console.error("Upload failed:", error);
+        setIsUploading(false);
+        showToast({ message: `Upload failed: ${error.message}`, duration: 3000, color: 'danger' });
+      }, 
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          sendMediaMessage(downloadURL, fileType, file.name);
+          setIsUploading(false);
+        });
+      }
+    );
   };
 
   return (
@@ -138,15 +194,19 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
               </div>
             )}
             <form className="chat-form" onSubmit={handleSendMessage}>
+              <IonButton fill="clear" slot="start" onClick={() => fileInputRef.current?.click()} disabled={isUploading}>
+                <IonIcon icon={attachOutline} />
+              </IonButton>
+              <input type="file" ref={fileInputRef} hidden onChange={handleFileSelect} accept="image/*,video/*,audio/*" />
               <IonInput
                 value={newMessage}
                 onIonChange={(e) => setNewMessage(e.detail.value!)}
                 placeholder="Type a message..."
                 className="chat-input"
-                disabled={!convoId}
+                disabled={!convoId || isUploading}
               />
-              <IonButton type="submit" fill="clear" slot="end" disabled={newMessage.trim() === '' || !convoId}>
-                <IonIcon icon={sendOutline} />
+              <IonButton type="submit" fill="clear" slot="end" disabled={newMessage.trim() === '' || !convoId || isUploading}>
+                {isUploading ? <IonSpinner name="crescent" /> : <IonIcon icon={sendOutline} />}
               </IonButton>
             </form>
           </div>

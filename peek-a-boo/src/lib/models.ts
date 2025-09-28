@@ -60,7 +60,7 @@ export interface ChatMessage {
   senderId: string,
   text: string,
   timestamp: Timestamp | number | null,
-  type: "text" | "image" | "video", // extendable
+  type: "text" | "image" | "video" | "audio", // extendable
   mediaUrl?: string,
   replyContext?: ReplyContext
 }

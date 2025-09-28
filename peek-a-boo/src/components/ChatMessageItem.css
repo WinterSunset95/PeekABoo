@@ -27,6 +27,7 @@
   border-radius: 18px;
   color: white;
   position: relative;
+  overflow: hidden; /* To keep rounded corners for images */
 }
 
 .chat-bubble.sent {
@@ -39,17 +40,52 @@
   border-bottom-left-radius: 4px;
 }
 
+.chat-content {
+  position: relative;
+}
+
 .chat-text {
   margin: 0;
-  padding-right: 3rem;
+  padding-right: 3.5rem; /* Space for timestamp */
   word-wrap: break-word;
   white-space: pre-wrap;
 }
 
 .chat-timestamp {
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.8);
+  position: absolute;
+  bottom: 0;
+  right: 0;
   margin: 0;
+}
+
+/* For text messages, the timestamp is inside the text flow box */
+.chat-text + .chat-timestamp {
+  position: relative;
+  float: right;
+  margin-left: 8px;
+  margin-top: 4px;
+}
+
+.chat-media-image {
+  max-width: 250px;
+  display: block;
+}
+
+.chat-media-video,
+.chat-media-audio {
+  width: 100%;
+  max-width: 250px;
+  display: block;
+}
+
+.chat-media-image + .chat-timestamp,
+.chat-media-video + .chat-timestamp,
+.chat-media-audio + .chat-timestamp {
+  background: rgba(0, 0, 0, 0.4);
+  padding: 1px 5px;
+  border-radius: 8px;
 }
 
 .reply-context {
