@@ -51,7 +51,7 @@ import { appVersion, Settings } from './lib/types';
 import SettingsPage from './pages/Settings';
 import HomePage from './pages/HomePage';
 import Search from './pages/Search';
-import Rooms from './pages/Rooms';
+import MediaPage from './pages/MediaPage';
 import MovieInfoPage from './pages/Info/MovieInfo';
 import TvInfoPage from './pages/Info/TvInfo';
 import InfoMode from './pages/Info/InfoMode';
@@ -223,8 +223,8 @@ const App: React.FC = () => {
 								<Route exact path="/search">
 									<Search />
 								</Route>
-								<Route exact path="/rooms">
-									<Rooms />
+								<Route exact path="/media">
+									<MediaPage />
 								</Route>
 								<Route exact path="/settings">
 									<SettingsPage />
@@ -241,7 +241,7 @@ const App: React.FC = () => {
 									<IonIcon icon={search}></IonIcon>
 									<IonLabel>Search</IonLabel>
 								</IonTabButton>
-								<IonTabButton tab='rooms' href='/rooms'>
+								<IonTabButton tab='media' href='/media'>
 									<IonIcon icon={filmOutline}></IonIcon>
 									<IonLabel>Media</IonLabel>
 								</IonTabButton>
