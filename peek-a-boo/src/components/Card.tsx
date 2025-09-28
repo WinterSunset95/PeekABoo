@@ -4,7 +4,7 @@ import {
 	IonCardTitle,
 	IonImg,
 } from "@ionic/react"
-import { MovieSearchResult } from "../lib/types"
+import { MovieInfo, MovieSearchResult } from "../lib/types"
 
 import AnimeInfoPage from '../pages/Info/AnimeInfo'
 import './Card.css'
@@ -12,7 +12,7 @@ import MovieInfoPage from "../pages/Info/MovieInfo"
 import TvInfoPage from "../pages/Info/TvInfo"
 import { Link } from "react-router-dom"
 
-const Card: React.FC<MovieSearchResult> = (item) => {
+const Card: React.FC<MovieInfo> = (item) => {
 	return (
 		<IonCard
 			className="item-card"

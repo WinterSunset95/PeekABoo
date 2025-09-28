@@ -38,6 +38,14 @@ export const getFeaturedMovie = async (): Promise<PeekABoo<MediaInfo | string>> 
 	}
 }
 
+export const getSimilarMovies = async (id: string): Promise<PeekABoo<MovieInfo[]>> => {
+  return await movieProvider.getSimilarMovies(id);
+}
+
+export const getSimilarTvShows = async (id: string): Promise<PeekABoo<MovieInfo[]>> => {
+  return await movieProvider.getSimilarTvShows(id);
+}
+
 // getTrendingMovies() returns an array of objects of type MovieSearchResult wrapped by a PeekABoo object
 export const getTrendingMovies = async (): Promise<PeekABoo<MovieInfo[]>> => {
 	return await movieProvider.getTrendingMovies()

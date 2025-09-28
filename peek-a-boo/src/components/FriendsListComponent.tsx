@@ -47,7 +47,7 @@ const FriendItem: React.FC<FriendItemProps> = ({ friend }) => {
   }
 
   return (
-    <IonItem>
+    <IonItem routerLink={`/chat/${friend.uid}`}>
       <IonAvatar slot="start">
         <img src={userData.photoURL} alt={userData.displayName} />
       </IonAvatar>

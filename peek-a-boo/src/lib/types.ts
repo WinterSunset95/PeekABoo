@@ -216,6 +216,7 @@ export interface TvInfo extends MovieInfo {
 }
 
 export interface MediaInfo extends MovieInfo {
+  TmdbMovieInfo?: TmdbMovieInfo,
 	AnimeEpisodes?: IAnimeEpisode[],
 	TvShowSeason?: TvSeason[],
 }

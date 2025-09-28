@@ -6,7 +6,7 @@ import {
 	IonToolbar
 } from '@ionic/react';
 import { Swiper, SwiperRef, SwiperSlide } from 'swiper/react';
-import { MovieSearchResult } from '../lib/types';
+import { MovieInfo, MovieSearchResult } from '../lib/types';
 import Card from './Card';
 import 'swiper/css'
 import 'swiper/css/bundle'
@@ -14,7 +14,7 @@ import { useEffect, useRef } from 'react';
 import { AutoplayOptions } from 'swiper/types';
 import { Autoplay, Navigation, Zoom } from 'swiper/modules';
 
-const List: React.FC<MovieSearchResult[]> = (list) => {
+const List: React.FC<MovieInfo[]> = (list) => {
 	const swiper = useRef<SwiperRef>(null)
 	useEffect(() => {
 		const swiperRef = swiper.current?.swiper

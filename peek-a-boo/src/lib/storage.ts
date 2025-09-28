@@ -17,7 +17,7 @@ export const getSettings = async (): Promise<PeekABoo<Settings>> => {
 
 export const resetSettings = async (): Promise<PeekABoo<Settings>> => {
 	const settings: Settings = {
-		AnimeType: "adfree",
+		AnimeType: "ad",
 		AnimeSource: "gogo",
 		MovieSource: "tmdb",
 		Server: "http://65.1.92.65"
