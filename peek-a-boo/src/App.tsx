@@ -199,17 +199,17 @@ const App: React.FC = () => {
   return (
     <UserContext.Provider value={{ user, setUser, name }}>
     <IonApp>
-      <IonReactRouter>
-        <IonRouterOutlet>
-          {loading ? (
-            <IonPage>
-              <IonContent fullscreen>
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                  <IonSpinner />
-                </div>
-              </IonContent>
-            </IonPage>
-          ) : (
+      {loading ? (
+        <IonPage>
+          <IonContent fullscreen>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+              <IonSpinner />
+            </div>
+          </IonContent>
+        </IonPage>
+      ) : (
+        <IonReactRouter>
+          <IonRouterOutlet>
             <Switch>
               {user ? (
                 <>
@@ -264,9 +264,9 @@ const App: React.FC = () => {
                 </>
               )}
             </Switch>
-          )}
-        </IonRouterOutlet>
-      </IonReactRouter>
+          </IonRouterOutlet>
+        </IonReactRouter>
+      )}
     </IonApp>
     </UserContext.Provider>
   )
