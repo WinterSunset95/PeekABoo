@@ -36,7 +36,7 @@ import ChatMessageItem from "../components/ChatMessageItem";
 import { attachOutline, closeCircleOutline, sendOutline } from "ionicons/icons";
 import { PlaybackState } from "../lib/models";
 import { database } from "../lib/firebase";
-import { ref, onValue, set, serverTimestamp, off } from "firebase/database";
+import { ref, onValue, set, serverTimestamp as rtdbServerTimestamp, off } from "firebase/database";
 import WatchTogetherPlayer from "../components/WatchTogetherPlayer";
 
 interface ChatProps extends RouteComponentProps<{
@@ -180,7 +180,7 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
       isPlaying: false,
       progress: 0,
       lastUpdatedBy: user.uid,
-      timestamp: serverTimestamp(),
+      timestamp: rtdbServerTimestamp(),
     };
     set(sessionRef, initialState);
   };
