@@ -210,15 +210,15 @@ const App: React.FC = () => {
       ) : (
         <IonReactRouter>
           <IonRouterOutlet>
+            <Route exact path="/user/:id" component={UserPage} />
+            <Route exact path="/chat/:id" component={ChatPage}/>
+            <Route exact path="/:type(movie|tv|anime)/:id" component={InfoMode}/>
             <Switch>
               {user ? (
                 <>
                   <Route exact path="/login">
                     <Redirect to="/home" />
                   </Route>
-                  <Route exact path="/user/:id" component={UserPage} />
-                  <Route exact path="/chat/:id" component={ChatPage}/>
-                  <Route exact path="/:type(movie|tv|anime)/:id" component={InfoMode}/>
                   <Route path="/">
                     <IonTabs>
                       <IonRouterOutlet>
