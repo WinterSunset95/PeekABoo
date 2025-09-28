@@ -1,3 +1,5 @@
+import { Timestamp } from "firebase/firestore";
+
 // /users/{userId}
 export interface UserData {
   uid: string,
@@ -50,7 +52,7 @@ export interface ChatMessage {
   id: string,
   senderId: string,
   text: string,
-  timestamp: any, // Firebase server timestamp
+  timestamp: Timestamp | number | null,
   type: "text" | "image" | "video", // extendable
   mediaUrl?: string,
   replyingTo?: string // messageId of message being replied to

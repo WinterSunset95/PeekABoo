@@ -23,7 +23,9 @@ const ChatMessageItem: React.FC<ChatMessageItemProps> = ({ message, currentUserI
       <div className={`chat-bubble ${isSender ? 'sent' : 'received'}`}>
         <p className="chat-text">{message.text}</p>
         <p className="chat-timestamp">
-          {message.timestamp ? new Date(message.timestamp.toMillis()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+          {message.timestamp ? new Date(
+            message.timestamp.toMillis ? message.timestamp.toMillis() : message.timestamp
+          ).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
         </p>
       </div>
     </div>
