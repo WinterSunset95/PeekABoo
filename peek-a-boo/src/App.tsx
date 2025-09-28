@@ -216,8 +216,8 @@ const App: React.FC = () => {
                   <Route exact path="/login">
                     <Redirect to="/home" />
                   </Route>
-                  <Route exact path="/chat/:id" component={ChatPage}/>
                   <Route exact path="/user/:id" component={UserPage} />
+                  <Route exact path="/chat/:id" component={ChatPage}/>
                   <Route exact path="/:type/:id" component={InfoMode}/>
                   <Route path="/">
                     <IonTabs>
