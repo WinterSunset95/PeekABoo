@@ -1,0 +1,43 @@
+.watch-together-player {
+  position: sticky;
+  top: 0;
+  background: var(--ion-color-dark-shade);
+  z-index: 1000;
+  padding: 8px;
+  border-bottom: 1px solid var(--ion-color-step-250, #333);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  animation: slideInDown 0.3s ease-out;
+}
+
+.player-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.player-title {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: var(--ion-color-light);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.media-element {
+  width: 100%;
+  border-radius: 4px;
+}
+
+@keyframes slideInDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

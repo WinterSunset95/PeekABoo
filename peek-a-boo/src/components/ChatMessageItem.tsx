@@ -1,16 +1,18 @@
 import React from 'react';
-import { IonAvatar, createGesture, IonImg } from '@ionic/react';
+import { IonAvatar, createGesture, IonImg, IonButton, IonIcon } from '@ionic/react';
 import { ChatMessage } from '../lib/models';
 import './ChatMessageItem.css';
 import { useUserData } from '../hooks/useUserData';
+import { playCircleOutline } from 'ionicons/icons';
 
 interface ChatMessageItemProps {
   message: ChatMessage;
   currentUserId: string;
   onReply: (message: ChatMessage) => void;
+  onStartWatchTogether: (mediaUrl: string, mediaType: 'video' | 'audio', title: string) => void;
 }
 
-const ChatMessageItem: React.FC<ChatMessageItemProps> = ({ message, currentUserId, onReply }) => {
+const ChatMessageItem: React.FC<ChatMessageItemProps> = ({ message, currentUserId, onReply, onStartWatchTogether }) => {
   const isSender = message.senderId === currentUserId;
   const { userData, loading } = useUserData(isSender ? null : message.senderId);
   const itemRef = React.useRef<HTMLDivElement>(null);
@@ -68,11 +70,22 @@ const ChatMessageItem: React.FC<ChatMessageItemProps> = ({ message, currentUserI
           {message.type === 'image' && message.mediaUrl && (
             <IonImg src={message.mediaUrl} className="chat-media-image" />
           )}
-          {message.type === 'video' && message.mediaUrl && (
-            <video src={message.mediaUrl} controls className="chat-media-video" />
-          )}
-          {message.type === 'audio' && message.mediaUrl && (
-            <audio src={message.mediaUrl} controls className="chat-media-audio" />
+          {(message.type === 'video' || message.type === 'audio') && message.mediaUrl && (
+            <div className="watch-together-container">
+              {message.type === 'video' ? (
+                <video src={message.mediaUrl} controls className="chat-media-video" />
+              ) : (
+                <audio src={message.mediaUrl} controls className="chat-media-audio" />
+              )}
+              <IonButton 
+                fill="clear" 
+                className="watch-together-button"
+                onClick={() => onStartWatchTogether(message.mediaUrl!, message.type, message.text)}
+              >
+                <IonIcon icon={playCircleOutline} slot="start" />
+                Watch Together
+              </IonButton>
+            </div>
           )}
           {message.type === 'text' && <p className="chat-text">{message.text}</p>}
 

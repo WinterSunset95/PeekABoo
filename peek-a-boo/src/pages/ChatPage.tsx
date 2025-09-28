@@ -34,6 +34,10 @@ import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/
 import { useUserData } from "../hooks/useUserData";
 import ChatMessageItem from "../components/ChatMessageItem";
 import { attachOutline, closeCircleOutline, sendOutline } from "ionicons/icons";
+import { PlaybackState } from "../lib/models";
+import { database } from "../lib/firebase";
+import { ref, onValue, set, serverTimestamp, off } from "firebase/database";
+import WatchTogetherPlayer from "../components/WatchTogetherPlayer";
 
 interface ChatProps extends RouteComponentProps<{
   id: string; // This will be the chat ID
@@ -51,6 +55,7 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
   const [replyingTo, setReplyingTo] = useState<ChatMessage | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [showToast] = useIonToast();
+  const [activeWatchSession, setActiveWatchSession] = useState(false);
   const contentRef = useRef<HTMLIonContentElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -63,6 +68,12 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
   useEffect(() => {
     if (!convoId) return;
 
+    // Listen for watch session
+    const sessionRef = ref(database, `playback_sessions/${convoId}`);
+    const sessionListener = onValue(sessionRef, (snapshot) => {
+      setActiveWatchSession(snapshot.exists());
+    });
+
     const db = getFirestore(app);
     const messagesRef = collection(db, "chats", convoId, "messages");
     const q = query(messagesRef, orderBy("timestamp", "asc"));
@@ -73,7 +84,10 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
       setTimeout(() => contentRef.current?.scrollToBottom(300), 100);
     });
 
-    return () => unsubscribe();
+    return () => {
+      unsubscribe();
+      off(sessionRef, 'value', sessionListener);
+    }
   }, [convoId]);
 
   const sendTextMessage = async () => {
@@ -155,6 +169,22 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
     );
   };
 
+  const handleStartWatchTogether = (mediaUrl: string, mediaType: 'video' | 'audio', title: string) => {
+    if (!user || !convoId) return;
+
+    const sessionRef = ref(database, `playback_sessions/${convoId}`);
+    const initialState: PlaybackState = {
+      mediaUrl,
+      mediaType,
+      title,
+      isPlaying: false,
+      progress: 0,
+      lastUpdatedBy: user.uid,
+      timestamp: serverTimestamp(),
+    };
+    set(sessionRef, initialState);
+  };
+
   return (
     <IonPage>
       <IonHeader>
@@ -172,10 +202,17 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
           )}
         </IonToolbar>
       </IonHeader>
-      <IonContent ref={contentRef} className="ion-padding">
+      <IonContent ref={contentRef} className="ion-padding" scrollEvents={true}>
+        {activeWatchSession && convoId && <WatchTogetherPlayer convoId={convoId} />}
         <div className="chat-messages-container">
           {messages.map((msg) => (
-            <ChatMessageItem key={msg.id} message={msg} currentUserId={user!.uid} onReply={setReplyingTo} />
+            <ChatMessageItem 
+              key={msg.id} 
+              message={msg} 
+              currentUserId={user!.uid} 
+              onReply={setReplyingTo}
+              onStartWatchTogether={handleStartWatchTogether}
+            />
           ))}
         </div>
       </IonContent>

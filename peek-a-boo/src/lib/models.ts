@@ -65,3 +65,14 @@ export interface ChatMessage {
   replyContext?: ReplyContext
 }
 
+// RTDB model for /playback_sessions/{chatId}
+export interface PlaybackState {
+  mediaUrl: string;
+  mediaType: 'video' | 'audio';
+  title: string;
+  isPlaying: boolean;
+  progress: number;
+  lastUpdatedBy: string; // uid of the user who last changed the state
+  timestamp: object; // server timestamp
+}
+

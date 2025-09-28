@@ -19,6 +19,7 @@ import { Capacitor } from "@capacitor/core";
 const firebaseConfig = {
   apiKey: "AIzaSyD13ajiY6S8FKlzmQJ-meMgDyJUNxOOq2w",
   authDomain: "peekaboo-fbf1a.firebaseapp.com",
+  databaseURL: "https://peekaboo-fbf1a-default-rtdb.firebaseio.com",
   projectId: "peekaboo-fbf1a",
   storageBucket: "peekaboo-fbf1a.firebasestorage.app",
   messagingSenderId: "1081048087865",
