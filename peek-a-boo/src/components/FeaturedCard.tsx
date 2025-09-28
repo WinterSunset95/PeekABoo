@@ -21,7 +21,7 @@ const FeaturedCard: React.FC<FeaturedCardProps> = ({ item }) => {
         </IonCardHeader>
         <IonCardContent>
           <p>{item.Overview}</p>
-          <IonButton fill="clear" color="light">
+          <IonButton fill="clear">
             <IonIcon slot="start" icon={playCircleOutline} />
             Watch Now
           </IonButton>
