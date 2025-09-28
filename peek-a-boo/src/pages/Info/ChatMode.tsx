@@ -48,9 +48,8 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
 
   useEffect(() => {
     if (!user || !chatId) return;
-    // Derive the conversation id from the id's of both users AI!
-    // it should be <one user's id>-<other user's id> AI!
-    // which user comes first should be decided alphabetically AI!
+    const uids = [user.uid, chatId].sort();
+    setConvoId(uids.join('-'));
   }, [chatId, user]);
 
   useEffect(() => {
@@ -70,10 +69,10 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
   }, [convoId]);
 
   const handleSendMessage = async () => {
-    if (newMessage.trim() === "" || !user || !chatId) return;
+    if (newMessage.trim() === "" || !user || !convoId) return;
 
     const db = getFirestore(app);
-    const messagesRef = collection(db, "chats", chatId, "messages");
+    const messagesRef = collection(db, "chats", convoId, "messages");
 
     await addDoc(messagesRef, {
       senderId: user.uid,
