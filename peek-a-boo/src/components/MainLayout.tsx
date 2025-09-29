@@ -1,4 +1,5 @@
-import { NavLink, Outlet } from "react-router-dom";
+import React from "react";
+import { NavLink } from "react-router-dom";
 import { MessageSquare, Search, Film, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -9,11 +10,11 @@ const navItems = [
   { href: "/settings", label: "Settings", icon: User },
 ];
 
-const MainLayout = () => {
+const MainLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="flex flex-col h-screen bg-background text-foreground">
       <div className="flex-grow overflow-y-auto">
-        <Outlet />
+        {children}
       </div>
       <nav className="border-t bg-background sticky bottom-0">
         <div className="flex justify-around items-center h-16 max-w-md mx-auto">
