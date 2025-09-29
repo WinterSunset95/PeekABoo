@@ -18,7 +18,7 @@ const ChatMessageItem: React.FC<ChatMessageItemProps> = ({ message, currentUserI
   const { userData, loading } = useUserData(isSender ? null : message.senderId);
 
   return (
-    <div className={cn("group flex items-end gap-2 p-2", isSender ? "justify-end" : "justify-start")}>
+    <div className={cn("group flex items-end gap-2", isSender ? "justify-end" : "justify-start")}>
       {!isSender && !loading && (
         <Avatar className="h-8 w-8">
           <AvatarImage src={userData?.photoURL} alt={userData?.displayName} />
