@@ -8,7 +8,7 @@ Peek-a-boo is a mobile application built with Ionic, React, and Capacitor. It us
 
 ## Current Goals & Roadmap
 
-1.  **Improve "Watch Together" Feature:** *(Addressed)* The synchronized media player logic was updated to fix a bug where users could not pause playback and to correctly synchronize seeking. The fix prevents race conditions by using specific event handlers for seeking (`onSeek`, `onSeeking`) and throttles regular time updates.
+1.  **Improve "Watch Together" Feature:** *(Addressed)* The synchronized media player logic has been updated for better reliability. Continuous time updates via `onProgress` have been removed. Instead, the playback position is now synchronized only during key events: play, pause, and seek.
 2.  **Implement YouTube Watch Together:** *(In Progress)* The file upload feature has been shelved due to persistent native implementation issues. The current goal is to allow users to share YouTube links and watch them together with synchronized playback.
 
 ## Key Features
@@ -41,9 +41,10 @@ Peek-a-boo is a mobile application built with Ionic, React, and Capacitor. It us
 -   **File:** `peek-a-boo/src/components/WatchTogetherPlayer.tsx`
 -   **Problem:** Users could not pause media, and seeking was not synchronized correctly. `onTimeUpdate` events were sending stale `isPlaying: true` state, overwriting pause commands.
 -   **Solution:**
-    1.  Switched from `set` to `update` for Realtime Database state changes. This prevents overwriting the entire state object with stale data and only updates the specified properties (`progress` or `isPlaying`).
-    2.  Throttled `onProgress` events to fire at most once per second to reduce network traffic and prevent race conditions during normal playback.
-    3.  Added `onSeek` and `onSeeking` event handlers to `ReactPlayer` to explicitly handle and synchronize seeking actions, preventing `onProgress` from sending conflicting updates.
+    1.  Switched from `set` to `update` for Realtime Database state changes. This prevents overwriting the entire state object with stale data and only updates the specified properties.
+    2.  Removed the throttled `onProgress` handler to eliminate continuous, and sometimes conflicting, time updates.
+    3.  The playback position (`progress`) is now explicitly synchronized along with the `isPlaying` state whenever a user plays or pauses the video.
+    4.  The `onSeek` handler remains to synchronize manual seeking actions. This results in a more stable and event-driven synchronization logic.
 
 ### Fixes for Mobile File Uploads
 

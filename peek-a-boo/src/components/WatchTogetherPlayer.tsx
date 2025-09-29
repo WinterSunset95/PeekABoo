@@ -57,18 +57,14 @@ const WatchTogetherPlayer: React.FC<WatchTogetherPlayerProps> = ({ convoId }) =>
     });
   };
   
-  const handlePlay = () => !isUpdatingFromRemote.current && updateRtdbState({ isPlaying: true });
-  const handlePause = () => !isUpdatingFromRemote.current && updateRtdbState({ isPlaying: false });
-  const handleProgress = (state: { played: number; playedSeconds: number; loaded: number; loadedSeconds: number; }) => {
-    console.log(state)
-    if (playerRef.current && !isUpdatingFromRemote.current && !isSeekingLocally.current) {
-      const currentTime = state.playedSeconds;
-      const now = Date.now();
-      // Throttle updates to every 1 second
-      if (now - lastTimeUpdateSent.current > 1000) {
-        lastTimeUpdateSent.current = now;
-        updateRtdbState({ progress: currentTime });
-      }
+  const handlePlay = () => {
+    if (!isUpdatingFromRemote.current && playerRef.current) {
+      updateRtdbState({ isPlaying: true, progress: playerRef.current.getCurrentTime() || 0 });
+    }
+  };
+  const handlePause = () => {
+    if (!isUpdatingFromRemote.current && playerRef.current) {
+      updateRtdbState({ isPlaying: false, progress: playerRef.current.getCurrentTime() || 0 });
     }
   };
 
@@ -111,7 +107,6 @@ const WatchTogetherPlayer: React.FC<WatchTogetherPlayerProps> = ({ convoId }) =>
           controls
           onPlay={handlePlay}
           onPause={handlePause}
-          onProgress={handleProgress}
           onSeek={handleSeek}
           onSeeking={handleSeeking}
           className="react-player"
