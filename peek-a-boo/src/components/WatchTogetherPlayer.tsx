@@ -1,12 +1,11 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { IonButton, IonIcon, IonProgressBar, IonSpinner } from '@ionic/react';
-import { closeCircleOutline } from 'ionicons/icons';
 import { database } from '../lib/firebase';
 import { ref, onValue, set, serverTimestamp, remove, off, update } from 'firebase/database';
 import { PlaybackState } from '../lib/models';
 import { UserContext } from '../App';
-import './WatchTogetherPlayer.css';
 import ReactPlayer from 'react-player';
+import { Button } from './ui/button';
+import { XCircle } from 'lucide-react';
 
 interface WatchTogetherPlayerProps {
   convoId: string;
@@ -92,24 +91,24 @@ const WatchTogetherPlayer: React.FC<WatchTogetherPlayerProps> = ({ convoId }) =>
   }
 
   return (
-    <div className="watch-together-player">
-      <div className="player-header">
-        <p className="player-title">{playbackState.title}</p>
-        <IonButton fill="clear" color="light" onClick={handleCloseSession}>
-          <IonIcon slot="icon-only" icon={closeCircleOutline} />
-        </IonButton>
+    <div className="sticky top-0 bg-background z-50 p-2 border-b border-border shadow-lg">
+      <div className="flex justify-between items-center mb-1">
+        <p className="text-sm font-bold text-foreground truncate">{playbackState.title}</p>
+        <Button variant="ghost" size="icon" onClick={handleCloseSession} className="text-muted-foreground">
+          <XCircle className="h-6 w-6" />
+        </Button>
       </div>
-      <div className="player-wrapper">
+      <div className="relative pt-[56.25%]">
         <ReactPlayer
           ref={playerRef}
-          src={playbackState.mediaUrl}
+          url={playbackState.mediaUrl}
           playing={playbackState.isPlaying}
           controls
           onPlay={handlePlay}
           onPause={handlePause}
           onSeek={handleSeek}
           onSeeking={handleSeeking}
-          className="react-player"
+          className="absolute top-0 left-0"
           width="100%"
           height="100%"
         />
