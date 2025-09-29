@@ -1,4 +1,4 @@
-// TODO: Remove IonNavLink when Ionic is fully removed from core files.
+import { Link } from "react-router-dom";
 
 interface DetailCardProps {
     imageUrl: string;
@@ -20,7 +20,7 @@ const DetailCard: React.FC<DetailCardProps> = ({ imageUrl, title, linkUrl, type,
     const shortenedOverview = overview && overview.length > 100 ? `${overview.substring(0, 100)}...` : overview;
 
     return (
-        <IonNavLink routerLink={linkUrl}>
+        <Link to={linkUrl}>
             <div className="flex bg-muted rounded-lg shadow-sm overflow-hidden transition-all hover:bg-accent hover:shadow-md">
                 <img
                     src={imageUrl}
@@ -39,7 +39,7 @@ const DetailCard: React.FC<DetailCardProps> = ({ imageUrl, title, linkUrl, type,
                     )}
                 </div>
             </div>
-        </IonNavLink>
+        </Link>
     );
 };
 

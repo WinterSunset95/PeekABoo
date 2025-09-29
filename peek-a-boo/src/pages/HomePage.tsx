@@ -1,8 +1,3 @@
-// TODO: Remove IonPage and IonContent when Ionic is fully removed.
-import {
-  IonPage,
-  IonContent,
-} from '@ionic/react';
 import { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import FriendsListComponent from '../components/FriendsListComponent';

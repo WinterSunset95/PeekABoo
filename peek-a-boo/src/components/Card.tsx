@@ -1,11 +1,10 @@
-// TODO: Remove IonNavLink when Ionic is fully removed from core files.
-import { IonNavLink } from "@ionic/react"
+import { Link } from "react-router-dom";
 import { MovieInfo } from "../lib/types"
 
 const Card: React.FC<MovieInfo> = (item) => {
 	return (
-		<IonNavLink
-			routerLink={item.Type == "anime" ? `/anime/${item.Id}` : item.Type == "movie" ? `/movie/${item.Id}` : `/tv/${item.Id}`}
+		<Link
+			to={item.Type == "anime" ? `/anime/${item.Id}` : item.Type == "movie" ? `/movie/${item.Id}` : `/tv/${item.Id}`}
 			className="aspect-[2/3] block"
 		>
 			<div className="group relative w-full h-full bg-background shadow-md rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
@@ -21,7 +20,7 @@ const Card: React.FC<MovieInfo> = (item) => {
 					</h3>
 				</div>
 			</div>
-		</IonNavLink>
+		</Link>
 	)
 }
 

@@ -1,6 +1,5 @@
 import React from 'react';
-// TODO: Remove IonNavLink when Ionic is fully removed from core files.
-import { IonNavLink } from '@ionic/react';
+import { Link } from 'react-router-dom';
 import { MovieInfo } from '../lib/types';
 import { Button } from './ui/button';
 import { PlayCircle } from 'lucide-react';
@@ -11,7 +10,7 @@ interface FeaturedCardProps {
 
 const FeaturedCard: React.FC<FeaturedCardProps> = ({ item }) => {
   return (
-    <IonNavLink routerLink={`/${item.Type}/${item.Id}`} className="block">
+    <Link to={`/${item.Type}/${item.Id}`} className="block">
       <div className="group relative aspect-video w-full rounded-lg overflow-hidden shadow-lg">
         <img src={item.Poster} alt={`Poster for ${item.Title}`} className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
@@ -26,7 +25,7 @@ const FeaturedCard: React.FC<FeaturedCardProps> = ({ item }) => {
           </Button>
         </div>
       </div>
-    </IonNavLink>
+    </Link>
   );
 };
 

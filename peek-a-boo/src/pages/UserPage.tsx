@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { useContext, useEffect, useState } from 'react';
 import { UserData } from "../lib/models";
 import { getFirestore, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
@@ -11,6 +11,7 @@ import { Loader2, ArrowLeft } from "lucide-react";
 const UserPage: React.FC = () => {
   const { id: userId } = useParams<{ id: string }>();
   const { user } = useContext(UserContext);
+  const navigate = useNavigate();
   const [profileUser, setProfileUser] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const [friendStatus, setFriendStatus] = useState<'loading' | 'not_friends' | 'sent_pending' | 'received_pending' | 'friends'>('loading');
@@ -20,7 +21,6 @@ const UserPage: React.FC = () => {
     if (!userId) return;
 
     if (user?.uid === userId) {
-      // TODO: Redirect to settings
       navigate('/settings', { replace: true });
       return;
     }
