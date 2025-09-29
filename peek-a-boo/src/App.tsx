@@ -15,6 +15,7 @@ import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
 import AuthComponent from './components/Auth';
 import MainLayout from './components/MainLayout';
 import { Loader2 } from 'lucide-react';
+import { useTheme } from './hooks/useTheme';
 
 export const UserContext = createContext<{
   user: User | null,
@@ -30,6 +31,8 @@ function App() {
   const name = useRef<string>("")
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+  
+  useTheme();
 
   useEffect(() => {
     document.title = "PeekABoo"

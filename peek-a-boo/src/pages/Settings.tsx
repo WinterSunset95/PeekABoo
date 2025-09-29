@@ -11,9 +11,11 @@ import { Label } from "@/components/ui/label"
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { toast } from "sonner"
 import { LogOut, UserCircle2, Trash2 } from "lucide-react"
+import { Theme, useTheme } from "../hooks/useTheme"
 
 const SettingsPage: React.FC = () => {
 	const { user, setUser } = useContext(UserContext)
+	const { theme, setTheme } = useTheme()
 	const [showRestartDialog, setShowRestartDialog] = useState(false)
 
 	const [type, setType] = useState<AnimeTypeOptions>("ad")
@@ -113,6 +115,18 @@ const SettingsPage: React.FC = () => {
 						<CardDescription>Configure application behavior.</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
+						<div className="space-y-2">
+							<Label htmlFor="theme-select">Theme</Label>
+							<Select value={theme} onValueChange={(value: Theme) => setTheme(value)}>
+								<SelectTrigger id="theme-select">
+									<SelectValue placeholder="Select theme" />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="light">Light</SelectItem>
+									<SelectItem value="dark">Dark</SelectItem>
+								</SelectContent>
+							</Select>
+						</div>
 						<div className="space-y-2">
 							<Label htmlFor="ads-select">Advertisements</Label>
 							<Select value={type} onValueChange={(value: AnimeTypeOptions) => setType(value)}>
