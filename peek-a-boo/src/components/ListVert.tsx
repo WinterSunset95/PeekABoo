@@ -1,5 +1,4 @@
 import React from 'react';
-import { IonList } from "@ionic/react";
 
 interface ListVertProps<T> {
   items: T[];
@@ -8,9 +7,9 @@ interface ListVertProps<T> {
 
 const ListVert = <T,>({ items, renderItem }: ListVertProps<T>) => {
   return (
-    <IonList style={{ padding: "0.5rem" }}>
+    <div className="space-y-4">
       {items.map((item) => renderItem(item))}
-    </IonList>
+    </div>
   );
 };
 
