@@ -1,5 +1,5 @@
-import { IonPage } from "@ionic/react"
-import { Link, useNavigate } from "react-router-dom"
+import { IonPage, IonContent } from "@ionic/react"
+import { Link } from "react-router-dom"
 import './AnimeInfo.css'
 import { useContext, useEffect, useState } from "react"
 import { MediaInfo, PlayerOptions, Settings, TvSeason, MovieInfo } from "../../lib/types"
@@ -42,7 +42,6 @@ const InfoPage: React.FC<InfoProps> = ({ info }) => {
 	const [playeroptions, setPlayeroptions] = useState<PlayerOptions>();
 	const [settings, setSettings] = useState<Settings>()
 	const { user } = useContext(UserContext)
-	const navigate = useNavigate()
 	const [isFavorited, setIsFavorited] = useState(false);
 	const [isFavoriteLoading, setIsFavoriteLoading] = useState(true);
 	const [similarMedia, setSimilarMedia] = useState<MovieInfo[]>([]);
@@ -168,7 +167,8 @@ const InfoPage: React.FC<InfoProps> = ({ info }) => {
 
 	const handleToggleFavorite = async () => {
 		if (!user) {
-			navigate(`/login?return=/${info.Type}/${info.Id}`);
+      // TODO: Redirect to login
+			// navigate(`/login?return=/${info.Type}/${info.Id}`);
 			return;
 		}
 		setIsFavoriteLoading(true);
@@ -361,6 +361,7 @@ const InfoPage: React.FC<InfoProps> = ({ info }) => {
 
 	return (
 		<IonPage>
+      <IonContent>
 
 			<header className="flex items-center p-2 border-b bg-background sticky top-0 z-10">
 				<Link to="/media">
@@ -384,6 +385,7 @@ const InfoPage: React.FC<InfoProps> = ({ info }) => {
 				</div>
 			</main>
 
+      </IonContent>
 		</IonPage>
 	)
 }

@@ -1,6 +1,5 @@
-import { IonPage } from "@ionic/react"
+import { IonPage, IonContent } from "@ionic/react"
 import React, { useContext, useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
 import { UserContext } from "../App"
 import { auth } from "../lib/firebase"
 import { AnimeSourceOptions, AnimeTypeOptions, MovieSourceoptions, ServerOptions, Settings, SettingsAnimeSources, SettingsAnimeTypes, SettingsMovieSources, SettingsServers } from "../lib/types"
@@ -16,10 +15,9 @@ import { LogOut, UserCircle2, Trash2 } from "lucide-react"
 
 const SettingsPage: React.FC = () => {
 	const { user, setUser } = useContext(UserContext)
-	const navigate = useNavigate()
 	const [showRestartDialog, setShowRestartDialog] = useState(false)
 
-	const [type, setType] = useState<AnimeTypeOptions>()
+	const [type, setType] = useState<AnimeTypeOptions>("ad")
 	const [aniSource, setAniSource] = useState<AnimeSourceOptions>()
 	const [movSource, setMovSource] = useState<MovieSourceoptions>()
 	const [server, setServer] = useState<ServerOptions>()
@@ -61,7 +59,6 @@ const SettingsPage: React.FC = () => {
 	const handleLogout = async () => {
 		await auth.signOut()
 		setUser(null)
-		navigate("/home", { replace: true })
 	}
 
 	if (!user) {
@@ -74,7 +71,7 @@ const SettingsPage: React.FC = () => {
 					<div className="flex flex-col items-center justify-center h-full text-center">
 						<h2 className="text-2xl font-semibold">Please Log In</h2>
 						<p className="text-muted-foreground mt-2">Log in to manage your account settings.</p>
-						<Button onClick={() => navigate('/login')} className="mt-4">Login</Button>
+						<Button onClick={() => console.log("Hello")} className="mt-4">Login</Button>
 					</div>
 				</main>
 			</IonPage>
@@ -83,6 +80,7 @@ const SettingsPage: React.FC = () => {
 
 	return (
 		<IonPage>
+      <IonContent>
 			<header className="p-4 border-b sticky top-0 bg-background z-10">
 				<h1 className="text-xl font-bold">Settings</h1>
 			</header>
@@ -164,7 +162,7 @@ const SettingsPage: React.FC = () => {
 								</SelectTrigger>
 								<SelectContent>
 									{SettingsServers.map((item) => (
-										<SelectItem key={item} value={item}>{item}</SelectItem>
+										<SelectItem key={item} value="test">{item}</SelectItem>
 									))}
 								</SelectContent>
 							</Select>
@@ -202,6 +200,7 @@ const SettingsPage: React.FC = () => {
 				</AlertDialog>
 
 			</main>
+      </IonContent>
 		</IonPage>
 	)
 }

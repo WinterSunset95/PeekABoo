@@ -1,4 +1,4 @@
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 // TODO: Remove IonPage and IonContent when Ionic is fully removed.
 import {
 	IonPage,
@@ -16,7 +16,6 @@ import { Loader2, ArrowLeft } from "lucide-react";
 const UserPage: React.FC = () => {
   const { id: userId } = useParams<{ id: string }>();
   const { user } = useContext(UserContext);
-  const navigate = useNavigate();
   const [profileUser, setProfileUser] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const [friendStatus, setFriendStatus] = useState<'loading' | 'not_friends' | 'sent_pending' | 'received_pending' | 'friends'>('loading');
@@ -26,6 +25,7 @@ const UserPage: React.FC = () => {
     if (!userId) return;
 
     if (user?.uid === userId) {
+      // TODO: Redirect to settings
       navigate('/settings', { replace: true });
       return;
     }
@@ -68,7 +68,7 @@ const UserPage: React.FC = () => {
     };
 
     fetchUserDataAndStatus();
-  }, [userId, user, navigate]);
+  }, [userId, user]);
 
   const handleAddFriend = async () => {
     if (!user || !profileUser || isProcessing) return;

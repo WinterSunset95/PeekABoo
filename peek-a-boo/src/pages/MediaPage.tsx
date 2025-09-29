@@ -71,7 +71,7 @@ const MediaPage: React.FC = () => {
             <h2 className="text-2xl font-bold mb-4">Featured</h2>
             {featuredItem ? (
               <FeaturedCard item={featuredItem} />
-            ) : <LoadingComponent choice='list' />}
+            ) : <LoadingComponent choice='card_large' />}
           </section>
           <section>
             <h2 className="text-2xl font-bold mb-4">Trending Shows</h2>
