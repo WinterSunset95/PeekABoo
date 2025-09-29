@@ -1,0 +1,137 @@
+.chat-message-wrapper {
+  display: flex;
+  align-items: flex-end;
+  margin-bottom: 0.5rem;
+  max-width: 80%;
+  user-select: none; /* Prevent text selection during swipe */
+}
+
+.chat-message-wrapper.sent {
+  margin-left: auto;
+  flex-direction: row-reverse;
+}
+
+.chat-message-wrapper.received {
+  margin-right: auto;
+}
+
+.chat-avatar {
+  width: 32px;
+  height: 32px;
+  margin-right: 8px;
+  margin-bottom: 4px;
+}
+
+.chat-bubble {
+  padding: 8px 12px;
+  border-radius: 18px;
+  color: white;
+  position: relative;
+  overflow: hidden; /* To keep rounded corners for images */
+}
+
+.chat-bubble.sent {
+  background: var(--ion-color-primary);
+  border-bottom-right-radius: 4px;
+}
+
+.chat-bubble.received {
+  background: var(--ion-color-medium-shade);
+  border-bottom-left-radius: 4px;
+}
+
+.chat-content {
+  position: relative;
+}
+
+.chat-text {
+  margin: 0;
+  padding-right: 3.5rem; /* Space for timestamp */
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.chat-timestamp {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.8);
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  margin: 0;
+}
+
+/* For text messages, the timestamp is inside the text flow box */
+.chat-text + .chat-timestamp {
+  position: relative;
+  float: right;
+  margin-left: 8px;
+  margin-top: 4px;
+}
+
+.chat-media-image {
+  max-width: 250px;
+  display: block;
+}
+
+.chat-media-video,
+.chat-media-audio {
+  width: 100%;
+  max-width: 250px;
+  display: block;
+}
+
+.chat-media-image + .chat-timestamp,
+.chat-media-video + .chat-timestamp,
+.chat-media-audio + .chat-timestamp {
+  background: rgba(0, 0, 0, 0.4);
+  padding: 1px 5px;
+  border-radius: 8px;
+}
+
+.reply-context {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-left: 3px solid var(--ion-color-secondary);
+  border-radius: 4px;
+  padding: 4px 8px;
+  margin-bottom: 6px;
+  max-width: 100%;
+}
+
+.reply-sender {
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: var(--ion-color-secondary);
+  margin: 0;
+}
+
+.reply-text {
+  font-size: 0.9rem;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0.9;
+}
+
+.watch-together-container {
+  position: relative;
+}
+
+.watch-together-button {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  --color: #fff;
+  --background: rgba(0, 0, 0, 0.6);
+  --border-radius: 20px;
+  height: 32px;
+  font-size: 0.8rem;
+  text-transform: none;
+}
+
+.youtube-link-preview {
+  padding: 8px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 8px;
+  margin-bottom: 40px; /* space for the watch together button */
+}

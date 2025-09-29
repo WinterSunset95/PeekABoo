@@ -1,202 +1,199 @@
-import {
-	IonPage,
-	IonContent,
-	IonHeader,
-	IonTitle,
-	IonToolbar,
-	IonIcon,
-	IonButton,
-	IonChip,
-	IonAvatar,
-	IonLabel,
-	useIonToast,
-	IonModal,
-    useIonRouter
-} from '@ionic/react';
-import { useContext, useEffect, useRef, useState } from 'react';
-import { MediaInfo, MovieInfo, MovieSearchResult } from '../lib/types';
-import { getTrending, getTopAiring } from '../lib/anime';
-import List from '../components/List';
-import './HomePage.css'
-import { getTrendingMovies, getTrendingTv } from '../lib/movies';
-import LoadingComponent from '../components/Loading';
+import { useContext, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import FriendsListComponent from '../components/FriendsListComponent';
 import { UserContext } from '../App';
-import AuthComponent from '../components/Auth';
-import { onAuthStateChanged } from 'firebase/auth';
-import { app, auth } from '../lib/firebase';
-import { Favourite, Friend } from '../lib/models';
-import { collection, getDocs, getFirestore, query, where } from 'firebase/firestore';
+import { app } from '../lib/firebase';
+import { Friend, UserData } from '../lib/models';
+import { collection, getDoc, getFirestore, query, where, doc, updateDoc, deleteDoc, onSnapshot } from 'firebase/firestore';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Check, X, Loader2 } from 'lucide-react';
 
-const HomePage: React.FC = () => {
-	const [trending, setTrending] = useState<MovieSearchResult[]>([])
-	const [trendingMovies, setTrendingMovies] = useState<MovieSearchResult[]>([])
-	const [trendingTv, setTrendingTv] = useState<MovieSearchResult[]>([])
-  const [favourites, setFavourites] = useState<Favourite[]>([]);
+function HomePage() {
   const [friends, setFriend] = useState<Friend[]>([]);
-	const { user, setUser, name } = useContext(UserContext)
-	const [ showToast ] = useIonToast()
-	const modalRef = useRef<HTMLIonModalElement>(null)
-  const router = useIonRouter();
+  const [friendRequests, setFriendRequests] = useState<Friend[]>([]);
+  const { user } = useContext(UserContext)
 
-	const errorMessage = (msg: string) => {
-		showToast({
-			message: msg,
-			duration: 3000,
-			swipeGesture: "vertical",
-			position: "top"
-		})
-	}
-
-	const loadTrending = async () => {
-		const response = await getTrending();
-		if (response.peek != true) {
-			errorMessage("Error loading trending anime")
-			return
-		}
-		setTrending(response.boo)
-	}
-
-	const loadTrendingMovies = async () => {
-		const res = await getTrendingMovies()
-		if (res.peek != true) {
-			errorMessage("Error loading trending movies")
-			return
-
-		}
-		setTrendingMovies(res.boo)
-	}
-
-	const loadTrendingTv = async () => {
-		const res = await getTrendingTv()
-		if (res.peek != true) {
-			errorMessage("Error loading trending movies")
-			return
-
-		}
-		setTrendingTv(res.boo)
-	}
-
-  const loadFavourites = async () => {
-    if (!user) return;
-    const db = getFirestore(app);
-    try {
-      const favsRef = collection(db, 'users', user.uid, 'favorites');
-      const querySnapshot = await getDocs(favsRef);
-      const favs = querySnapshot.docs.map(doc => doc.data() as Favourite);
-      setFavourites(favs);
-    } catch (error) {
-      console.error("Error loading favourites:", error)
-      errorMessage("Error loading favourites")
-    }
+  const errorMessage = (msg: string) => {
+    toast.error(msg);
   }
-
-  const loadFriends = async () => {
-    if (!user) return;
-    const db = getFirestore(app);
-    try {
-      const friendsRef = collection(db, 'users', user.uid, 'friends');
-      const q = query(friendsRef, where("status", "==", "friends"));
-      const querySnapshot = await getDocs(q);
-      const friendsList = querySnapshot.docs.map(doc => doc.data() as Friend);
-      setFriend(friendsList);
-    } catch (error) {
-      console.error("Error loading friends:", error)
-      errorMessage("Error loading friends")
-    }
-  }
-
-	useEffect(() => {
-		loadTrending()
-		loadTrendingMovies()
-		loadTrendingTv()
-	}, [])
-
-	useEffect(() => {
-		if (user) {
-			loadFavourites()
-			loadFriends()
-		}
-	}, [user])
-
-	useEffect(() => {
-		document.title = "PeekABoo"
-    onAuthStateChanged(auth, (newLoginUser) => {
-      if (newLoginUser != null) {
-        setUser(newLoginUser)
-      } else {
-        setUser(null)
-      }
-    })
-	}, [])
 
   useEffect(() => {
-    console.log(user, auth.currentUser)
-    if (user != null && auth.currentUser != null) {
-        router.push("/home", "root")
+    if (user) {
+      const db = getFirestore(app);
+      const friendsRef = collection(db, 'users', user.uid, 'friends');
+
+      // Listener for friends
+      const friendsQuery = query(friendsRef, where("status", "==", "friends"));
+      const unsubscribeFriends = onSnapshot(friendsQuery, (snapshot) => {
+        const friendsList = snapshot.docs.map(doc => ({ uid: doc.id, ...doc.data() } as Friend));
+        setFriend(friendsList);
+      }, (error) => {
+        console.error("Error listening to friends:", error);
+        errorMessage("Error loading friends.");
+      });
+
+      // Listener for friend requests
+      const requestsQuery = query(friendsRef, where("status", "==", "received_pending"));
+      const unsubscribeRequests = onSnapshot(requestsQuery, (snapshot) => {
+        const requestsList = snapshot.docs.map(doc => ({ uid: doc.id, ...doc.data() } as Friend));
+        setFriendRequests(requestsList);
+      }, (error) => {
+        console.error("Error listening to friend requests:", error);
+        errorMessage("Error loading friend requests.");
+      });
+
+      // Cleanup listeners on component unmount or user change
+      return () => {
+        unsubscribeFriends();
+        unsubscribeRequests();
+      };
     } else {
-        router.push("/login", "root")
+      // Clear social data when user logs out
+      setFriend([]);
+      setFriendRequests([]);
     }
   }, [user])
 
-	return (
-		<IonPage>
-			<IonHeader
-				translucent={true}
-			>
-				<IonToolbar
-					style={{
-						paddingRight: "1rem"
-					}}
-				>
-					<IonTitle>Peek-A-Boo</IonTitle>
-					{user ? user.email
-					? 
-						<IonChip slot='end'
-							onClick={() => {
-								showToast({
-									message: `UserID: ${user.email}`,
-									duration: 3000,
-									position: "top",
-									swipeGesture: "vertical"
-								})
-							}}
-						>
-							<IonAvatar>
-								<img src={user.photoURL ?? ""} alt="" />
-							</IonAvatar>
-							<IonLabel>{user.displayName}</IonLabel>
-						</IonChip>
-					: <IonButton id='loginButton' slot='end'>Login</IonButton>
-					: <IonButton id='loginButton' slot='end'>Login</IonButton>
-					}
-				</IonToolbar>
-			</IonHeader>
-			<IonContent className='ion-padding'>
-				<h1>Friends</h1>
-				<FriendsListComponent friends={friends} />
-				<h1>Trending Shows</h1>
-				{
-					trendingTv.length > 0 ?
-					<List {...trendingTv} />
-					: <LoadingComponent choice='list' />
-				}
-				<h1>Trending Movies</h1>
-				{
-					trendingMovies.length > 0 ?
-					<List {...trendingMovies} />
-					: <LoadingComponent choice='list' />
-				}
-				<h1>Trending Anime</h1>
-				{
-					trending.length > 0 ? 
-					<List {...trending} />
-					: <LoadingComponent choice='list' />
+  useEffect(() => {
+    document.title = "PeekABoo"
+  }, [])
 
-				}
-			</IonContent>
-		</IonPage>
-	)
+
+  const handleAcceptRequest = async (friendUid: string) => {
+    if (!user) return;
+    try {
+      const db = getFirestore(app);
+      const now = Date.now();
+      
+      // Update current user's friend document
+      const currentUserFriendRef = doc(db, 'users', user.uid, 'friends', friendUid);
+      await updateDoc(currentUserFriendRef, { status: 'friends', since: now });
+  
+      // Update the other user's friend document
+      const otherUserFriendRef = doc(db, 'users', friendUid, 'friends', user.uid);
+      await updateDoc(otherUserFriendRef, { status: 'friends', since: now });
+  
+    } catch (error) {
+      console.error("Error accepting friend request:", error);
+      errorMessage("Failed to accept friend request.");
+    }
+  };
+
+  const handleDeclineRequest = async (friendUid: string) => {
+    if (!user) return;
+    try {
+      const db = getFirestore(app);
+      
+      // Delete from current user's friend list
+      const currentUserFriendRef = doc(db, 'users', user.uid, 'friends', friendUid);
+      await deleteDoc(currentUserFriendRef);
+      
+      // Delete from the other user's friend list
+      const otherUserFriendRef = doc(db, 'users', friendUid, 'friends', user.uid);
+      await deleteDoc(otherUserFriendRef);
+  
+    } catch (error) {
+      console.error("Error declining friend request:", error);
+      errorMessage("Failed to decline friend request.");
+    }
+  };
+
+  function FriendRequestItem({ request }: { request: Friend }) {
+    const [userData, setUserData] = useState<UserData | null>(null);
+    const [loading, setLoading] = useState(true);
+    
+    useEffect(() => {
+      const fetchUserData = async () => {
+        setLoading(true);
+        try {
+          const db = getFirestore(app);
+          const userRef = doc(db, 'users', request.uid);
+          const userSnap = await getDoc(userRef);
+          if (userSnap.exists()) {
+          setUserData(userSnap.data() as UserData);
+          }
+        } catch (error) {
+          console.error("Error fetching user data for request:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchUserData();
+    }, [request.uid]);
+    
+    if (loading) {
+      return (
+      <div className="flex items-center p-2">
+        <Loader2 className="h-5 w-5 animate-spin mr-2" />
+        <span>Loading request...</span>
+      </div>
+      );
+    }
+    
+    if (!userData) return null;
+    
+    return (
+      <div className="flex items-center p-2 rounded-lg hover:bg-muted">
+        <Avatar>
+          <AvatarImage src={userData.photoURL} alt={userData.displayName} />
+          <AvatarFallback>{userData.displayName?.[0]}</AvatarFallback>
+        </Avatar>
+        <div className="ml-4 flex-grow">
+          <h2 className="font-semibold">{userData.displayName}</h2>
+          <p className="text-sm text-muted-foreground">Wants to be your friend.</p>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="ghost" size="icon" onClick={() => handleAcceptRequest(request.uid)}>
+            <Check className="h-5 w-5 text-green-500" />
+          </Button>
+          <Button variant="ghost" size="icon" onClick={() => handleDeclineRequest(request.uid)}>
+            <X className="h-5 w-5 text-red-500" />
+          </Button>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <>
+      <header className="flex items-center justify-between p-2 border-b sticky top-0 bg-background z-10">
+        <h1 className="text-xl font-bold">Peek-A-Boo</h1>
+        {user ? (
+          <Link to="/settings">
+            <Avatar className="cursor-pointer">
+              <AvatarImage src={user.photoURL ?? ""} alt={user.displayName ?? ""} />
+              <AvatarFallback>{user.displayName?.[0]}</AvatarFallback>
+            </Avatar>
+          </Link>
+        ) : (
+          <Link to="/login">
+            <Button>Login</Button>
+          </Link>
+        )}
+      </header>
+      <main className="p-4 space-y-8">
+        {friendRequests.length > 0 && (
+          <section>
+            <h2 className="text-2xl font-bold mb-4">Friend Requests</h2>
+            <div className="space-y-2">
+              {friendRequests.map(req => (
+                <FriendRequestItem
+                  key={req.uid}
+                  request={req}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+        <section>
+          <h2 className="text-2xl font-bold mb-4">Friends</h2>
+          <FriendsListComponent friends={friends} />
+        </section>
+      </main>
+    </>
+  )
 }
 
 export default HomePage

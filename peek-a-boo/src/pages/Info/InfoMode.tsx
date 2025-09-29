@@ -1,51 +1,41 @@
-import { RouteComponentProps } from "react-router";
-import AnimeInfoPage from "./AnimeInfo";
+import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { AnimeInfo, MediaInfo, MediaTypes } from "../../lib/types";
+import { MediaInfo, MediaTypes } from "../../lib/types";
 import { getAnimeInfo } from "../../lib/anime";
 import LoadingComponent from "../../components/Loading";
 import InfoPage from "./InfoPage";
-import { useIonAlert, useIonToast } from "@ionic/react";
+import { toast } from "sonner";
 import { getMovieInfo, getTvInfo } from "../../lib/movies";
 
-interface InfoProps extends RouteComponentProps<{
-	type: MediaTypes
-    id: string
-}> {}
+function InfoMode() {
+  const { type, id } = useParams<{ type: string; id: string }>();
+  const [info, setInfo] = useState<MediaInfo>()
 
-const InfoMode: React.FC<InfoProps> = ({ match }) => {
-    const [info, setInfo] = useState<MediaInfo>()
-	const [ showAlert ] = useIonAlert()
-	const [ showToast ] = useIonToast()
-
-	const loadInfo = async () => {
-		if (!match.params.id) {
-			showToast("ID undefined, retrying. . .")
-			return
-		}
-		console.log(`Media Id: ${match.params.id}`)
-		const choice = async () => {
-			if (match.params.type == "anime") return await getAnimeInfo(match.params.id)
-			else if (match.params.type == "movie") return await getMovieInfo(match.params.id)
-			else if (match.params.type == "tv") return await getTvInfo(match.params.id)
-			else return await getTvInfo(match.params.id)
-		}
-		const res = await choice()
-		if (res.peek == false || typeof res.boo == "string") {
-			showToast({
-				message: `Error: ${res.boo}`,
-				duration: 3000,
-				position: 'top'
-			})
-			return
-		}
-		setInfo(res.boo)
-	}
+  const loadInfo = async () => {
+    if (!id) {
+      toast.warning("ID undefined, retrying...")
+      return
+    }
+    console.log(`Media Id: ${id}`)
+    const choice = async () => {
+      if (type == "anime") return await getAnimeInfo(id)
+      else if (type == "movie") return await getMovieInfo(id)
+      else if (type == "tv") return await getTvInfo(id)
+      else return await getTvInfo(id)
+    }
+    const res = await choice()
+    console.log(res)
+    if (res.peek == false || typeof res.boo == "string") {
+      toast.error(`Error: ${res.boo}`)
+      return
+    }
+    setInfo(res.boo)
+  }
 
 
     useEffect(() => {
-		loadInfo()
-    }, [])
+    loadInfo()
+    }, [id, type])
 
     if (!info) return <LoadingComponent choice="full_page" />
 

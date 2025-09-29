@@ -1,9 +1,8 @@
-import { Preferences } from '@capacitor/preferences'
 import { PeekABoo, Settings, User } from './types'
 
 export const getSettings = async (): Promise<PeekABoo<Settings>> => {
 
-	let { value } = await Preferences.get({ key : "base_settings" })
+	let value = localStorage.getItem("base_settings")
 	if (value == null) {
 		const res = await resetSettings()
 		value = JSON.stringify(res.boo)
@@ -17,17 +16,14 @@ export const getSettings = async (): Promise<PeekABoo<Settings>> => {
 
 export const resetSettings = async (): Promise<PeekABoo<Settings>> => {
 	const settings: Settings = {
-		AnimeType: "adfree",
+		AnimeType: "ad",
 		AnimeSource: "gogo",
 		MovieSource: "tmdb",
 		Server: "http://65.1.92.65"
 	};
-	await Preferences.set({
-		key: "base_settings",
-		value: JSON.stringify(settings)
-	})
+	localStorage.setItem("base_settings", JSON.stringify(settings))
 
-	const { value } = await Preferences.get({ key: "base_settings" })
+	const value = localStorage.getItem("base_settings")
 	if ( value == null) {
 		return {
 			peek: false,
@@ -48,12 +44,9 @@ export const resetSettings = async (): Promise<PeekABoo<Settings>> => {
 }
 
 export const setSettings = async (settings: Settings): Promise<PeekABoo<Settings | string>> => {
-	await Preferences.set({
-		key: "base_settings",
-		value: JSON.stringify(settings)
-	})
+	localStorage.setItem("base_settings", JSON.stringify(settings))
 	
-	const { value } = await Preferences.get({ key: "base_settings" })
+	const value = localStorage.getItem("base_settings")
 	if ( value == null) {
 		return {
 			peek: false,

@@ -1,21 +1,16 @@
-import { IonList } from "@ionic/react";
-import { MovieSearchResult } from "../lib/types";
-import DetailCard from "./DetailCard";
+import React from 'react';
 
-const ListVert: React.FC<MovieSearchResult[]> = (list) => {
-    return (
-        <IonList style={{ padding: "0.5rem" }}>
-            {Object.values(list).map((item, index) => (
-                <DetailCard
-                    key={index}
-                    imageUrl={item.Poster}
-                    title={item.Title}
-                    linkUrl={item.Type === "anime" ? `/anime/${item.Id}` : item.Type === "movie" ? `/movie/${item.Id}` : `/tv/${item.Id}`}
-                    subtitle={item.Type ? item.Type.charAt(0).toUpperCase() + item.Type.slice(1) : undefined}
-                />
-            ))}
-        </IonList>
-    );
+interface ListVertProps<T> {
+  items: T[];
+  renderItem: (item: T) => React.ReactNode;
 }
+
+const ListVert = <T,>({ items, renderItem }: ListVertProps<T>) => {
+  return (
+    <div className="flex flex-col gap-2">
+      {items.map((item) => renderItem(item))}
+    </div>
+  );
+};
 
 export default ListVert;

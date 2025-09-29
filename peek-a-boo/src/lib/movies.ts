@@ -1,9 +1,9 @@
 import { IEpisodeServer, ISource, MOVIES } from "@consumet/extensions";
 import { TMDB } from "../lib/tmdb";
 
-import { 
-	PeekABoo, 
-	MovieSearchResult, 
+import {
+	PeekABoo,
+	MovieSearchResult,
 	MovieInfo,
   TvInfo,
   MediaInfo
@@ -36,6 +36,14 @@ export const getFeaturedMovie = async (): Promise<PeekABoo<MediaInfo | string>> 
 		peek: true,
 		boo: data.boo
 	}
+}
+
+export const getSimilarMovies = async (id: string): Promise<PeekABoo<MovieInfo[]>> => {
+  return await movieProvider.getSimilarMovies(id);
+}
+
+export const getSimilarTvShows = async (id: string): Promise<PeekABoo<MovieInfo[]>> => {
+  return await movieProvider.getSimilarTvShows(id);
 }
 
 // getTrendingMovies() returns an array of objects of type MovieSearchResult wrapped by a PeekABoo object

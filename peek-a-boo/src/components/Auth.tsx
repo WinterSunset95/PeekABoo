@@ -1,105 +1,130 @@
-import { useContext, useEffect, useRef, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { UserContext } from "../App"
-import { IonButton, IonInput, IonTab, IonTabBar, IonTabButton, IonTabs, useIonAlert, useIonRouter } from "@ionic/react"
-import SettingsPage from "../pages/Settings"
-import { socket } from "../lib/socket"
 import { app, auth } from "../lib/firebase"
-import { FirebaseAuthentication } from "@capacitor-firebase/authentication"
-import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithCredential } from "firebase/auth"
+import { 
+  GoogleAuthProvider, 
+  onAuthStateChanged, 
+  signInWithPopup,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword
+} from "firebase/auth"
+import { toast } from "sonner"
+import { Button } from "./ui/button"
+import { Input } from "./ui/input"
+import { Label } from "./ui/label"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./ui/card"
+import { Loader2 } from "lucide-react"
 
 interface AuthProps {
     returnUrl?: string,
     modalRef?: React.RefObject<HTMLIonModalElement>
 }
 
-const AuthComponent: React.FC<AuthProps> = ({ returnUrl, modalRef }) => {
-    const { user, setUser, name} = useContext(UserContext)
-    const [ showAlert ] = useIonAlert()
+function AuthComponent({ returnUrl, modalRef }: AuthProps) {
+    const { setUser } = useContext(UserContext)
     const [disabled, setDisabled] = useState(false)
-    const router = useIonRouter()
+    const [isSignUp, setIsSignUp] = useState(false)
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
 
     const signInWithGoogle = async () => {
       try {
         setDisabled(true)
-        const result = await FirebaseAuthentication.signInWithGoogle();
-        const credential = GoogleAuthProvider.credential(result.credential?.idToken)
-        const auth = getAuth(app)
-        signInWithCredential(auth, credential)
+        const provider = new GoogleAuthProvider();
+        await signInWithPopup(auth, provider);
+        // The onAuthStateChanged listener in App.tsx will handle the user state change
       } catch (error) {
         console.error("Google Sign-In Error", error);
-        showAlert("Failed to signin with Google.")
+        toast.error("Failed to sign in with Google.")
       } finally {
         setDisabled(false)
       }
     }
 
+    const handleEmailAuth = async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!email || !password) {
+        toast.error("Please enter email and password.");
+        return;
+      }
+      setDisabled(true);
+      try {
+        if (isSignUp) {
+          await createUserWithEmailAndPassword(auth, email, password);
+        } else {
+          await signInWithEmailAndPassword(auth, email, password);
+        }
+        // The onAuthStateChanged listener in App.tsx will handle the rest
+      } catch (error: any) {
+        console.error("Email/Password Auth Error", error);
+        toast.error(error.message || "Authentication failed.");
+      } finally {
+        setDisabled(false);
+      }
+    }
+
     useEffect(() => {
       document.title = "PeekABoo"
-      onAuthStateChanged(auth, (newLoginUser) => {
-        if (newLoginUser != null) {
-          setUser(newLoginUser)
-        } else {
-          setUser(null)
-        }
+      const unsubscribe = onAuthStateChanged(auth, (newLoginUser) => {
+        setUser(newLoginUser)
       })
-    }, [])
-
-    useEffect(() => {
-      if (user != null && auth.currentUser != null) {
-          router.push("/home", "root")
-      } else {
-          router.push("/login", "root")
-      }
-    }, [user])
-
-    //const connectSocket = () => {
-    //    if (name.current.length == 0) {
-    //        showAlert("The username should not be empty")
-    //        return
-    //    }
-		//setDisabled(true)
-		//socket.connect()
-		//setTimeout(() => {
-    //        setDisabled(false)
-    //    }, 5000)
-    //}
-
-    //if (user.user) {
-    //    if (returnUrl) {
-    //        router.push(returnUrl, "forward", "replace")
-    //    } else if (modalRef && modalRef.current != null) {
-    //        modalRef.current.dismiss()
-    //    }
-    //}
+      return () => unsubscribe();
+    }, [setUser])
 
     return (
-        <div className="main">
-            <form className="form" onSubmit={(e) => {
-                e.preventDefault()
-                //connectSocket()
-            }}>
-                <IonInput placeholder='Enter a username'
-                  label='Email'
-                  fill='outline'
-                  labelPlacement='floating'
-                  value={name.current}
-                  onIonInput={(e) => name.current = e.target.value as string}
+      <div className="flex items-center justify-center min-h-screen bg-background p-4">
+        <Card className="w-full max-w-sm">
+          <CardHeader>
+            <CardTitle className="text-2xl">{isSignUp ? "Create an account" : "Welcome back"}</CardTitle>
+            <CardDescription>
+              {isSignUp ? "Enter your details to sign up." : "Enter your credentials to sign in."}
+            </CardDescription>
+          </CardHeader>
+          <form onSubmit={handleEmailAuth}>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="m@example.com"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   disabled={disabled}
-                ></IonInput>
-                <IonInput placeholder='Enter a username'
-                  label='Password'
-                  fill='outline'
-                  labelPlacement='floating'
-                  value={name.current}
-                  onIonInput={(e) => name.current = e.target.value as string}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   disabled={disabled}
-                ></IonInput>
-                <IonButton type='submit' expand='block' className='form-button' disabled={disabled}>Submit</IonButton>
-            </form>
-            <IonButton expand='block' className='form-button' disabled={disabled} onClick={signInWithGoogle}>
-              Sign in with Google
-            </IonButton>
-        </div>
+                />
+              </div>
+            </CardContent>
+            <CardFooter className="flex flex-col gap-4">
+              <Button type="submit" className="w-full" disabled={disabled}>
+                {disabled && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isSignUp ? "Sign Up" : "Sign In"}
+              </Button>
+              <Button variant="outline" type="button" className="w-full" onClick={signInWithGoogle} disabled={disabled}>
+                {disabled && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Sign in with Google
+              </Button>
+            </CardFooter>
+          </form>
+          <div className="p-6 pt-0 text-center text-sm">
+            {isSignUp ? "Already have an account?" : "Don't have an account?"}
+            <Button variant="link" onClick={() => setIsSignUp(!isSignUp)}>
+              {isSignUp ? "Sign In" : "Sign Up"}
+            </Button>
+          </div>
+        </Card>
+      </div>
     )
 }
 

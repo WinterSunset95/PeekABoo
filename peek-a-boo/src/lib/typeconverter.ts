@@ -73,7 +73,7 @@ export const tmdbTv_to_MovieInfo = (input: TmdbSearchResult<TmdbTv>): MovieInfo[
       Id: item.id.toString(),
       Title: item.name,
       Poster: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
-      Type: "movie",
+      Type: "tv",
       Overview: item.overview,
       Year: item.first_air_date,
       Duration: "",

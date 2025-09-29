@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { Friend, UserData } from '../lib/models';
-import { IonList, IonItem, IonLabel, IonAvatar, IonSpinner } from '@ionic/react';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
 import { app } from '../lib/firebase';
+import { Link } from 'react-router-dom';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { Loader2 } from 'lucide-react';
 
 interface FriendItemProps {
   friend: Friend;
 }
 
-const FriendItem: React.FC<FriendItemProps> = ({ friend }) => {
+function FriendItem({ friend }: FriendItemProps) {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -35,10 +37,10 @@ const FriendItem: React.FC<FriendItemProps> = ({ friend }) => {
 
   if (loading) {
     return (
-        <IonItem>
-            <IonSpinner name="crescent" slot="start"></IonSpinner>
-            <IonLabel>Loading friend...</IonLabel>
-        </IonItem>
+      <div className="flex items-center p-2">
+        <Loader2 className="h-5 w-5 animate-spin mr-3" />
+        <span>Loading friend...</span>
+      </div>
     )
   }
 
@@ -47,15 +49,16 @@ const FriendItem: React.FC<FriendItemProps> = ({ friend }) => {
   }
 
   return (
-    <IonItem>
-      <IonAvatar slot="start">
-        <img src={userData.photoURL} alt={userData.displayName} />
-      </IonAvatar>
-      <IonLabel>
-        <h2>{userData.displayName}</h2>
-        <p>Friends since {new Date(friend.since).toLocaleDateString()}</p>
-      </IonLabel>
-    </IonItem>
+    <Link to={`/chat/${friend.uid}`} className="flex items-center p-2 rounded-lg transition-colors hover:bg-muted">
+      <Avatar>
+        <AvatarImage src={userData.photoURL} alt={userData.displayName} />
+        <AvatarFallback>{userData.displayName?.[0]}</AvatarFallback>
+      </Avatar>
+      <div className="ml-4">
+        <h2 className="font-semibold">{userData.displayName}</h2>
+        <p className="text-sm text-muted-foreground">Friends since {new Date(friend.since).toLocaleDateString()}</p>
+      </div>
+    </Link>
   );
 };
 
@@ -63,17 +66,17 @@ interface FriendsListComponentProps {
   friends: Friend[];
 }
 
-const FriendsListComponent: React.FC<FriendsListComponentProps> = ({ friends }) => {
+function FriendsListComponent({ friends }: FriendsListComponentProps) {
   if (friends.length === 0) {
-    return <p>You have no friends yet.</p>;
+    return <p className="text-center text-muted-foreground">You have no friends yet.</p>;
   }
 
   return (
-    <IonList>
+    <div className="space-y-2">
       {friends.map(friend => (
         <FriendItem key={friend.uid} friend={friend} />
       ))}
-    </IonList>
+    </div>
   );
 };
 

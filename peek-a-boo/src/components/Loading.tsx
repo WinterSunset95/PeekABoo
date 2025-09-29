@@ -1,19 +1,17 @@
 import { useEffect, useRef } from "react"
 import { Swiper, SwiperRef, SwiperSlide } from "swiper/react"
-import "./Loading.css"
-import { IonContent, IonPage, IonText, IonTitle, IonToolbar } from "@ionic/react"
 
 const LoadingComponent: React.FC<{ choice: "card" | "card_large" | "list" | "full_page" | "vert-list" | undefined }> = ({ choice }) => {
     /* Loading components here all take up the full size of their parent */
 
     if (choice == "vert-list") {
         return (
-            <div>
+            <div className="space-y-4">
                 {Array.from({ length: 5 }, (_, index) => (
-                    <div key={index} style={{ display: 'flex', alignItems: 'center', width: '100%', margin: '10px 0', padding: '10px' }} className="loading-component-card">
-                        <div style={{ width: '100px', minWidth: '100px', height: '130px', borderRadius: '4px' }} className="loading-component-card"></div>
-                        <div style={{ marginLeft: '10px', flex: 1 }}>
-                            <div style={{ width: '70%', height: '20px', borderRadius: '4px' }} className="loading-component-card"></div>
+                    <div key={index} className="flex items-center w-full animate-pulse">
+                        <div className="w-24 h-32 bg-muted rounded-lg flex-shrink-0"></div>
+                        <div className="ml-4 flex-1 space-y-2">
+                            <div className="h-5 w-3/4 bg-muted rounded-lg"></div>
                         </div>
                     </div>
                 ))}
@@ -31,13 +29,13 @@ const LoadingComponent: React.FC<{ choice: "card" | "card_large" | "list" | "ful
         return (
             <Swiper
                 spaceBetween={10}
-                slidesPerView={2}
+                slidesPerView={2.5}
                 centeredSlides={true}
                 ref={swiper}
                 direction="horizontal"
             >
-                {Array.from({ length: 5}, (_, index) => (
-                    <SwiperSlide key={index} className="loading-component-list">
+                {Array.from({ length: 5 }, (_, index) => (
+                    <SwiperSlide key={index} className="aspect-[2/3] bg-muted animate-pulse rounded-lg">
                     </SwiperSlide>
                 ))}
             </Swiper>
@@ -46,39 +44,33 @@ const LoadingComponent: React.FC<{ choice: "card" | "card_large" | "list" | "ful
 
     if (choice == "card_large") {
         return (
-            <div className="loading-component-card-large">
+            <div className="w-full aspect-video bg-muted animate-pulse rounded-lg">
             </div>
         )
     }
 
     if (choice == "full_page") {
         return (
-            <IonPage>
-                <IonToolbar style={{ padding: '0.5rem'}}>
-                    <IonTitle slot="start"><div className="loading-episode-name"></div></IonTitle>
-                </IonToolbar>
-                <IonContent>
-                    <div className="loading-container">
-                        <div className="loading-top">
-                            <div className="loading-image"></div>
-                            <div className="loading-episode-name"></div>
-                            <div className="loading-episodes">
-                                <div className="loading-episode"></div>
-                                <div className="loading-episode"></div>
-                                <div className="loading-episode"></div>
-                                <div className="loading-episode"></div>
-                                <div className="loading-episode"></div>
-                            </div>
-                        </div>
-                        <div className="loading-bottom"></div>
+            <div className="flex flex-col h-screen bg-background">
+                <header className="p-4 border-b">
+                    <div className="w-1/2 h-8 bg-muted animate-pulse rounded-md"></div>
+                </header>
+                <main className="flex-grow p-4 space-y-4 animate-pulse">
+                    <div className="w-full aspect-video bg-muted rounded-lg"></div>
+                    <div className="w-3/4 h-8 bg-muted rounded-md"></div>
+                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                        {Array.from({ length: 5 }, (_, index) => (
+                            <div key={index} className="h-12 bg-muted rounded-md"></div>
+                        ))}
                     </div>
-                </IonContent>
-            </IonPage>
+                    <div className="w-full h-40 bg-muted rounded-lg"></div>
+                </main>
+            </div>
         )
     }
 
     return (
-        <div className="loading-component-card loading-component">
+        <div className="w-full aspect-[2/3] bg-muted animate-pulse rounded-lg">
         </div>
     )
 }

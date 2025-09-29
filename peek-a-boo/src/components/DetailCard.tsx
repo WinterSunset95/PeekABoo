@@ -1,31 +1,45 @@
-import { IonCard, IonCardHeader, IonCardTitle, IonImg, IonCardSubtitle } from "@ionic/react";
-import "./DetailCard.css"
+import { Link } from "react-router-dom";
 
 interface DetailCardProps {
     imageUrl: string;
     title: string;
     linkUrl: string;
-    subtitle?: string;
+    type?: string;
+    year?: string;
+    duration?: string;
+    overview?: string;
 }
 
-const DetailCard: React.FC<DetailCardProps> = ({ imageUrl, title, linkUrl, subtitle }) => {
+function DetailCard({ imageUrl, title, linkUrl, type, year, duration, overview }: DetailCardProps) {
+    const subtitleParts = [
+        type ? type.charAt(0).toUpperCase() + type.slice(1) : undefined,
+        year,
+        duration
+    ].filter(Boolean);
+
+    const shortenedOverview = overview && overview.length > 100 ? `${overview.substring(0, 100)}...` : overview;
+
     return (
-        <IonCard
-            routerLink={linkUrl}
-        >
-          <div className="detail-card-container">
-            <IonImg
-                src={imageUrl}
-                style={{ width: '5rem', aspectRatio: '9/16', objectFit: 'cover' }}
-            />
-            <div>
-                <IonCardHeader>
-                    <IonCardTitle>{title}</IonCardTitle>
-                    {subtitle && <IonCardSubtitle>{subtitle}</IonCardSubtitle>}
-                </IonCardHeader>
+        <Link to={linkUrl}>
+            <div className="flex bg-muted rounded-lg shadow-sm overflow-hidden transition-all hover:bg-accent hover:shadow-md">
+                <img
+                    src={imageUrl}
+                    className="w-20 aspect-[2/3] object-cover flex-shrink-0"
+                    alt={`Poster for ${title}`}
+                />
+                <div className="p-4 flex flex-col justify-center">
+                    <h3 className="font-bold text-lg text-foreground leading-tight">{title}</h3>
+                    {subtitleParts.length > 0 && (
+                        <p className="text-xs text-muted-foreground mt-1">{subtitleParts.join(" • ")}</p>
+                    )}
+                    {shortenedOverview && (
+                        <p className="text-sm text-muted-foreground mt-2 hidden sm:block">
+                            {shortenedOverview}
+                        </p>
+                    )}
+                </div>
             </div>
-          </div>
-        </IonCard>
+        </Link>
     );
 };
 
