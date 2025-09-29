@@ -76,6 +76,7 @@ Peek-a-boo is a mobile application built with Ionic, React, and Capacitor. It us
     3.  **DataUrl Memory/Type Limitation:** An attempt to use the Capacitor Camera plugin with `DataUrl` and the Firebase Web SDK's `uploadString` method solved the `Uri` issue but limited uploads to only images and was not memory-efficient for large files like videos.
     4.  **Emulator Connection Error:** A persistent `Firebase Storage: An unknown error occurred` was traced to the emulator connection setup. The fix attempt using a hardcoded IP (`10.0.2.2`) for Android was incorrect for the user's `--external` development workflow. The configuration has been reverted to use `window.location.hostname` which correctly provides the development server's IP. The native Firebase Storage plugin is also now configured to use the emulator for any potential future use.
     5.  **Final Solution:**
-        *   The Capacitor Camera and native Firebase Storage plugins were removed from the upload process.
-        *   A standard hidden `<input type="file">` is now used to allow users to select any media file (image, video, audio).
-        *   The more memory-efficient `uploadBytes` function from the Firebase Web JS SDK is used to upload the selected `File` object directly. This solution works reliably across both web and native platforms.
+        *   The unreliable native Firebase Storage plugin (`@capacitor-firebase/storage`) is bypassed for the actual upload.
+        *   The `@capacitor/camera` plugin is used to natively select photos or videos, which returns a local file URI (`file:///...`).
+        *   On both native and web, the URI is converted to a `Blob` using the standard `fetch` API. This is a crucial step that works within the Capacitor environment to access local files for upload.
+        *   The memory-efficient `uploadBytes` function from the Firebase Web JS SDK is used to upload the `Blob`. This provides a unified, reliable solution for media uploads across all platforms.
