@@ -9,7 +9,7 @@ Peek-a-boo is a mobile application built with Ionic, React, and Capacitor. It us
 ## Current Goals & Roadmap
 
 1.  **Fix "Watch Together" Feature:** *(Addressed)* The synchronized media player logic was updated to fix a bug where users could not pause playback. The fix prevents race conditions and throttles time updates.
-2.  **Resolve Mobile File Uploads:** *(Addressed)* The Firebase configuration for native platforms was updated to correctly connect to the storage emulator, which should resolve file upload issues on mobile.
+2.  **Resolve Mobile File Uploads:** *(Addressed)* The Firebase configuration and native upload logic have been corrected to resolve file upload issues on mobile.
 
 ## Key Features
 
@@ -51,6 +51,7 @@ Peek-a-boo is a mobile application built with Ionic, React, and Capacitor. It us
 -   **Solution:**
     1.  Added the missing `@capacitor-firebase/storage` plugin configuration.
     2.  The native storage plugin is now configured to use the local Firebase Storage emulator, consistent with other Firebase services like Auth and Firestore. This requires installing the `@capacitor-firebase/storage` package.
+    3.  Corrected the property name for the storage path from `path` to `ref` in the `FirebaseStorage.uploadFile` call in `ChatPage.tsx` to ensure a valid download URL is returned.
 
 ## Session Context (as of 2025-09-29)
 
@@ -63,7 +64,7 @@ Peek-a-boo is a mobile application built with Ionic, React, and Capacitor. It us
 
 ### Mobile File Upload Failure Analysis
 
--   **Problem:** File uploads do not work on native mobile platforms (Android/iOS).
+-   **Problem:** File uploads do not work on native mobile platforms (Android/iOS). The process was failing to return a valid URL, causing a Firestore `undefined` field value error.
 -   **Files:** `peek-a-boo/src/pages/ChatPage.tsx`, `peek-a-boo/src/lib/firebase.ts`
--   **Implementation:** `ChatPage.tsx` uses the standard Firebase Web JS SDK (`firebase/storage`) for handling uploads.
--   **Hypothesis:** The `firebase.ts` configuration is missing the necessary setup for the native `@capacitor-firebase/storage` plugin. While other Firebase services like Auth and Firestore have specific `useEmulator` calls for Capacitor, Storage does not. This likely means native file access and upload are not correctly configured, causing uploads to fail on mobile despite working on the web.
+-   **Implementation:** `ChatPage.tsx` uses `@capacitor-firebase/storage` for native uploads.
+-   **Hypothesis:** An incorrect parameter (`path` instead of `ref`) was used in the `FirebaseStorage.uploadFile` method call. This, combined with the initial missing native plugin configuration, caused the end-to-end upload failure. Both issues have been addressed.
