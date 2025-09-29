@@ -1,5 +1,4 @@
 // TODO: Remove IonNavLink when Ionic is fully removed from core files.
-import { IonNavLink } from "@ionic/react";
 
 interface DetailCardProps {
     imageUrl: string;

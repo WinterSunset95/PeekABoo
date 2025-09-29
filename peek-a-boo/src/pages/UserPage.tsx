@@ -176,10 +176,9 @@ const UserPage: React.FC = () => {
         </Link>
         <h1 className="text-lg font-bold truncate ml-2">{profileUser?.displayName || 'User Profile'}</h1>
       </header>
-      <IonContent>
-        <main className="p-4">
-          {renderContent()}
-        </main>
+      <main className="p-4">
+        {renderContent()}
+      </main>
     </>
   )
 }
