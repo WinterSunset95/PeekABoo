@@ -60,6 +60,7 @@ const WatchTogetherPlayer: React.FC<WatchTogetherPlayerProps> = ({ convoId }) =>
   const handlePlay = () => !isUpdatingFromRemote.current && updateRtdbState({ isPlaying: true });
   const handlePause = () => !isUpdatingFromRemote.current && updateRtdbState({ isPlaying: false });
   const handleProgress = (state: { played: number; playedSeconds: number; loaded: number; loadedSeconds: number; }) => {
+    console.log(state)
     if (playerRef.current && !isUpdatingFromRemote.current && !isSeekingLocally.current) {
       const currentTime = state.playedSeconds;
       const now = Date.now();
