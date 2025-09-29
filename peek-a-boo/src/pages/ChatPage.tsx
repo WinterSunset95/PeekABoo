@@ -147,13 +147,13 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
       const photo = await Camera.getPhoto({
         quality: 90,
         allowEditing: false,
-        resultType: CameraResultType.Uri,
+        resultType: CameraResultType.DataUrl,
         source,
       });
 
-      const path = photo.path ?? photo.webPath;
-      if (!path) {
-        throw new Error('No file path received');
+      const dataUrl = photo.dataUrl;
+      if (!dataUrl) {
+        throw new Error('No file data received');
       }
 
       setIsUploading(true);
@@ -162,12 +162,15 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
       let downloadURL: string;
 
       if (Capacitor.isNativePlatform()) {
-        console.log(filePath, path)
-        await FirebaseStorage.uploadFile({ path: filePath, uri: path });
+        await FirebaseStorage.uploadString({
+          path: filePath,
+          dataUrl: dataUrl,
+          format: "data_url",
+        });
         const { downloadUrl } = await FirebaseStorage.getDownloadUrl({ path: filePath });
         downloadURL = downloadUrl;
       } else {
-        const response = await fetch(path);
+        const response = await fetch(dataUrl);
         const blob = await response.blob();
         const storage = getStorage(app);
         const fileStorageRef = storageRef(storage, filePath);
