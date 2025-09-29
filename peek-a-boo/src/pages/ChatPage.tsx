@@ -1,5 +1,4 @@
-import { RouteComponentProps } from "react-router";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useContext, useEffect, useRef, useState } from "react";
 import { UserContext } from "../App";
 import { ChatMessage, PlaybackState } from "../lib/models";
@@ -24,13 +23,9 @@ import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ArrowLeft, Paperclip, Send, X, Loader2 } from "lucide-react";
 
-interface ChatProps extends RouteComponentProps<{
-  id: string; // This will be the chat ID
-}> {}
-
-const ChatPage: React.FC<ChatProps> = ({ match }) => {
+function ChatPage() {
   const { user } = useContext(UserContext);
-  const chatId = match.params.id;
+  const { id: chatId } = useParams<{ id: string }>();
   
   const { userData: otherUser, loading: userLoading } = useUserData(chatId);
   const [convoId, setConvoId] = useState<string | null>(null);

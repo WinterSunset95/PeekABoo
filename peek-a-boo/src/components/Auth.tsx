@@ -20,7 +20,7 @@ interface AuthProps {
     modalRef?: React.RefObject<HTMLIonModalElement>
 }
 
-const AuthComponent: React.FC<AuthProps> = ({ returnUrl, modalRef }) => {
+function AuthComponent({ returnUrl, modalRef }: AuthProps) {
     const { setUser } = useContext(UserContext)
     const [disabled, setDisabled] = useState(false)
     const [isSignUp, setIsSignUp] = useState(false)

@@ -8,7 +8,7 @@ interface FeaturedCardProps {
   item: MovieInfo;
 }
 
-const FeaturedCard: React.FC<FeaturedCardProps> = ({ item }) => {
+function FeaturedCard({ item }: FeaturedCardProps) {
   return (
     <Link to={`/${item.Type}/${item.Id}`} className="block">
       <div className="group relative aspect-video w-full rounded-lg overflow-hidden shadow-lg">

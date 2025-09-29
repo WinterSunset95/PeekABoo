@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { MovieInfo } from "../lib/types"
 
-const Card: React.FC<MovieInfo> = (item) => {
+function Card(item: MovieInfo) {
 	return (
 		<Link
 			to={item.Type == "anime" ? `/anime/${item.Id}` : item.Type == "movie" ? `/movie/${item.Id}` : `/tv/${item.Id}`}

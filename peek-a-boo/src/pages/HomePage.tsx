@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Check, X, Loader2 } from 'lucide-react';
 
-const HomePage: React.FC = () => {
+function HomePage() {
   const [friends, setFriend] = useState<Friend[]>([]);
   const [friendRequests, setFriendRequests] = useState<Friend[]>([]);
   const { user } = useContext(UserContext)
@@ -100,7 +100,7 @@ const HomePage: React.FC = () => {
     }
   };
 
-  const FriendRequestItem: React.FC<{ request: Friend; }> = ({ request }) => {
+  function FriendRequestItem({ request }: { request: Friend }) {
     const [userData, setUserData] = useState<UserData | null>(null);
     const [loading, setLoading] = useState(true);
     

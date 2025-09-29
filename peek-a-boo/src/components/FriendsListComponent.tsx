@@ -10,7 +10,7 @@ interface FriendItemProps {
   friend: Friend;
 }
 
-const FriendItem: React.FC<FriendItemProps> = ({ friend }) => {
+function FriendItem({ friend }: FriendItemProps) {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -66,7 +66,7 @@ interface FriendsListComponentProps {
   friends: Friend[];
 }
 
-const FriendsListComponent: React.FC<FriendsListComponentProps> = ({ friends }) => {
+function FriendsListComponent({ friends }: FriendsListComponentProps) {
   if (friends.length === 0) {
     return <p className="text-center text-muted-foreground">You have no friends yet.</p>;
   }

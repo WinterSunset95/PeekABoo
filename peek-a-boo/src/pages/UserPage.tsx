@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Loader2, ArrowLeft } from "lucide-react";
 
-const UserPage: React.FC = () => {
+function UserPage() {
   const { id: userId } = useParams<{ id: string }>();
   const { user } = useContext(UserContext);
   const navigate = useNavigate();

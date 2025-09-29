@@ -26,7 +26,7 @@ export const UserContext = createContext<{
   name: { current: '' },
 })
 
-const App: React.FC = () => {
+function App() {
   const name = useRef<string>("")
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)

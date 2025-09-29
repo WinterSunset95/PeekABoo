@@ -10,7 +10,7 @@ interface DetailCardProps {
     overview?: string;
 }
 
-const DetailCard: React.FC<DetailCardProps> = ({ imageUrl, title, linkUrl, type, year, duration, overview }) => {
+function DetailCard({ imageUrl, title, linkUrl, type, year, duration, overview }: DetailCardProps) {
     const subtitleParts = [
         type ? type.charAt(0).toUpperCase() + type.slice(1) : undefined,
         year,

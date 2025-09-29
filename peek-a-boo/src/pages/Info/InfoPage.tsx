@@ -25,7 +25,7 @@ interface InfoProps {
 	info: MediaInfo,
 }
 
-const InfoPage: React.FC<InfoProps> = ({ info }) => {
+function InfoPage({ info }: InfoProps) {
 	const [season, setSeason] = useState<TvSeason>()
 	const [tvEpisode, setTvEpisode] = useState<number>()
 	const [episode, setEpisode] = useState<IAnimeEpisode>();
