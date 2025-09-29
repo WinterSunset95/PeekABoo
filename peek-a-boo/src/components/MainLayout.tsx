@@ -16,7 +16,7 @@ const MainLayout = () => {
       <div className="flex-grow overflow-y-auto">
         <Outlet />
       </div>
-      <nav className="border-t bg-background sticky bottom-0">
+      <nav className="border-t bg-background sticky bottom-0 z-500">
         <div className="flex justify-around items-center h-16 max-w-md mx-auto">
           {navItems.map((item) => (
             <NavLink
