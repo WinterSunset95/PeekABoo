@@ -1,8 +1,3 @@
-// TODO: Remove IonPage and IonContent when Ionic is fully removed.
-import {
-  IonPage,
-  IonContent,
-} from '@ionic/react'
 import { useEffect, useState } from 'react'
 import { searchAnime } from '../lib/anime'
 import { MovieInfo } from '../lib/types'
@@ -66,8 +61,7 @@ const Search: React.FC = () => {
   }, [search, segment])
 
   return (
-    <IonPage>
-      {/* TODO: Remove IonPage and IonContent when Ionic is fully removed. */}
+    <>
       <header className="p-4 border-b sticky top-0 bg-background z-10">
         <div className="relative">
           <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
@@ -155,8 +149,7 @@ const Search: React.FC = () => {
             </TabsContent>
           </Tabs>
         </main>
-      </IonContent>
-    </IonPage>
+    </>
   )
 }
 

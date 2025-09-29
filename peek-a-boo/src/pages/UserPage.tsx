@@ -1,9 +1,4 @@
 import { Link, useParams } from "react-router-dom";
-// TODO: Remove IonPage and IonContent when Ionic is fully removed.
-import {
-	IonPage,
-	IonContent,
-} from '@ionic/react';
 import { useContext, useEffect, useState } from 'react';
 import { UserData } from "../lib/models";
 import { getFirestore, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
@@ -172,8 +167,7 @@ const UserPage: React.FC = () => {
   };
 
   return (
-    <IonPage>
-      {/* TODO: Remove IonPage and IonContent when Ionic is fully removed. */}
+    <>
       <header className="flex items-center p-2 border-b bg-background sticky top-0 z-10">
         <Link to="/search">
           <Button variant="ghost" size="icon">
@@ -186,8 +180,7 @@ const UserPage: React.FC = () => {
         <main className="p-4">
           {renderContent()}
         </main>
-      </IonContent>
-    </IonPage>
+    </>
   )
 }
 

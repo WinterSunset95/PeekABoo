@@ -1,4 +1,3 @@
-import { IonPage, IonContent } from "@ionic/react"
 import { Link } from "react-router-dom"
 import './AnimeInfo.css'
 import { useContext, useEffect, useState } from "react"
@@ -201,12 +200,10 @@ const InfoPage: React.FC<InfoProps> = ({ info }) => {
 
 	if (!settings) {
 		return (
-			<IonPage>
-				<div className="flex items-center justify-center h-screen">
-					<Loader2 className="h-8 w-8 animate-spin" />
-					<p className="ml-2">Loading settings...</p>
-				</div>
-			</IonPage>
+			<div className="flex items-center justify-center h-screen">
+				<Loader2 className="h-8 w-8 animate-spin" />
+				<p className="ml-2">Loading settings...</p>
+			</div>
 		)
 	}
 
@@ -360,9 +357,7 @@ const InfoPage: React.FC<InfoProps> = ({ info }) => {
 	}
 
 	return (
-		<IonPage>
-      <IonContent>
-
+		<>
 			<header className="flex items-center p-2 border-b bg-background sticky top-0 z-10">
 				<Link to="/media">
 					<Button variant="ghost" size="icon">
@@ -384,9 +379,7 @@ const InfoPage: React.FC<InfoProps> = ({ info }) => {
 					<Details />
 				</div>
 			</main>
-
-      </IonContent>
-		</IonPage>
+		</>
 	)
 }
 

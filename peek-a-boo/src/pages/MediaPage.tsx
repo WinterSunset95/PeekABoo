@@ -1,8 +1,3 @@
-// TODO: Remove IonPage and IonContent when Ionic is fully removed.
-import {
-  IonContent,
-  IonPage,
-} from '@ionic/react';
 import { toast } from 'sonner';
 import { useEffect, useState } from 'react';
 import { getTrending } from '../lib/anime';
@@ -60,14 +55,12 @@ const MediaPage: React.FC = () => {
   }, []);
 
   return (
-    <IonPage>
-      {/* TODO: Remove IonPage and IonContent when Ionic is fully removed. */}
+    <>
       <header className="p-4 border-b sticky top-0 bg-background z-10">
         <h1 className="text-xl font-bold">Media</h1>
       </header>
-      <IonContent>
-        <main className="p-4 space-y-8">
-          <section>
+      <main className="p-4 space-y-8">
+        <section>
             <h2 className="text-2xl font-bold mb-4">Featured</h2>
             {featuredItem ? (
               <FeaturedCard item={featuredItem} />
@@ -98,8 +91,7 @@ const MediaPage: React.FC = () => {
             }
           </section>
         </main>
-      </IonContent>
-    </IonPage>
+    </>
   );
 };
 

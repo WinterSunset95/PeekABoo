@@ -1,4 +1,3 @@
-import { IonPage, IonContent } from "@ionic/react"
 import React, { useContext, useEffect, useState } from "react"
 import { UserContext } from "../App"
 import { auth } from "../lib/firebase"
@@ -63,7 +62,7 @@ const SettingsPage: React.FC = () => {
 
 	if (!user) {
 		return (
-			<IonPage>
+			<>
 				<header className="p-4 border-b">
 					<h1 className="text-xl font-bold">Settings</h1>
 				</header>
@@ -74,13 +73,12 @@ const SettingsPage: React.FC = () => {
 						<Button onClick={() => console.log("Hello")} className="mt-4">Login</Button>
 					</div>
 				</main>
-			</IonPage>
+			</>
 		)
 	}
 
 	return (
-		<IonPage>
-      <IonContent>
+		<>
 			<header className="p-4 border-b sticky top-0 bg-background z-10">
 				<h1 className="text-xl font-bold">Settings</h1>
 			</header>
@@ -200,8 +198,7 @@ const SettingsPage: React.FC = () => {
 				</AlertDialog>
 
 			</main>
-      </IonContent>
-		</IonPage>
+		</>
 	)
 }
 

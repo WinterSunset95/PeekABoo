@@ -1,5 +1,3 @@
-import { IonPage } from "@ionic/react";
-
 import { RouteComponentProps } from "react-router";
 import { Link } from "react-router-dom";
 import { useContext, useEffect, useRef, useState } from "react";
@@ -207,7 +205,6 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
   };
 
   return (
-    <IonPage>
     <div className="flex flex-col h-[100dvh] bg-background text-foreground">
       <header className="flex items-center p-2 border-b border-border shadow-sm">
         <Link to="/home">
@@ -288,7 +285,6 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
         </form>
       </footer>
     </div>
-    </IonPage>
   );
 };
 
