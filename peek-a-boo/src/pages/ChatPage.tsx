@@ -30,7 +30,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { app } from "../lib/firebase";
-import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
+import { getStorage, ref as storageRef, uploadString, getDownloadURL } from "firebase/storage";
 import { useUserData } from "../hooks/useUserData";
 import ChatMessageItem from "../components/ChatMessageItem";
 import { attachOutline, closeCircleOutline, sendOutline } from "ionicons/icons";
@@ -161,22 +161,10 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
       const filePath = `chats/${convoId}/${fileName}`;
       let downloadURL: string;
 
-      if (Capacitor.isNativePlatform()) {
-        await FirebaseStorage.uploadString({
-          path: filePath,
-          dataUrl: dataUrl,
-          format: "data_url",
-        });
-        const { downloadUrl } = await FirebaseStorage.getDownloadUrl({ path: filePath });
-        downloadURL = downloadUrl;
-      } else {
-        const response = await fetch(dataUrl);
-        const blob = await response.blob();
-        const storage = getStorage(app);
-        const fileStorageRef = storageRef(storage, filePath);
-        await uploadBytes(fileStorageRef, blob);
-        downloadURL = await getDownloadURL(fileStorageRef);
-      }
+      const storage = getStorage(app);
+      const fileStorageRef = storageRef(storage, filePath);
+      await uploadString(fileStorageRef, dataUrl, 'data_url');
+      downloadURL = await getDownloadURL(fileStorageRef);
       
       await sendMediaMessage(downloadURL, 'image', fileName);
 
