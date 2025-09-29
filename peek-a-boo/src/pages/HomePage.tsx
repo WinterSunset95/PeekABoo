@@ -162,8 +162,7 @@ const HomePage: React.FC = () => {
   };
 
   return (
-    <IonPage>
-      {/* TODO: Remove IonPage and IonContent when Ionic is fully removed. */}
+    <>
       <header className="flex items-center justify-between p-2 border-b sticky top-0 bg-background z-10">
         <h1 className="text-xl font-bold">Peek-A-Boo</h1>
         {user ? (
@@ -179,28 +178,26 @@ const HomePage: React.FC = () => {
           </Link>
         )}
       </header>
-      <IonContent>
-        <main className="p-4 space-y-8">
-          {friendRequests.length > 0 && (
-            <section>
-              <h2 className="text-2xl font-bold mb-4">Friend Requests</h2>
-              <div className="space-y-2">
-                {friendRequests.map(req => (
-                  <FriendRequestItem 
-                    key={req.uid} 
-                    request={req}
-                  />
-                ))}
-              </div>
-            </section>
-          )}
+      <main className="p-4 space-y-8">
+        {friendRequests.length > 0 && (
           <section>
-            <h2 className="text-2xl font-bold mb-4">Friends</h2>
-            <FriendsListComponent friends={friends} />
+            <h2 className="text-2xl font-bold mb-4">Friend Requests</h2>
+            <div className="space-y-2">
+              {friendRequests.map(req => (
+                <FriendRequestItem
+                  key={req.uid}
+                  request={req}
+                />
+              ))}
+            </div>
           </section>
-        </main>
-      </IonContent>
-    </IonPage>
+        )}
+        <section>
+          <h2 className="text-2xl font-bold mb-4">Friends</h2>
+          <FriendsListComponent friends={friends} />
+        </section>
+      </main>
+    </>
   )
 }
 
