@@ -70,6 +70,7 @@ import {
   onAuthStateChanged,
   User
 } from 'firebase/auth';
+import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
 import AuthComponent from './components/Auth';
 
 setupIonicReact();
@@ -187,7 +188,24 @@ const App: React.FC = () => {
     checkPermissions()
     loadUpdates()
 
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // Check for user document and create if it doesn't exist
+        const db = getFirestore(app);
+        const userDocRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(userDocRef);
+
+        if (!docSnap.exists()) {
+          const newUser = {
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName,
+            photoURL: user.photoURL,
+            createdAt: user.metadata.creationTime,
+          };
+          await setDoc(userDocRef, newUser);
+        }
+      }
       setUser(user);
       setLoading(false);
     });
