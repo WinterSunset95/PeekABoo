@@ -91,7 +91,7 @@ const WatchTogetherPlayer: React.FC<WatchTogetherPlayerProps> = ({ convoId }) =>
   }
 
   return (
-    <div className="sticky top-0 bg-background z-50 p-2 border-b border-border shadow-lg">
+    <div className="sticky top-0 bg-background/80 backdrop-blur-sm z-50 p-2 border-b border-border shadow-lg">
       <div className="flex justify-between items-center mb-1">
         <p className="text-sm font-bold text-foreground truncate">{playbackState.title}</p>
         <Button variant="ghost" size="icon" onClick={handleCloseSession} className="text-muted-foreground">
