@@ -2,16 +2,10 @@
 import { getApp, initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { connectAuthEmulator, getAuth } from "firebase/auth";
-import { FirebaseAuthentication, UseEmulatorOptions } from "@capacitor-firebase/authentication";
-import { FirebaseFirestore } from "@capacitor-firebase/firestore";
-import { FirebaseFunctions } from "@capacitor-firebase/functions";
-import { FirebaseStorage } from "@capacitor-firebase/storage";
 import { connectFirestoreEmulator, getFirestore } from "firebase/firestore";
 import { connectFunctionsEmulator, getFunctions } from "firebase/functions";
 import { connectStorageEmulator, getStorage } from "firebase/storage";
 import { connectDatabaseEmulator, getDatabase } from "firebase/database";
-import { FirebaseApp } from "@capacitor-firebase/app";
-import { Capacitor } from "@capacitor/core";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -46,13 +40,6 @@ if (process.env.NODE_ENV === "development") {
   connectDatabaseEmulator(database, host, 9000);
   connectStorageEmulator(storage, host, 9199);
 
-  // If on native platform, connect native plugins to emulators
-  if (Capacitor.getPlatform() !== 'web') {
-    FirebaseAuthentication.useEmulator({ host: host, port: 9099 });
-    FirebaseFirestore.useEmulator({ host: host, port: 8080 });
-    FirebaseFunctions.useEmulator({ host: host, port: 5001 });
-    FirebaseStorage.useEmulator({ host: host, port: 9199 });
-  }
 }
 
 //export const analytics = getAnalytics(app);

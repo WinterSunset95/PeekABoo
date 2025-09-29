@@ -35,9 +35,6 @@ import { useUserData } from "../hooks/useUserData";
 import ChatMessageItem from "../components/ChatMessageItem";
 import { attachOutline, closeCircleOutline, sendOutline } from "ionicons/icons";
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-import { Capacitor } from '@capacitor/core';
-import { Directory, Filesystem } from '@capacitor/filesystem';
-import { FirebaseStorage } from '@capacitor-firebase/storage';
 import { PlaybackState } from "../lib/models";
 import { database } from "../lib/firebase";
 import { ref, onValue, set, serverTimestamp as rtdbServerTimestamp, off } from "firebase/database";
@@ -178,33 +175,13 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
       const filePath = `chats/${convoId}/${fileName}`;
       let downloadURL: string;
 
-      if (Capacitor.isNativePlatform()) {
-        // To avoid permission issues, copy the file to a more permanent location
-        const savedFile = await Filesystem.copy({
-          from: path,
-          to: fileName,
-          directory: Directory.Data, // Use an app-private directory
-        });
-
-        await FirebaseStorage.uploadFile({
-          path: filePath,
-          uri: savedFile.uri,
-        });
-        const result = await FirebaseStorage.getDownloadUrl({ path: filePath });
-        downloadURL = result.downloadUrl;
-        
-        // Clean up copied file
-        await Filesystem.deleteFile({ path: savedFile.uri });
-
-      } else {
-        // Web implementation remains the same
-        const response = await fetch(path);
-        const blob = await response.blob();
-        const storage = getStorage(app);
-        const fileStorageRef = storageRef(storage, filePath);
-        await uploadBytes(fileStorageRef, blob);
-        downloadURL = await getDownloadURL(fileStorageRef);
-      }
+      // Web implementation
+      const response = await fetch(path);
+      const blob = await response.blob();
+      const storage = getStorage(app);
+      const fileStorageRef = storageRef(storage, filePath);
+      await uploadBytes(fileStorageRef, blob);
+      downloadURL = await getDownloadURL(fileStorageRef);
       
       // The camera plugin only provides 'image' or 'video'
       const mediaType = photo.format === 'mp4' ? 'video' : 'image';

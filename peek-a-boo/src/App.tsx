@@ -56,12 +56,8 @@ import MediaPage from './pages/MediaPage';
 import InfoMode from './pages/Info/InfoMode';
 import ChatPage from './pages/ChatPage';
 import { getUpdates } from './lib/backendconnection';
-import { Directory, Filesystem } from '@capacitor/filesystem';
 import { getSettings } from './lib/storage';
-import { FileOpener } from '@capacitor-community/file-opener';
 import UserPage from './pages/UserPage'
-import { StatusBar } from '@capacitor/status-bar';
-import { Capacitor } from '@capacitor/core';
 import { app, auth } from "./lib/firebase"
 import {
   getAuth,
@@ -91,102 +87,8 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState(true)
   const [showAlert, controls] = useIonAlert()
 
-  if (Capacitor.getPlatform() != 'web') {
-    StatusBar.setOverlaysWebView({ overlay: false })
-  }
-
-  const checkPermissions = async () => {
-    const res = await Filesystem.checkPermissions()
-    if (res.publicStorage != 'granted') {
-      const data = await Filesystem.requestPermissions()
-      if (data.publicStorage != 'granted') {
-        showAlert("Storage permissions are necessary for automatic updates and file downloads!!")
-      }
-    }
-  }
-
-  const loadUpdates = async () => {
-    const res = await getUpdates()
-    if (appVersion != res.latest.Version) {
-      showAlert({
-        header: `A new version (${res.latest.Version}) is available`,
-        message: `
-        ChangeLogs: \n\n
-        ${res.latest.ChangeLogs}
-        `,
-        buttons: [
-          {
-            text: 'Ignore',
-            role: 'cancel',
-            handler: () => {
-              console.log("Cancelled")
-            }
-          },
-          {
-            text: 'Update',
-            role: 'accept',
-            handler: () => {
-              downloadUpdate(res.latest.Apk)
-            }
-          }
-        ]
-      })
-    }
-  }
-
-  const downloadUpdate = async (filepath: string) => {
-    const filenameArray = filepath.split("/")
-    const filename = filenameArray[filenameArray.length-1]
-    let url = ""
-    const { boo } = await getSettings()
-    if (filepath.includes("http")) {
-      url = filepath
-    } else {
-      url = `${boo.Server}${filepath}`
-    }
-    console.log(filename)
-    const res = await Filesystem.downloadFile({
-      method: 'GET',
-      url: url,
-      directory: Directory.ExternalStorage,
-      path: `Download/${filename}`
-    })
-    if (res.path) {
-      showAlert({
-        header: "Download successful!",
-        message: `File was successfully downloaded to: ${res.path}. Install now?`,
-        buttons: [
-          {
-            text: 'Later',
-            role: 'cancel',
-            handler: () => {
-              console.log("Will install later")
-            }
-          },
-          {
-            text: 'Install',
-            role: 'accept',
-            handler: async () => {
-              try {
-                await FileOpener.open({
-                  filePath: res.path as string
-                })
-              } catch (e) {
-                console.log(e)
-              }
-            }
-          },
-        ]
-      })
-    } else {
-      showAlert("Failed to download file")
-    }
-  }
-
   useEffect(() => {
     document.title = "PeekABoo"
-    checkPermissions()
-    loadUpdates()
 
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
