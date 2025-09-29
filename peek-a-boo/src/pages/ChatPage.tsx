@@ -18,13 +18,11 @@ import { ref, onValue, set, serverTimestamp as rtdbServerTimestamp, off } from "
 import { useUserData } from "../hooks/useUserData";
 import ChatMessageItem from "../components/ChatMessageItem";
 import WatchTogetherPlayer from "../components/WatchTogetherPlayer";
-import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { ArrowLeft, Paperclip, Send, X, Loader2, Camera as CameraIcon, Image as ImageIcon } from "lucide-react";
+import { ArrowLeft, Paperclip, Send, X, Loader2 } from "lucide-react";
 
 interface ChatProps extends RouteComponentProps<{
   id: string; // This will be the chat ID
@@ -42,8 +40,8 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
   const [replyingTo, setReplyingTo] = useState<ChatMessage | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [activeWatchSession, setActiveWatchSession] = useState(false);
-  const [showAttachSheet, setShowAttachSheet] = useState(false);
   const contentRef = useRef<HTMLElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!user || !chatId) return;
@@ -142,49 +140,40 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
     setReplyingTo(null);
   };
 
-  const selectAndUploadFile = async (source: CameraSource) => {
-    if (!user || !convoId) return;
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user || !convoId) return;
 
+    const fileType = file.type.split('/')[0] as 'image' | 'video' | 'audio';
+    if (!['image', 'video', 'audio'].includes(fileType)) {
+      toast.error('Unsupported file type.');
+      return;
+    }
+
+    setIsUploading(true);
     try {
-      const photo = await Camera.getPhoto({
-        quality: 90,
-        allowEditing: false,
-        resultType: CameraResultType.Uri,
-        source,
-      });
-
-      const path = photo.path ?? photo.webPath;
-      if (!path) {
-        throw new Error("No file path available for upload.");
-      }
-      
-      setIsUploading(true);
-      const fileExtension = photo.format;
-      const fileName = `${new Date().getTime()}.${fileExtension}`;
-      const filePath = `chats/${convoId}/${fileName}`;
-      let downloadURL: string;
-
-      // Web implementation
-      const response = await fetch(path);
-      const blob = await response.blob();
       const storage = getStorage(app);
+      const filePath = `chats/${convoId}/${Date.now()}-${file.name}`;
       const fileStorageRef = storageRef(storage, filePath);
-      await uploadBytes(fileStorageRef, blob);
-      downloadURL = await getDownloadURL(fileStorageRef);
       
-      // The camera plugin only provides 'image' or 'video'
-      const mediaType = photo.format === 'mp4' ? 'video' : 'image';
-      await sendMediaMessage(downloadURL, mediaType, fileName);
+      await uploadBytes(fileStorageRef, file);
+      const downloadURL = await getDownloadURL(fileStorageRef);
+      
+      await sendMediaMessage(downloadURL, fileType, file.name);
 
-    } catch (e) {
-      console.error('File upload error', e);
-      if (e instanceof Error && e.message.includes('cancelled')) {
-        // User cancelled, do nothing.
+    } catch (error) {
+      console.error("File upload error", error);
+      if (error instanceof Error) {
+        toast.error(`Upload failed: ${error.message}`);
       } else {
-        toast.error('File upload failed.');
+        toast.error("An unknown upload error occurred.");
       }
     } finally {
       setIsUploading(false);
+      // Reset file input to allow selecting the same file again
+      if (e.target) {
+        e.target.value = '';
+      }
     }
   };
 
@@ -249,28 +238,16 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
           </div>
         )}
         <form className="flex items-center gap-2" onSubmit={handleSendMessage}>
-          <Sheet open={showAttachSheet} onOpenChange={setShowAttachSheet}>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" disabled={isUploading}>
-                <Paperclip className="h-6 w-6" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="bottom">
-              <SheetHeader>
-                <SheetTitle>Attach Media</SheetTitle>
-              </SheetHeader>
-              <div className="grid gap-4 py-4">
-                <Button variant="outline" className="justify-start gap-2" onClick={() => { selectAndUploadFile(CameraSource.Camera); setShowAttachSheet(false); }}>
-                  <CameraIcon className="h-5 w-5" />
-                  Take Photo/Video
-                </Button>
-                <Button variant="outline" className="justify-start gap-2" onClick={() => { selectAndUploadFile(CameraSource.Photos); setShowAttachSheet(false); }}>
-                  <ImageIcon className="h-5 w-5" />
-                  Choose from Gallery
-                </Button>
-              </div>
-            </SheetContent>
-          </Sheet>
+          <Button variant="ghost" size="icon" disabled={isUploading} onClick={() => fileInputRef.current?.click()}>
+            <Paperclip className="h-6 w-6" />
+          </Button>
+          <input
+            type="file"
+            ref={fileInputRef}
+            hidden
+            onChange={handleFileSelect}
+            accept="image/*,video/*,audio/*"
+          />
 
           <Input
             value={newMessage}
