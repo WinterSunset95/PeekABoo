@@ -4,25 +4,24 @@ This file is maintained by the AI assistant to provide context across developmen
 
 ## Project Overview
 
-Peek-a-boo is a mobile application built with Ionic, React, and Capacitor. It uses Firebase for its backend services. The core feature is a chat application with rich media sharing and a synchronized "Watch Together" media playback functionality.
+Peek-a-boo is a web application built with React, Vite, Tailwind CSS, and Shadcn UI. It uses Firebase for its backend services. The core feature is a chat application with rich media sharing and a synchronized "Watch Together" media playback functionality. The project was recently migrated from an Ionic/Capacitor-based hybrid mobile app to a web-only focus.
 
 ## Current Goals & Roadmap
 
-1.  **Improve "Watch Together" Feature:** *(Addressed)* The synchronized media player logic has been updated for better reliability. Continuous time updates via `onProgress` have been removed. Instead, the playback position is now synchronized only during key events: play, pause, and seek.
-2.  **Implement YouTube Watch Together:** *(In Progress)* The current goal is to allow users to share YouTube links and watch them together with synchronized playback.
-3.  **Restore File Uploads:** *(In Progress)* Restore the native file upload functionality for sharing photos and videos.
+1.  **Complete Web Migration:** *(Addressed)* The application has been fully migrated from an Ionic/Capacitor stack to a modern web stack (React, Vite, Tailwind, Shadcn UI). All native dependencies have been removed.
+2.  **UI Enhancements:** *(In Progress)* Polish the new UI, including adding blur effects to headers and navigation areas and improving active state highlighting for navigation elements.
 
 ## Key Features
 
 -   **Real-time Chat:** One-on-one conversations using Firestore.
 -   **Media Sharing:** Users can share YouTube videos for synchronized playback and upload their own photos/videos.
--   **Reply to Message:** A swipe-to-reply gesture allows quoting previous messages.
+-   **Reply to Message:** A hover-to-reveal reply button allows quoting previous messages.
 -   **Watch Together:** A synchronized media playback feature using Firebase Realtime Database to keep player states (play/pause, progress) in sync across participants.
 
 ## Tech Stack
 
--   **Frontend:** React, TypeScript, Ionic Framework
--   **Mobile Wrapper:** Capacitor
+-   **Frontend:** React, TypeScript, Vite, Tailwind CSS, Shadcn UI
+-   **Routing:** React Router DOM
 -   **Backend:** Firebase
     -   Authentication
     -   Firestore (for chat messages)
@@ -36,6 +35,16 @@ Peek-a-boo is a mobile application built with Ionic, React, and Capacitor. It us
 -   **Code Style:** Follow existing patterns in the codebase. Components are functional with Hooks.
 
 ## Session Changelog (as of 2025-09-29)
+
+### Migration from Ionic/Capacitor to Web Stack
+
+-   **Files:** Project-wide.
+-   **Problem:** Ionic dependencies were causing `react-router-dom` version conflicts and limiting the project to a hybrid-app feel. The goal shifted to a pure web application.
+-   **Solution:**
+    1.  **Component Refactoring:** Systematically refactored all components and pages (`Auth`, `Card`, `ChatPage`, `HomePage`, `SettingsPage`, etc.) to remove Ionic UI components (`IonPage`, `IonButton`, `IonInput`, etc.) and replace them with a combination of standard HTML elements, Tailwind CSS for styling, and Shadcn UI components (`Button`, `Card`, `Avatar`, `Input`, etc.).
+    2.  **Routing Migration:** Replaced `@ionic/react-router` with `react-router-dom`, converting all navigation logic to use `Link` and `useNavigate`. Implemented a declarative routing structure in `App.tsx` with a `MainLayout` for shared UI.
+    3.  **Plugin & Hook Replacement:** Replaced Capacitor plugins (`Preferences`, `Camera`) and Ionic hooks (`useIonAlert`, `useIonToast`) with web-native equivalents (`localStorage`, `<input type="file">`, `sonner` toasts).
+    4.  **Dependency Cleanup:** Removed all `@ionic/*` and `@capacitor/*` packages from `package.json`, deleted native `android`/`ios` directories, and removed framework-specific configuration files (`ionic.config.json`, `capacitor.config.ts`).
 
 ### Fixes for "Watch Together"
 
@@ -62,23 +71,9 @@ Peek-a-boo is a mobile application built with Ionic, React, and Capacitor. It us
 -   **Triggering `updateRtdbState`:** The function is called on `onPlay`, `onPause`, and `onTimeUpdate` events of the media element.
 -   **Hypothesis:** The `isUpdatingFromRemote` ref, intended to prevent infinite loops between clients, might be incorrectly blocking user-initiated pause events from being sent to the Realtime Database. The `onTimeUpdate` event continuously sends updates while playing, which might interfere with the `onPause` event handler logic.
 
-### Mobile File Upload Failure Analysis
+### Mobile File Upload Failure Analysis (Historical)
 
--   **Problem:** File uploads do not work on native mobile platforms (Android/iOS). The process was failing to return a valid URL, causing a Firestore `undefined` field value error.
--   **Files:** `peek-a-boo/src/pages/ChatPage.tsx`, `peek-a-boo/src/lib/firebase.ts`
--   **Implementation:** `ChatPage.tsx` uses `@capacitor-firebase/storage` for native uploads.
--   **Hypothesis & Solution History:** The file upload feature went through several iterations to resolve issues on native platforms.
-    1.  **Initial Problem:** Uploads failed on native. This was due to missing native plugin configuration in `MainActivity.java` and `AndroidManifest.xml`.
-    2.  **Capacitor Plugin Issues:** The `@capacitor-firebase/storage` plugin proved unreliable. It failed with `Uri` paths due to file access issues ("Object does not exist") and its `uploadString` method was not implemented on Android.
-    3.  **DataUrl Memory/Type Limitation:** An attempt to use the Capacitor Camera plugin with `DataUrl` and the Firebase Web SDK's `uploadString` method solved the `Uri` issue but limited uploads to only images and was not memory-efficient for large files like videos.
-    4.  **Emulator Connection Error:** A persistent `Firebase Storage: An unknown error occurred` was traced to the emulator connection setup. The fix attempt using a hardcoded IP (`10.0.2.2`) for Android was incorrect for the user's `--external` development workflow. The configuration has been reverted to use `window.location.hostname` which correctly provides the development server's IP. The native Firebase Storage plugin is also now configured to use the emulator for any potential future use.
-    5.  **Final Solution (Hybrid Native/Web):**
-        *   **Native Platform:**
-            *   The `@capacitor/camera` plugin selects a media file and returns a temporary cache URI.
-            *   To bypass Android file permission issues that cause "Object does not exist" errors, the `@capacitor/filesystem` plugin is used to copy the file from the temporary cache to a private app directory (`Directory.Data`).
-            *   The reliable native `@capacitor-firebase/storage` plugin is then used to `uploadFile` using the new, accessible URI.
-            *   The copied file is deleted after a successful upload.
-        *   **Web Platform:**
-            *   The `@capacitor/camera` plugin returns a `webPath`.
-            *   This path is converted to a `Blob` using the `fetch` API.
-            *   The memory-efficient `uploadBytes` function from the Firebase Web JS SDK is used to upload the `Blob`.
+-   **Problem:** *This section documents the historical challenges with native file uploads before the project was migrated to a web-only stack.* File uploads failed on native mobile platforms.
+-   **Files:** (Formerly) `peek-a-boo/src/pages/ChatPage.tsx`, `peek-a-boo/src/lib/firebase.ts`
+-   **Implementation:** (Formerly) `ChatPage.tsx` used various Capacitor plugins.
+-   **Hypothesis & Solution History:** The native file upload feature went through several iterations to resolve issues on native platforms, facing challenges with plugin reliability, file URI permissions, and emulator connections. Ultimately, this complexity contributed to the decision to pivot to a web-only application, where file uploads are handled reliably via the standard `<input type="file">` element and the Firebase Web SDK.
