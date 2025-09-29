@@ -1,0 +1,5 @@
+@import "tailwindcss";
+
+.firebase-emulator-warning {
+  display: none !important;
+}

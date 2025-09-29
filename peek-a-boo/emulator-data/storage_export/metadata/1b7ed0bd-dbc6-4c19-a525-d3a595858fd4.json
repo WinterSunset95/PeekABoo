@@ -1,0 +1,19 @@
+{
+  "name": "chats/mm4rHpAmwZmsrHZ8cncYCt17Zi6J-twGhkwxA8D9lL6kQtL1vpdYJ8aHY/1759101923692-new_test.mp4",
+  "bucket": "peekaboo-fbf1a.firebasestorage.app",
+  "metageneration": 1,
+  "generation": 1759101923856,
+  "contentType": "video/mp4",
+  "storageClass": "STANDARD",
+  "contentDisposition": "inline",
+  "downloadTokens": [
+    "dfceed8e-98f7-4f1a-b26e-eec1e7708f05"
+  ],
+  "etag": "eZAQfGCfMx51q2qA4Nk+ScM9c/k",
+  "customMetadata": {},
+  "timeCreated": "2025-09-28T23:25:23.856Z",
+  "updated": "2025-09-28T23:25:23.856Z",
+  "size": 5886532,
+  "md5Hash": "1+73gw92R+whQiJtuHRwKw==",
+  "crc32c": "922508638"
+}

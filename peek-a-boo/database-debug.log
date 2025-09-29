@@ -1,9 +1,4 @@
-21:47:55.702 [NamespaceSystem-akka.actor.default-dispatcher-6] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started
-21:47:56.028 [main] INFO com.firebase.server.forge.App$ - Listening at 0.0.0.0:9000
-21:48:29.592 [NamespaceSystem-akka.actor.default-dispatcher-6] INFO com.firebase.core.namespace.NamespaceActor - peekaboo-fbf1a-default-rtdb successfully activated FBKV (SurveyIdle(0)) wait: 646ms, init: 0ms
-21:48:29.896 [NamespaceSystem-blocking-namespace-operation-dispatcher-8] INFO com.firebase.core.namespace.StateManager - Namespace peekaboo-fbf1a-default-rtdb status Active to Active
-03:37:38.245 [FirebaseWorkerPool-1-3] WARN com.firebase.core.persistence.backend.dummy.EmulatorMetadataPersistence - Multiple projectIds are not recommended in single project mode. Requested 
-namespace peekaboo-fbf1a, but the emulator is configured for peekaboo-fbf1a-default-rtdb. To 
-opt-out of single project mode add/set the singleProjectMode: false property in 
-the firebase.json emulators config. 
-03:37:38.297 [NamespaceSystem-akka.actor.default-dispatcher-13] INFO com.firebase.core.namespace.NamespaceActor - peekaboo-fbf1a successfully activated FBKV (SurveyIdle(0)) wait: 20ms, init: 0ms
+21:19:20.352 [NamespaceSystem-akka.actor.default-dispatcher-5] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started
+21:19:20.531 [main] INFO com.firebase.server.forge.App$ - Listening at 0.0.0.0:9000
+21:19:39.370 [NamespaceSystem-akka.actor.default-dispatcher-5] INFO com.firebase.core.namespace.NamespaceActor - peekaboo-fbf1a-default-rtdb successfully activated FBKV (SurveyIdle(0)) wait: 147ms, init: 0ms
+21:19:39.471 [NamespaceSystem-blocking-namespace-operation-dispatcher-7] INFO com.firebase.core.namespace.StateManager - Namespace peekaboo-fbf1a-default-rtdb status Active to Active

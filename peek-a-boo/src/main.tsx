@@ -1,7 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import "./main.css";
 import App from './App';
-import { defineCustomElements } from '@ionic/pwa-elements/loader';
 
 const container = document.getElementById('root');
 const root = createRoot(container!);
@@ -13,7 +13,6 @@ const root = createRoot(container!);
 //	console.log(e)
 //	console.log("service workers are not supported")
 //}
-defineCustomElements(window)
 root.render(
   <React.StrictMode>
     <App />

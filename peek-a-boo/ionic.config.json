@@ -1,7 +1,0 @@
-{
-  "name": "PeekABoo",
-  "integrations": {
-    "capacitor": {}
-  },
-  "type": "react-vite"
-}

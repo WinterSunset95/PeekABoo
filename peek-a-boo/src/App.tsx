@@ -2,7 +2,6 @@ import React, { createContext, useEffect, useRef, useState } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 /* Theme variables */
-import './theme/variables.css';
 import SettingsPage from './pages/Settings';
 import HomePage from './pages/HomePage';
 import Search from './pages/Search';

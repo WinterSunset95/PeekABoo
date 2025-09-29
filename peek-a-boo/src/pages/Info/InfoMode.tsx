@@ -14,7 +14,7 @@ interface InfoProps extends RouteComponentProps<{
 }> {}
 
 const InfoMode: React.FC<InfoProps> = ({ match }) => {
-    const [info, setInfo] = useState<MediaInfo>()
+  const [info, setInfo] = useState<MediaInfo>()
 
   const loadInfo = async () => {
     if (!match.params.id) {

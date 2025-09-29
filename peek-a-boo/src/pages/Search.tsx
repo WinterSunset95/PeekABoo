@@ -73,7 +73,6 @@ const Search: React.FC = () => {
           />
         </div>
       </header>
-      <IonContent>
         <main className="p-4">
           <Tabs value={segment} onValueChange={setSegment}>
             <TabsList className="grid w-full grid-cols-4">

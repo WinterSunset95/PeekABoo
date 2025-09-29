@@ -101,7 +101,7 @@ const WatchTogetherPlayer: React.FC<WatchTogetherPlayerProps> = ({ convoId }) =>
       <div className="relative pt-[56.25%]">
         <ReactPlayer
           ref={playerRef}
-          url={playbackState.mediaUrl}
+          src={playbackState.mediaUrl}
           playing={playbackState.isPlaying}
           controls
           onPlay={handlePlay}

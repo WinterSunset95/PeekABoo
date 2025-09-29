@@ -1,10 +1,3 @@
-import {
-	IonPage,
-	IonContent,
-	IonHeader,
-	IonTitle,
-	IonToolbar
-} from '@ionic/react';
 import { Swiper, SwiperRef, SwiperSlide } from 'swiper/react';
 import { MovieInfo, MovieSearchResult } from '../lib/types';
 import Card from './Card';
