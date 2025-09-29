@@ -1,0 +1,10 @@
+/drop
+/add       peek-a-boo/src/components/ChatMessageItem.css
+/add       peek-a-boo/src/components/ChatMessageItem.tsx
+/add       peek-a-boo/src/components/WatchTogetherPlayer.css
+/add       peek-a-boo/src/components/WatchTogetherPlayer.tsx
+/add       peek-a-boo/src/lib/firebase.ts
+/add       peek-a-boo/src/lib/models.ts
+/add       peek-a-boo/src/lib/tmdb.ts
+/add       peek-a-boo/src/pages/ChatPage.css
+/add       peek-a-boo/src/pages/ChatPage.tsx

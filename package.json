@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@capacitor-firebase/storage": "^7.3.1"
+  }
+}

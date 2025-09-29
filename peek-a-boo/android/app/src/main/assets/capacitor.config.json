@@ -1,0 +1,25 @@
+{
+	"appId": "github.WinterSunset95.PeekABoo",
+	"appName": "PeekABoo",
+	"webDir": "dist",
+	"android": {
+		"allowMixedContent": true
+	},
+	"server": {
+		"androidScheme": "http",
+		"cleartext": true,
+		"url": "http://192.168.214.210:8100"
+	},
+	"plugins": {
+		"CapacitorHttp": {
+			"enabled": true
+		},
+		"FirebaseAuthentication": {
+			"skipNativeAuth": false,
+			"providers": [
+				"google.com",
+				"phone"
+			]
+		}
+	}
+}
