@@ -16,7 +16,7 @@ const MainLayout = () => {
       <div className="flex-grow overflow-y-auto">
         <Outlet />
       </div>
-      <nav className="border-t bg-background sticky bottom-0 z-500">
+      <nav className="border-t bg-background/80 backdrop-blur-sm sticky bottom-0 z-500">
         <div className="flex justify-around items-center h-16 max-w-md mx-auto">
           {navItems.map((item) => (
             <NavLink
@@ -25,7 +25,7 @@ const MainLayout = () => {
               className={({ isActive }) =>
                 cn(
                   "flex flex-col items-center gap-1 text-muted-foreground transition-colors hover:text-primary w-16",
-                  isActive && "text-primary"
+                  isActive && "text-primary font-semibold"
                 )
               }
             >

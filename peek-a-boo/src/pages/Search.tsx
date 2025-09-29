@@ -62,7 +62,7 @@ const Search: React.FC = () => {
 
   return (
     <>
-      <header className="p-4 border-b sticky top-0 bg-background z-10">
+      <header className="p-4 border-b sticky top-0 bg-background/80 backdrop-blur-sm z-10">
         <div className="relative">
           <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           <Input

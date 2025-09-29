@@ -79,7 +79,7 @@ const SettingsPage: React.FC = () => {
 
 	return (
 		<>
-			<header className="p-4 border-b sticky top-0 bg-background z-10">
+			<header className="p-4 border-b sticky top-0 bg-background/80 backdrop-blur-sm z-10">
 				<h1 className="text-xl font-bold">Settings</h1>
 			</header>
 			<main className="p-4 space-y-8">
