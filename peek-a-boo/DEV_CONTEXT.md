@@ -9,12 +9,13 @@ Peek-a-boo is a mobile application built with Ionic, React, and Capacitor. It us
 ## Current Goals & Roadmap
 
 1.  **Improve "Watch Together" Feature:** *(Addressed)* The synchronized media player logic has been updated for better reliability. Continuous time updates via `onProgress` have been removed. Instead, the playback position is now synchronized only during key events: play, pause, and seek.
-2.  **Implement YouTube Watch Together:** *(In Progress)* The file upload feature has been shelved due to persistent native implementation issues. The current goal is to allow users to share YouTube links and watch them together with synchronized playback.
+2.  **Implement YouTube Watch Together:** *(In Progress)* The current goal is to allow users to share YouTube links and watch them together with synchronized playback.
+3.  **Restore File Uploads:** *(In Progress)* Restore the native file upload functionality for sharing photos and videos.
 
 ## Key Features
 
 -   **Real-time Chat:** One-on-one conversations using Firestore.
--   **Media Sharing:** Users can share YouTube videos for synchronized playback. (File uploads are temporarily disabled).
+-   **Media Sharing:** Users can share YouTube videos for synchronized playback and upload their own photos/videos.
 -   **Reply to Message:** A swipe-to-reply gesture allows quoting previous messages.
 -   **Watch Together:** A synchronized media playback feature using Firebase Realtime Database to keep player states (play/pause, progress) in sync across participants.
 
@@ -50,7 +51,7 @@ Peek-a-boo is a mobile application built with Ionic, React, and Capacitor. It us
 
 -   **File:** `peek-a-boo/src/lib/firebase.ts`
 -   **Problem:** File uploads failed on native mobile platforms during development.
--   **Status:** This feature has been temporarily shelved due to persistent, complex issues with native file system access, plugin reliability (`@capacitor-firebase/storage`), and emulator connectivity. The focus has pivoted to implementing YouTube link sharing and synchronized playback, which relies on more stable, web-based technologies.
+-   **Status:** This feature has been restored using the hybrid native/web solution detailed below. This approach leverages Capacitor for native file access and the Firebase SDK for the upload process to address previous reliability issues.
 
 ## Session Context (as of 2025-09-29)
 

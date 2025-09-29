@@ -30,9 +30,14 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { app } from "../lib/firebase";
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useUserData } from "../hooks/useUserData";
 import ChatMessageItem from "../components/ChatMessageItem";
-import { closeCircleOutline, sendOutline } from "ionicons/icons";
+import { attachOutline, closeCircleOutline, sendOutline } from "ionicons/icons";
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { Capacitor } from '@capacitor/core';
+import { Directory, Filesystem } from '@capacitor/filesystem';
+import { FirebaseStorage } from '@capacitor-firebase/storage';
 import { PlaybackState } from "../lib/models";
 import { database } from "../lib/firebase";
 import { ref, onValue, set, serverTimestamp as rtdbServerTimestamp, off } from "firebase/database";
@@ -55,6 +60,7 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [showToast] = useIonToast();
   const [activeWatchSession, setActiveWatchSession] = useState(false);
+  const [showAttachSheet, setShowAttachSheet] = useState(false);
   const contentRef = useRef<HTMLIonContentElement>(null);
 
   useEffect(() => {
@@ -128,12 +134,92 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
     await addDoc(messagesRef, messageData);
   }
 
+  const sendMediaMessage = async (url: string, type: 'image' | 'video' | 'audio', fileName: string) => {
+    if (!user || !convoId) return;
+
+    const db = getFirestore(app);
+    const messagesRef = collection(db, "chats", convoId, "messages");
+
+    await addDoc(messagesRef, {
+      senderId: user.uid,
+      text: fileName,
+      timestamp: serverTimestamp(),
+      type: type,
+      mediaUrl: url,
+    });
+  };
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     await sendTextMessage();
     setNewMessage("");
     setReplyingTo(null);
+  };
+
+  const selectAndUploadFile = async (source: CameraSource) => {
+    if (!user || !convoId) return;
+
+    try {
+      const photo = await Camera.getPhoto({
+        quality: 90,
+        allowEditing: false,
+        resultType: CameraResultType.Uri,
+        source,
+      });
+
+      const path = photo.path ?? photo.webPath;
+      if (!path) {
+        throw new Error("No file path available for upload.");
+      }
+      
+      setIsUploading(true);
+      const fileExtension = photo.format;
+      const fileName = `${new Date().getTime()}.${fileExtension}`;
+      const filePath = `chats/${convoId}/${fileName}`;
+      let downloadURL: string;
+
+      if (Capacitor.isNativePlatform()) {
+        // To avoid permission issues, copy the file to a more permanent location
+        const savedFile = await Filesystem.copy({
+          from: path,
+          to: fileName,
+          directory: Directory.Data, // Use an app-private directory
+        });
+
+        await FirebaseStorage.uploadFile({
+          path: filePath,
+          uri: savedFile.uri,
+        });
+        const result = await FirebaseStorage.getDownloadUrl({ path: filePath });
+        downloadURL = result.downloadUrl;
+        
+        // Clean up copied file
+        await Filesystem.deleteFile({ path: savedFile.uri });
+
+      } else {
+        // Web implementation remains the same
+        const response = await fetch(path);
+        const blob = await response.blob();
+        const storage = getStorage(app);
+        const fileStorageRef = storageRef(storage, filePath);
+        await uploadBytes(fileStorageRef, blob);
+        downloadURL = await getDownloadURL(fileStorageRef);
+      }
+      
+      // The camera plugin only provides 'image' or 'video'
+      const mediaType = photo.format === 'mp4' ? 'video' : 'image';
+      await sendMediaMessage(downloadURL, mediaType, fileName);
+
+    } catch (e) {
+      console.error('File upload error', e);
+      if (e instanceof Error && e.message.includes('cancelled')) {
+        // User cancelled, do nothing.
+      } else {
+        showToast({ message: 'File upload failed.', duration: 3000, color: 'danger' });
+      }
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleStartWatchTogether = (mediaUrl: string, mediaType: 'video' | 'audio' | 'youtube', title: string) => {
@@ -182,6 +268,25 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
             />
           ))}
         </div>
+        <IonActionSheet
+          isOpen={showAttachSheet}
+          onDidDismiss={() => setShowAttachSheet(false)}
+          header="Attach Media"
+          buttons={[
+            {
+              text: 'Take Photo/Video',
+              handler: () => selectAndUploadFile(CameraSource.Camera),
+            },
+            {
+              text: 'Choose from Gallery',
+              handler: () => selectAndUploadFile(CameraSource.Photos),
+            },
+            {
+              text: 'Cancel',
+              role: 'cancel',
+            },
+          ]}
+        />
       </IonContent>
       <IonFooter>
         <IonToolbar className="chat-input-toolbar">
@@ -198,6 +303,9 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
               </div>
             )}
             <form className="chat-form" onSubmit={handleSendMessage}>
+              <IonButton fill="clear" slot="start" onClick={() => setShowAttachSheet(true)} disabled={isUploading}>
+                <IonIcon icon={attachOutline} />
+              </IonButton>
               <IonInput
                 value={newMessage}
                 onIonChange={(e) => setNewMessage(e.detail.value!)}
