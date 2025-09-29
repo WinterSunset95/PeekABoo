@@ -33,11 +33,11 @@ const WatchTogetherPlayer: React.FC<WatchTogetherPlayerProps> = ({ convoId }) =>
           // Note: play/pause state is synced declaratively via the `playing` prop on ReactPlayer.
 
           // Sync progress, accounting for latency
-          const player = playerRef.current;
-          const currentTime = player.getCurrentTime() || 0;
+          const player = playerRef.current as any;
+          const currentTime = player.currentTime || 0;
           const timeDiff = Math.abs(currentTime - data.progress);
           if (timeDiff > 2) { // 2-second tolerance
-            player.seekTo(data.progress, 'seconds');
+            player.currentTime = data.progress;
           }
           
           setTimeout(() => { isUpdatingFromRemote.current = false; }, 100);
@@ -59,12 +59,12 @@ const WatchTogetherPlayer: React.FC<WatchTogetherPlayerProps> = ({ convoId }) =>
   
   const handlePlay = () => {
     if (!isUpdatingFromRemote.current && playerRef.current) {
-      updateRtdbState({ isPlaying: true, progress: playerRef.current.getCurrentTime() || 0 });
+      updateRtdbState({ isPlaying: true, progress: (playerRef.current as any).currentTime || 0 });
     }
   };
   const handlePause = () => {
     if (!isUpdatingFromRemote.current && playerRef.current) {
-      updateRtdbState({ isPlaying: false, progress: playerRef.current.getCurrentTime() || 0 });
+      updateRtdbState({ isPlaying: false, progress: (playerRef.current as any).currentTime || 0 });
     }
   };
 
