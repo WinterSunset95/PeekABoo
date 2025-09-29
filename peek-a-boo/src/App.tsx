@@ -63,11 +63,13 @@ const App: React.FC = () => {
 
   const AppRoutes = () => (
     <Routes>
-      <Route path="/home" element={<MainLayout><HomePage /></MainLayout>} />
-      <Route path="/search" element={<MainLayout><Search /></MainLayout>} />
-      <Route path="/media" element={<MainLayout><MediaPage /></MainLayout>} />
-      <Route path="/settings" element={<MainLayout><SettingsPage /></MainLayout>} />
-      <Route path="/" element={<Navigate to="/home" replace />} />
+      <Route element={<MainLayout />}>
+        <Route path="/home" element={<HomePage />} />
+        <Route path="/search" element={<Search />} />
+        <Route path="/media" element={<MediaPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/" element={<Navigate to="/home" replace />} />
+      </Route>
       <Route path="/user/:id" element={<UserPage />} />
       <Route path="/chat/:id" element={<ChatPage />} />
       <Route path="/:type(movie|tv|anime)/:id" element={<InfoMode />} />
