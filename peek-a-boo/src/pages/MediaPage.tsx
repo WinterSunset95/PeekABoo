@@ -1,18 +1,15 @@
+// TODO: Remove IonPage and IonContent when Ionic is fully removed.
 import {
   IonContent,
-  IonHeader,
   IonPage,
-  IonTitle,
-  IonToolbar,
-  useIonToast,
 } from '@ionic/react';
+import { toast } from 'sonner';
 import { useEffect, useState } from 'react';
 import { getTrending } from '../lib/anime';
 import { getTrendingMovies, getTrendingTv } from '../lib/movies';
 import { MovieSearchResult, MovieInfo } from '../lib/types';
 import List from '../components/List';
 import LoadingComponent from '../components/Loading';
-import './HomePage.css'
 import FeaturedCard from '../components/FeaturedCard';
 
 const MediaPage: React.FC = () => {
@@ -20,15 +17,9 @@ const MediaPage: React.FC = () => {
   const [trendingMovies, setTrendingMovies] = useState<MovieInfo[]>([]);
   const [trendingTv, setTrendingTv] = useState<MovieInfo[]>([]);
   const [featuredItem, setFeaturedItem] = useState<MovieInfo | null>(null);
-  const [showToast] = useIonToast();
 
   const errorMessage = (msg: string) => {
-    showToast({
-      message: msg,
-      duration: 3000,
-      swipeGesture: "vertical",
-      position: "top"
-    });
+    toast.error(msg);
   };
 
   const loadTrending = async () => {
@@ -70,36 +61,43 @@ const MediaPage: React.FC = () => {
 
   return (
     <IonPage>
-      <IonHeader translucent={true}>
-        <IonToolbar>
-          <IonTitle>Media</IonTitle>
-        </IonToolbar>
-      </IonHeader>
-      <IonContent className='ion-padding'>
-        {featuredItem ? (
-          <>
-            <h1>Featured</h1>
-            <FeaturedCard item={featuredItem} />
-          </>
-        ) : <LoadingComponent choice='list' />}
-        <h1>Trending Shows</h1>
-        {
-          trendingTv.length > 0 ?
-          <List {...trendingTv} />
-          : <LoadingComponent choice='list' />
-        }
-        <h1>Trending Movies</h1>
-        {
-          trendingMovies.length > 0 ?
-          <List {...trendingMovies} />
-          : <LoadingComponent choice='list' />
-        }
-        <h1>Trending Anime</h1>
-        {
-          trending.length > 0 ?
-          <List {...trending} />
-          : <LoadingComponent choice='list' />
-        }
+      {/* TODO: Remove IonPage and IonContent when Ionic is fully removed. */}
+      <header className="p-4 border-b sticky top-0 bg-background z-10">
+        <h1 className="text-xl font-bold">Media</h1>
+      </header>
+      <IonContent>
+        <main className="p-4 space-y-8">
+          <section>
+            <h2 className="text-2xl font-bold mb-4">Featured</h2>
+            {featuredItem ? (
+              <FeaturedCard item={featuredItem} />
+            ) : <LoadingComponent choice='list' />}
+          </section>
+          <section>
+            <h2 className="text-2xl font-bold mb-4">Trending Shows</h2>
+            {
+              trendingTv.length > 0 ?
+                <List {...trendingTv} />
+                : <LoadingComponent choice='list' />
+            }
+          </section>
+          <section>
+            <h2 className="text-2xl font-bold mb-4">Trending Movies</h2>
+            {
+              trendingMovies.length > 0 ?
+                <List {...trendingMovies} />
+                : <LoadingComponent choice='list' />
+            }
+          </section>
+          <section>
+            <h2 className="text-2xl font-bold mb-4">Trending Anime</h2>
+            {
+              trending.length > 0 ?
+                <List {...trending} />
+                : <LoadingComponent choice='list' />
+            }
+          </section>
+        </main>
       </IonContent>
     </IonPage>
   );
