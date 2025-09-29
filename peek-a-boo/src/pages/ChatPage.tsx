@@ -162,6 +162,7 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
       let downloadURL: string;
 
       if (Capacitor.isNativePlatform()) {
+        console.log(filePath, path)
         const result = await FirebaseStorage.uploadFile({ ref: filePath, path: path });
         downloadURL = result.downloadUrl;
       } else {
