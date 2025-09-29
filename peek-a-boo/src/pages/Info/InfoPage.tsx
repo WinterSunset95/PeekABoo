@@ -1,5 +1,4 @@
 import { Link, useNavigate } from "react-router-dom"
-import './AnimeInfo.css'
 import { useContext, useEffect, useState } from "react"
 import { MediaInfo, PlayerOptions, Settings, TvSeason, MovieInfo } from "../../lib/types"
 import { getEpisodeServers, getEpisodeSources } from "../../lib/anime"
@@ -11,7 +10,6 @@ import { proxyThisLink } from "../../lib/backendconnection"
 import { getSettings, resetSettings } from "../../lib/storage"
 import { UserContext } from "../../App"
 import { getMovieEmbeds, getMovieSources, getTvEpisodeEmbeds, getTvEpisodeSources, getSimilarMovies, getSimilarTvShows } from "../../lib/movies"
-import "./InfoPage.css"
 import { getFirestore, doc, setDoc, getDoc, deleteDoc } from "firebase/firestore"
 import { app } from "../../lib/firebase"
 import { Favourite } from "../../lib/models"
