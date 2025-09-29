@@ -1,5 +1,5 @@
-import { IonCard, IonCardHeader, IonCardTitle, IonImg, IonCardSubtitle, IonCardContent } from "@ionic/react";
-import "./DetailCard.css"
+// TODO: Remove IonNavLink when Ionic is fully removed from core files.
+import { IonNavLink } from "@ionic/react";
 
 interface DetailCardProps {
     imageUrl: string;
@@ -21,26 +21,26 @@ const DetailCard: React.FC<DetailCardProps> = ({ imageUrl, title, linkUrl, type,
     const shortenedOverview = overview && overview.length > 100 ? `${overview.substring(0, 100)}...` : overview;
 
     return (
-        <IonCard
-            routerLink={linkUrl}
-        >
-          <div className="detail-card-container">
-            <IonImg
-                src={imageUrl}
-                style={{ width: '5rem', aspectRatio: '9/16', objectFit: 'cover' }}
-            />
-            <div>
-                <IonCardHeader>
-                    <IonCardTitle>{title}</IonCardTitle>
-                    {subtitleParts.length > 0 && <IonCardSubtitle>{subtitleParts.join(" • ")}</IonCardSubtitle>}
-                </IonCardHeader>
-                {shortenedOverview &&
-                <IonCardContent style={{ paddingTop: 0, fontSize: '0.9em' }}>
-                    {shortenedOverview}
-                </IonCardContent>}
+        <IonNavLink routerLink={linkUrl}>
+            <div className="flex bg-muted rounded-lg shadow-sm overflow-hidden transition-all hover:bg-accent hover:shadow-md">
+                <img
+                    src={imageUrl}
+                    className="w-20 aspect-[2/3] object-cover flex-shrink-0"
+                    alt={`Poster for ${title}`}
+                />
+                <div className="p-4 flex flex-col justify-center">
+                    <h3 className="font-bold text-lg text-foreground leading-tight">{title}</h3>
+                    {subtitleParts.length > 0 && (
+                        <p className="text-xs text-muted-foreground mt-1">{subtitleParts.join(" • ")}</p>
+                    )}
+                    {shortenedOverview && (
+                        <p className="text-sm text-muted-foreground mt-2 hidden sm:block">
+                            {shortenedOverview}
+                        </p>
+                    )}
+                </div>
             </div>
-          </div>
-        </IonCard>
+        </IonNavLink>
     );
 };
 
