@@ -6,7 +6,7 @@ import { ref, onValue, set, serverTimestamp, remove, off, update } from 'firebas
 import { PlaybackState } from '../lib/models';
 import { UserContext } from '../App';
 import './WatchTogetherPlayer.css';
-import ReactPlayer from 'react-player/lazy';
+import ReactPlayer from 'react-player';
 
 interface WatchTogetherPlayerProps {
   convoId: string;
@@ -72,6 +72,10 @@ const WatchTogetherPlayer: React.FC<WatchTogetherPlayerProps> = ({ convoId }) =>
   
   const handleCloseSession = () => remove(sessionRef);
 
+  useEffect(() => {
+    console.log(playbackState)
+  }, [playbackState])
+
   if (!playbackState) {
     return null;
   }
@@ -87,7 +91,7 @@ const WatchTogetherPlayer: React.FC<WatchTogetherPlayerProps> = ({ convoId }) =>
       <div className="player-wrapper">
         <ReactPlayer
           ref={playerRef}
-          url={playbackState.mediaUrl}
+          src={playbackState.mediaUrl}
           playing={playbackState.isPlaying}
           controls
           onPlay={handlePlay}
