@@ -59,12 +59,9 @@ function ChatPage() {
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const msgs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ChatMessage));
+      // reverse msgs
+      msgs.reverse();
       setMessages(msgs);
-      setTimeout(() => {
-        if (contentRef.current) {
-          contentRef.current.scrollTop = contentRef.current.scrollHeight;
-        }
-      }, 100);
     });
 
     return () => {
@@ -189,7 +186,7 @@ function ChatPage() {
   };
 
   return (
-    <div className="flex flex-col h-[100dvh] bg-background text-foreground">
+    <div className="flex flex-col h-[100dvh] w-[100dvw] bg-background text-foreground">
       <header className="flex items-center p-2 border-b border-border shadow-sm">
         <Link to="/home">
           <Button variant="ghost" size="icon">
@@ -206,9 +203,9 @@ function ChatPage() {
           </>
         )}
       </header>
-      <main ref={contentRef} className="flex-grow overflow-y-auto p-4 space-y-4">
-        {activeWatchSession && convoId && <WatchTogetherPlayer convoId={convoId} />}
-        <div>
+      {activeWatchSession && convoId && <WatchTogetherPlayer convoId={convoId} />}
+      <main ref={contentRef} className="flex-1 overflow-auto flex flex-col-reverse mb-2 p-2">
+        <div className="flex flex-col-reverse gap-4">
           {messages.map((msg) => (
             <ChatMessageItem 
               key={msg.id} 
@@ -232,7 +229,7 @@ function ChatPage() {
             </Button>
           </div>
         )}
-        <form className="flex items-center gap-2" onSubmit={handleSendMessage}>
+        <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" disabled={isUploading} onClick={() => fileInputRef.current?.click()}>
             <Paperclip className="h-6 w-6" />
           </Button>
@@ -243,18 +240,20 @@ function ChatPage() {
             onChange={handleFileSelect}
             accept="image/*,video/*,audio/*"
           />
+          <form className="flex items-center gap-2 flex-1" onSubmit={handleSendMessage}>
 
-          <Input
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="Type a message..."
-            className="flex-grow"
-            disabled={!convoId || isUploading}
-          />
-          <Button type="submit" size="icon" disabled={newMessage.trim() === '' || !convoId || isUploading}>
-            {isUploading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
-          </Button>
-        </form>
+            <Input
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              placeholder="Type a message..."
+              className="flex-grow"
+              disabled={!convoId || isUploading}
+            />
+            <Button type="submit" size="icon" disabled={newMessage.trim() === '' || !convoId || isUploading}>
+              {isUploading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
+            </Button>
+          </form>
+        </div>
       </footer>
     </div>
   );
