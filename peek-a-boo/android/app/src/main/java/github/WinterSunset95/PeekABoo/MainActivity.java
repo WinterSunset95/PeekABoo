@@ -5,6 +5,7 @@ import android.webkit.WebView;
 import com.getcapacitor.BridgeActivity;
 
 import com.getcapacitor.plugin.camera.CameraPlugin;
+import com.getcapacitor.plugin.filesystem.FilesystemPlugin;
 
 import io.capawesome.capacitorjs.plugins.firebase.authentication.FirebaseAuthenticationPlugin;
 import io.capawesome.capacitorjs.plugins.firebase.firestore.FirebaseFirestorePlugin;
@@ -18,5 +19,6 @@ public class MainActivity extends BridgeActivity {
     registerPlugin(FirebaseFirestorePlugin.class);
     registerPlugin(FirebaseStoragePlugin.class);
     registerPlugin(CameraPlugin.class);
+    registerPlugin(FilesystemPlugin.class);
   }
 }

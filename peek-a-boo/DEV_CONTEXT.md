@@ -75,8 +75,13 @@ Peek-a-boo is a mobile application built with Ionic, React, and Capacitor. It us
     2.  **Capacitor Plugin Issues:** The `@capacitor-firebase/storage` plugin proved unreliable. It failed with `Uri` paths due to file access issues ("Object does not exist") and its `uploadString` method was not implemented on Android.
     3.  **DataUrl Memory/Type Limitation:** An attempt to use the Capacitor Camera plugin with `DataUrl` and the Firebase Web SDK's `uploadString` method solved the `Uri` issue but limited uploads to only images and was not memory-efficient for large files like videos.
     4.  **Emulator Connection Error:** A persistent `Firebase Storage: An unknown error occurred` was traced to the emulator connection setup. The fix attempt using a hardcoded IP (`10.0.2.2`) for Android was incorrect for the user's `--external` development workflow. The configuration has been reverted to use `window.location.hostname` which correctly provides the development server's IP. The native Firebase Storage plugin is also now configured to use the emulator for any potential future use.
-    5.  **Final Solution:**
-        *   The unreliable native Firebase Storage plugin (`@capacitor-firebase/storage`) is bypassed for the actual upload.
-        *   The `@capacitor/camera` plugin is used to natively select photos or videos, which returns a local file URI (`file:///...`).
-        *   On both native and web, the URI is converted to a `Blob` using the standard `fetch` API. This is a crucial step that works within the Capacitor environment to access local files for upload.
-        *   The memory-efficient `uploadBytes` function from the Firebase Web JS SDK is used to upload the `Blob`. This provides a unified, reliable solution for media uploads across all platforms.
+    5.  **Final Solution (Hybrid Native/Web):**
+        *   **Native Platform:**
+            *   The `@capacitor/camera` plugin selects a media file and returns a temporary cache URI.
+            *   To bypass Android file permission issues that cause "Object does not exist" errors, the `@capacitor/filesystem` plugin is used to copy the file from the temporary cache to a private app directory (`Directory.Data`).
+            *   The reliable native `@capacitor-firebase/storage` plugin is then used to `uploadFile` using the new, accessible URI.
+            *   The copied file is deleted after a successful upload.
+        *   **Web Platform:**
+            *   The `@capacitor/camera` plugin returns a `webPath`.
+            *   This path is converted to a `Blob` using the `fetch` API.
+            *   The memory-efficient `uploadBytes` function from the Firebase Web JS SDK is used to upload the `Blob`.
