@@ -9,7 +9,7 @@ interface ChatMessageItemProps {
   message: ChatMessage;
   currentUserId: string;
   onReply: (message: ChatMessage) => void;
-  onStartWatchTogether: (mediaUrl: string, mediaType: 'video' | 'audio', title: string) => void;
+  onStartWatchTogether: (mediaUrl: string, mediaType: 'video' | 'audio' | 'youtube', title: string) => void;
 }
 
 const ChatMessageItem: React.FC<ChatMessageItemProps> = ({ message, currentUserId, onReply, onStartWatchTogether }) => {
@@ -70,12 +70,14 @@ const ChatMessageItem: React.FC<ChatMessageItemProps> = ({ message, currentUserI
           {message.type === 'image' && message.mediaUrl && (
             <IonImg src={message.mediaUrl} className="chat-media-image" />
           )}
-          {(message.type === 'video' || message.type === 'audio') && message.mediaUrl && (
+          {(message.type === 'video' || message.type === 'audio' || message.type === 'youtube') && message.mediaUrl && (
             <div className="watch-together-container">
-              {message.type === 'video' ? (
-                <video src={message.mediaUrl} controls className="chat-media-video" />
-              ) : (
-                <audio src={message.mediaUrl} controls className="chat-media-audio" />
+              {message.type === 'video' && <video src={message.mediaUrl} controls className="chat-media-video" />}
+              {message.type === 'audio' && <audio src={message.mediaUrl} controls className="chat-media-audio" />}
+              {message.type === 'youtube' && (
+                <div className="youtube-link-preview">
+                  <p className="chat-text">{message.text}</p>
+                </div>
               )}
               <IonButton 
                 fill="clear" 

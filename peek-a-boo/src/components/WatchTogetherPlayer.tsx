@@ -6,6 +6,7 @@ import { ref, onValue, set, serverTimestamp, remove, off, update } from 'firebas
 import { PlaybackState } from '../lib/models';
 import { UserContext } from '../App';
 import './WatchTogetherPlayer.css';
+import ReactPlayer from 'react-player/lazy';
 
 interface WatchTogetherPlayerProps {
   convoId: string;
@@ -14,7 +15,7 @@ interface WatchTogetherPlayerProps {
 const WatchTogetherPlayer: React.FC<WatchTogetherPlayerProps> = ({ convoId }) => {
   const { user } = useContext(UserContext);
   const [playbackState, setPlaybackState] = useState<PlaybackState | null>(null);
-  const playerRef = useRef<HTMLVideoElement | HTMLAudioElement>(null);
+  const playerRef = useRef<ReactPlayer>(null);
   const isUpdatingFromRemote = useRef(false);
   const lastTimeUpdateSent = useRef(0);
   const sessionRef = ref(database, `playback_sessions/${convoId}`);
@@ -28,18 +29,14 @@ const WatchTogetherPlayer: React.FC<WatchTogetherPlayerProps> = ({ convoId }) =>
         if (data.lastUpdatedBy !== user.uid) {
           isUpdatingFromRemote.current = true;
 
-          const player = playerRef.current;
-          // Sync play/pause state
-          if (data.isPlaying && player.paused) {
-            player.play().catch(e => console.error("Autoplay failed", e));
-          } else if (!data.isPlaying && !player.paused) {
-            player.pause();
-          }
+          // Note: play/pause state is synced declaratively via the `playing` prop on ReactPlayer.
 
           // Sync progress, accounting for latency
-          const timeDiff = Math.abs(player.currentTime - data.progress);
+          const player = playerRef.current;
+          const currentTime = player.getCurrentTime() || 0;
+          const timeDiff = Math.abs(currentTime - data.progress);
           if (timeDiff > 2) { // 2-second tolerance
-            player.currentTime = data.progress;
+            player.seekTo(data.progress, 'seconds');
           }
           
           setTimeout(() => { isUpdatingFromRemote.current = false; }, 100);
@@ -61,9 +58,9 @@ const WatchTogetherPlayer: React.FC<WatchTogetherPlayerProps> = ({ convoId }) =>
   
   const handlePlay = () => !isUpdatingFromRemote.current && updateRtdbState({ isPlaying: true });
   const handlePause = () => !isUpdatingFromRemote.current && updateRtdbState({ isPlaying: false });
-  const handleTimeUpdate = () => {
+  const handleProgress = (state: { played: number; playedSeconds: number; loaded: number; loadedSeconds: number; }) => {
     if (playerRef.current && !isUpdatingFromRemote.current) {
-      const currentTime = playerRef.current.currentTime;
+      const currentTime = state.playedSeconds;
       const now = Date.now();
       // Throttle updates to every 1 second
       if (now - lastTimeUpdateSent.current > 1000) {
@@ -87,27 +84,20 @@ const WatchTogetherPlayer: React.FC<WatchTogetherPlayerProps> = ({ convoId }) =>
           <IonIcon slot="icon-only" icon={closeCircleOutline} />
         </IonButton>
       </div>
-      {playbackState.mediaType === 'video' ? (
-        <video
-          ref={playerRef as React.RefObject<HTMLVideoElement>}
-          src={playbackState.mediaUrl}
+      <div className="player-wrapper">
+        <ReactPlayer
+          ref={playerRef}
+          url={playbackState.mediaUrl}
+          playing={playbackState.isPlaying}
           controls
           onPlay={handlePlay}
           onPause={handlePause}
-          onTimeUpdate={handleTimeUpdate}
-          className="media-element"
+          onProgress={handleProgress}
+          className="react-player"
+          width="100%"
+          height="100%"
         />
-      ) : (
-        <audio
-          ref={playerRef as React.RefObject<HTMLAudioElement>}
-          src={playbackState.mediaUrl}
-          controls
-          onPlay={handlePlay}
-          onPause={handlePause}
-          onTimeUpdate={handleTimeUpdate}
-          className="media-element"
-        />
-      )}
+      </div>
     </div>
   );
 };

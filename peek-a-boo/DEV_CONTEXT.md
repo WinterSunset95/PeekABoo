@@ -9,12 +9,12 @@ Peek-a-boo is a mobile application built with Ionic, React, and Capacitor. It us
 ## Current Goals & Roadmap
 
 1.  **Fix "Watch Together" Feature:** *(Addressed)* The synchronized media player logic was updated to fix a bug where users could not pause playback. The fix prevents race conditions and throttles time updates.
-2.  **Resolve Mobile File Uploads & Add Media Support:** *(Addressed)* The file upload system has been refactored to support various media types (image, video, audio) and to fix connection issues with the Firebase Storage emulator on native devices.
+2.  **Implement YouTube Watch Together:** *(In Progress)* The file upload feature has been shelved due to persistent native implementation issues. The current goal is to allow users to share YouTube links and watch them together with synchronized playback.
 
 ## Key Features
 
 -   **Real-time Chat:** One-on-one conversations using Firestore.
--   **Media Sharing:** Users can upload and share images, videos, and audio files, which are stored in Firebase Storage.
+-   **Media Sharing:** Users can share YouTube videos for synchronized playback. (File uploads are temporarily disabled).
 -   **Reply to Message:** A swipe-to-reply gesture allows quoting previous messages.
 -   **Watch Together:** A synchronized media playback feature using Firebase Realtime Database to keep player states (play/pause, progress) in sync across participants.
 
@@ -48,13 +48,7 @@ Peek-a-boo is a mobile application built with Ionic, React, and Capacitor. It us
 
 -   **File:** `peek-a-boo/src/lib/firebase.ts`
 -   **Problem:** File uploads failed on native mobile platforms during development.
--   **Solution:**
-    1.  Added the missing `@capacitor-firebase/storage` plugin configuration.
-    2.  The native storage plugin is now configured to use the local Firebase Storage emulator, consistent with other Firebase services like Auth and Firestore. This requires installing the `@capacitor-firebase/storage` package.
-    3.  Corrected the parameters for `FirebaseStorage.uploadFile` to use `path` for the remote storage destination and `uri` for the local file source URI, as per the plugin's documentation.
-    4.  Modified the native upload logic to first `uploadFile` and then explicitly call `getDownloadUrl` to retrieve the URL, as the upload function itself does not return it.
-    5.  Switched from `CameraResultType.Uri` to `CameraResultType.DataUrl` to work with image data directly.
-    6.  The native `@capacitor-firebase/storage` plugin was found to not implement `uploadString` and its `uploadFile` method failed with `Uri`s. The solution was to remove the native plugin's usage for uploads and use the Firebase Web JS SDK's `uploadString` method on all platforms (web and native). This provides a reliable and unified upload mechanism.
+-   **Status:** This feature has been temporarily shelved due to persistent, complex issues with native file system access, plugin reliability (`@capacitor-firebase/storage`), and emulator connectivity. The focus has pivoted to implementing YouTube link sharing and synchronized playback, which relies on more stable, web-based technologies.
 
 ## Session Context (as of 2025-09-29)
 

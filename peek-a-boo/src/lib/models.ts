@@ -60,7 +60,7 @@ export interface ChatMessage {
   senderId: string,
   text: string,
   timestamp: Timestamp | number | null,
-  type: "text" | "image" | "video" | "audio", // extendable
+  type: "text" | "image" | "video" | "audio" | "youtube", // extendable
   mediaUrl?: string,
   replyContext?: ReplyContext
 }
@@ -68,7 +68,7 @@ export interface ChatMessage {
 // RTDB model for /playback_sessions/{chatId}
 export interface PlaybackState {
   mediaUrl: string;
-  mediaType: 'video' | 'audio';
+  mediaType: 'video' | 'audio' | 'youtube';
   title: string;
   isPlaying: boolean;
   progress: number;

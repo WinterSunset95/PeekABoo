@@ -128,3 +128,10 @@
   font-size: 0.8rem;
   text-transform: none;
 }
+
+.youtube-link-preview {
+  padding: 8px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 8px;
+  margin-bottom: 40px; /* space for the watch together button */
+}
