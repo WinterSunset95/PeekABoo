@@ -62,6 +62,9 @@ function App() {
 
   const AppRoutes = () => (
     <Routes>
+      <Route path="/user/:id" element={<UserPage />} />
+      <Route path="/chat/:id" element={<ChatPage />} />
+      <Route path="/:type/:id" element={<InfoMode />} />
       <Route element={<MainLayout />}>
         <Route path="/home" element={<HomePage />} />
         <Route path="/search" element={<Search />} />
@@ -69,10 +72,6 @@ function App() {
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/" element={<Navigate to="/home" replace />} />
       </Route>
-      <Route path="/user/:id" element={<UserPage />} />
-      <Route path="/chat/:id" element={<ChatPage />} />
-      <Route path="/:type(movie|tv|anime)/:id" element={<InfoMode />} />
-      <Route path="*" element={<Navigate to="/home" replace />} />
     </Routes>
   );
 
