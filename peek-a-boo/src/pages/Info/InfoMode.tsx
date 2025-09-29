@@ -5,7 +5,7 @@ import { AnimeInfo, MediaInfo, MediaTypes } from "../../lib/types";
 import { getAnimeInfo } from "../../lib/anime";
 import LoadingComponent from "../../components/Loading";
 import InfoPage from "./InfoPage";
-import { useIonAlert, useIonToast } from "@ionic/react";
+import { toast } from "sonner";
 import { getMovieInfo, getTvInfo } from "../../lib/movies";
 
 interface InfoProps extends RouteComponentProps<{
@@ -15,12 +15,10 @@ interface InfoProps extends RouteComponentProps<{
 
 const InfoMode: React.FC<InfoProps> = ({ match }) => {
     const [info, setInfo] = useState<MediaInfo>()
-  const [ showAlert ] = useIonAlert()
-  const [ showToast ] = useIonToast()
 
   const loadInfo = async () => {
     if (!match.params.id) {
-      showToast("ID undefined, retrying. . .")
+      toast.warning("ID undefined, retrying...")
       return
     }
     console.log(`Media Id: ${match.params.id}`)
@@ -33,11 +31,7 @@ const InfoMode: React.FC<InfoProps> = ({ match }) => {
     const res = await choice()
     console.log(res)
     if (res.peek == false || typeof res.boo == "string") {
-      showToast({
-        message: `Error: ${res.boo}`,
-        duration: 3000,
-        position: 'top'
-      })
+      toast.error(`Error: ${res.boo}`)
       return
     }
     setInfo(res.boo)
