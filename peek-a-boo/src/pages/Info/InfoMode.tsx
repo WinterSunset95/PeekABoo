@@ -10,7 +10,7 @@ import { getMovieInfo, getTvInfo } from "../../lib/movies";
 
 interface InfoProps extends RouteComponentProps<{
   type: MediaTypes
-    id: string
+  id: string
 }> {}
 
 const InfoMode: React.FC<InfoProps> = ({ match }) => {
