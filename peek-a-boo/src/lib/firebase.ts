@@ -5,7 +5,6 @@ import { connectAuthEmulator, getAuth } from "firebase/auth";
 import { FirebaseAuthentication, UseEmulatorOptions } from "@capacitor-firebase/authentication";
 import { FirebaseFirestore } from "@capacitor-firebase/firestore";
 import { FirebaseFunctions } from "@capacitor-firebase/functions";
-import { FirebaseStorage } from "@capacitor-firebase/storage";
 import { connectFirestoreEmulator, getFirestore } from "firebase/firestore";
 import { connectFunctionsEmulator, getFunctions } from "firebase/functions";
 import { connectStorageEmulator, getStorage } from "firebase/storage";
@@ -37,27 +36,34 @@ export const database = getDatabase(app);
 
 if (process.env.NODE_ENV === "development") {
   // If on web platform, connect to <url location eg. localhost, 192.168.210.163>:<port>
-  console.log(window.location.hostname)
-  const host = window.location.hostname
-  console.log(Capacitor.getPlatform())
-  if (Capacitor.getPlatform() === 'web') {
+  const platform = Capacitor.getPlatform();
+  console.log(`Capacitor platform: ${platform}`);
+
+  if (platform === 'web') {
+    const host = window.location.hostname;
+    console.log(`Connecting to web emulators at ${host}`);
     connectAuthEmulator(getAuth(app), `http://${host}:9099`);
     connectFirestoreEmulator(getFirestore(app), host, 8080);
     connectFunctionsEmulator(functions, host, 5001);
     connectDatabaseEmulator(database, host, 9000);
     connectStorageEmulator(storage, host, 9199);
   } else {
-    FirebaseAuthentication.useEmulator({ host: host, port: 9099 })
-    FirebaseFirestore.useEmulator({ host: host, port: 8080 })
-    FirebaseFunctions.useEmulator({ host: host, port: 5001 })
-    FirebaseStorage.useEmulator({ host: host, port: 9199 })
+    // For native platforms, use specific host IP for emulators/simulators
+    const host = platform === 'android' ? '10.0.2.2' : 'localhost';
+    console.log(`Connecting to native emulators at ${host}`);
+
+    // Connect JS SDK to emulators
     connectAuthEmulator(getAuth(app), `http://${host}:9099`);
     connectFirestoreEmulator(getFirestore(app), host, 8080);
     connectFunctionsEmulator(functions, host, 5001);
     connectDatabaseEmulator(database, host, 9000);
     connectStorageEmulator(storage, host, 9199);
+
+    // Connect native plugins to emulators
+    FirebaseAuthentication.useEmulator({ host: host, port: 9099 });
+    FirebaseFirestore.useEmulator({ host: host, port: 8080 });
+    FirebaseFunctions.useEmulator({ host: host, port: 5001 });
   }
-  // If on android platform, connect to the emulators through capacitor-firebase plugin
 }
 
 //export const analytics = getAnalytics(app);

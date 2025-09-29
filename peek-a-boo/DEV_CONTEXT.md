@@ -9,7 +9,7 @@ Peek-a-boo is a mobile application built with Ionic, React, and Capacitor. It us
 ## Current Goals & Roadmap
 
 1.  **Fix "Watch Together" Feature:** *(Addressed)* The synchronized media player logic was updated to fix a bug where users could not pause playback. The fix prevents race conditions and throttles time updates.
-2.  **Resolve Mobile File Uploads:** *(Addressed)* The Firebase configuration and native upload logic have been corrected to resolve file upload issues on mobile.
+2.  **Resolve Mobile File Uploads & Add Media Support:** *(Addressed)* The file upload system has been refactored to support various media types (image, video, audio) and to fix connection issues with the Firebase Storage emulator on native devices.
 
 ## Key Features
 
@@ -70,9 +70,12 @@ Peek-a-boo is a mobile application built with Ionic, React, and Capacitor. It us
 -   **Problem:** File uploads do not work on native mobile platforms (Android/iOS). The process was failing to return a valid URL, causing a Firestore `undefined` field value error.
 -   **Files:** `peek-a-boo/src/pages/ChatPage.tsx`, `peek-a-boo/src/lib/firebase.ts`
 -   **Implementation:** `ChatPage.tsx` uses `@capacitor-firebase/storage` for native uploads.
--   **Hypothesis:** The native file upload was failing due to a series of issues with the `@capacitor-firebase/storage` plugin:
-    1.  Initial native configuration was missing.
-    2.  The `uploadFile` method had incorrect parameters and an incorrect return value assumption.
-    3.  When using a file `Uri`, `uploadFile` failed due to file system access/permission issues on Android.
-    4.  When switching to a `DataUrl` string, the `uploadString` method was discovered to be unimplemented on the native Android plugin.
-    5.  **Final Solution:** The native storage plugin was abandoned for file uploads. The code was unified to use the standard Firebase Web JS SDK's `uploadString` method on all platforms, which successfully uploads the `DataUrl` provided by the Capacitor Camera plugin.
+-   **Hypothesis & Solution History:** The file upload feature went through several iterations to resolve issues on native platforms.
+    1.  **Initial Problem:** Uploads failed on native. This was due to missing native plugin configuration in `MainActivity.java` and `AndroidManifest.xml`.
+    2.  **Capacitor Plugin Issues:** The `@capacitor-firebase/storage` plugin proved unreliable. It failed with `Uri` paths due to file access issues ("Object does not exist") and its `uploadString` method was not implemented on Android.
+    3.  **DataUrl Memory/Type Limitation:** An attempt to use the Capacitor Camera plugin with `DataUrl` and the Firebase Web SDK's `uploadString` method solved the `Uri` issue but limited uploads to only images and was not memory-efficient for large files like videos.
+    4.  **Emulator Connection Error:** A persistent `Firebase Storage: An unknown error occurred` was traced to an incorrect emulator host IP in `firebase.ts` for native builds. `window.location.hostname` is empty on native, so the connection failed. This was fixed by using `10.0.2.2` for Android.
+    5.  **Final Solution:**
+        *   The Capacitor Camera and native Firebase Storage plugins were removed from the upload process.
+        *   A standard hidden `<input type="file">` is now used to allow users to select any media file (image, video, audio).
+        *   The more memory-efficient `uploadBytes` function from the Firebase Web JS SDK is used to upload the selected `File` object directly. This solution works reliably across both web and native platforms.

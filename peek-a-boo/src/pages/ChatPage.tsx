@@ -30,13 +30,10 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { app } from "../lib/firebase";
-import { getStorage, ref as storageRef, uploadString, getDownloadURL } from "firebase/storage";
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useUserData } from "../hooks/useUserData";
 import ChatMessageItem from "../components/ChatMessageItem";
 import { attachOutline, closeCircleOutline, sendOutline } from "ionicons/icons";
-import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-import { Capacitor } from '@capacitor/core';
-import { FirebaseStorage } from '@capacitor-firebase/storage';
 import { PlaybackState } from "../lib/models";
 import { database } from "../lib/firebase";
 import { ref, onValue, set, serverTimestamp as rtdbServerTimestamp, off } from "firebase/database";
@@ -59,8 +56,8 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [showToast] = useIonToast();
   const [activeWatchSession, setActiveWatchSession] = useState(false);
-  const [showAttachSheet, setShowAttachSheet] = useState(false);
   const contentRef = useRef<HTMLIonContentElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!user || !chatId) return;
@@ -140,43 +137,36 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
     setReplyingTo(null);
   };
 
-  const selectAndUploadFile = async (source: CameraSource) => {
-    if (!user || !convoId) return;
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user || !convoId) return;
 
+    const fileType = file.type.split('/')[0] as 'image' | 'video' | 'audio';
+    if (!['image', 'video', 'audio'].includes(fileType)) {
+      showToast({ message: 'Unsupported file type.', duration: 3000, color: 'danger' });
+      return;
+    }
+
+    setIsUploading(true);
     try {
-      const photo = await Camera.getPhoto({
-        quality: 90,
-        allowEditing: false,
-        resultType: CameraResultType.DataUrl,
-        source,
-      });
-
-      const dataUrl = photo.dataUrl;
-      if (!dataUrl) {
-        throw new Error('No file data received');
-      }
-
-      setIsUploading(true);
-      const fileName = new Date().getTime() + '.jpeg';
-      const filePath = `chats/${convoId}/${fileName}`;
-      let downloadURL: string;
-
       const storage = getStorage(app);
+      const filePath = `chats/${convoId}/${Date.now()}-${file.name}`;
       const fileStorageRef = storageRef(storage, filePath);
-      await uploadString(fileStorageRef, dataUrl, 'data_url');
-      downloadURL = await getDownloadURL(fileStorageRef);
       
-      await sendMediaMessage(downloadURL, 'image', fileName);
+      await uploadBytes(fileStorageRef, file);
+      const downloadURL = await getDownloadURL(fileStorageRef);
+      
+      await sendMediaMessage(downloadURL, fileType, file.name);
 
-    } catch (e) {
-      console.error('File upload error', e);
-      if (e instanceof Error && e.message.includes('cancelled')) {
-        // Do nothing, user cancelled
-      } else {
-        showToast({ message: 'File upload failed.', duration: 3000, color: 'danger' });
-      }
+    } catch (error) {
+      console.error("File upload error", error);
+      showToast({ message: `Upload failed: ${error}`, duration: 3000, color: 'danger' });
     } finally {
       setIsUploading(false);
+      // Reset file input
+      if (e.target) {
+        e.target.value = '';
+      }
     }
   };
 
@@ -226,25 +216,6 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
             />
           ))}
         </div>
-        <IonActionSheet
-          isOpen={showAttachSheet}
-          onDidDismiss={() => setShowAttachSheet(false)}
-          header="Attach Image"
-          buttons={[
-            {
-              text: 'Take Photo',
-              handler: () => selectAndUploadFile(CameraSource.Camera),
-            },
-            {
-              text: 'Choose from Gallery',
-              handler: () => selectAndUploadFile(CameraSource.Photos),
-            },
-            {
-              text: 'Cancel',
-              role: 'cancel',
-            },
-          ]}
-        />
       </IonContent>
       <IonFooter>
         <IonToolbar className="chat-input-toolbar">
@@ -261,9 +232,10 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
               </div>
             )}
             <form className="chat-form" onSubmit={handleSendMessage}>
-              <IonButton fill="clear" slot="start" onClick={() => setShowAttachSheet(true)} disabled={isUploading}>
+              <IonButton fill="clear" slot="start" onClick={() => fileInputRef.current?.click()} disabled={isUploading}>
                 <IonIcon icon={attachOutline} />
               </IonButton>
+              <input type="file" ref={fileInputRef} hidden onChange={handleFileSelect} accept="image/*,video/*,audio/*" />
               <IonInput
                 value={newMessage}
                 onIonChange={(e) => setNewMessage(e.detail.value!)}
