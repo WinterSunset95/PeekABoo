@@ -1,25 +1,8 @@
 import { RouteComponentProps } from "react-router";
+import { Link } from "react-router-dom";
 import { useContext, useEffect, useRef, useState } from "react";
-import {
-  IonActionSheet,
-  IonAvatar,
-  IonBackButton,
-  IonButton,
-  IonButtons,
-  IonContent,
-  IonFooter,
-  IonHeader,
-  IonIcon,
-  IonInput,
-  IonPage,
-  IonSpinner,
-  IonTitle,
-  IonToolbar,
-  useIonToast,
-} from "@ionic/react";
 import { UserContext } from "../App";
-import "./ChatPage.css";
-import { ChatMessage } from "../lib/models";
+import { ChatMessage, PlaybackState } from "../lib/models";
 import {
   addDoc,
   collection,
@@ -29,16 +12,19 @@ import {
   query,
   serverTimestamp,
 } from "firebase/firestore";
-import { app } from "../lib/firebase";
+import { app, database } from "../lib/firebase";
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
+import { ref, onValue, set, serverTimestamp as rtdbServerTimestamp, off } from "firebase/database";
 import { useUserData } from "../hooks/useUserData";
 import ChatMessageItem from "../components/ChatMessageItem";
-import { attachOutline, closeCircleOutline, sendOutline } from "ionicons/icons";
-import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-import { PlaybackState } from "../lib/models";
-import { database } from "../lib/firebase";
-import { ref, onValue, set, serverTimestamp as rtdbServerTimestamp, off } from "firebase/database";
 import WatchTogetherPlayer from "../components/WatchTogetherPlayer";
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { ArrowLeft, Paperclip, Send, X, Loader2, Camera as CameraIcon, Image as ImageIcon } from "lucide-react";
 
 interface ChatProps extends RouteComponentProps<{
   id: string; // This will be the chat ID
@@ -55,10 +41,9 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
   const [newMessage, setNewMessage] = useState("");
   const [replyingTo, setReplyingTo] = useState<ChatMessage | null>(null);
   const [isUploading, setIsUploading] = useState(false);
-  const [showToast] = useIonToast();
   const [activeWatchSession, setActiveWatchSession] = useState(false);
   const [showAttachSheet, setShowAttachSheet] = useState(false);
-  const contentRef = useRef<HTMLIonContentElement>(null);
+  const contentRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     if (!user || !chatId) return;
@@ -82,7 +67,11 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const msgs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ChatMessage));
       setMessages(msgs);
-      setTimeout(() => contentRef.current?.scrollToBottom(300), 100);
+      setTimeout(() => {
+        if (contentRef.current) {
+          contentRef.current.scrollTop = contentRef.current.scrollHeight;
+        }
+      }, 100);
     });
 
     return () => {
@@ -192,7 +181,7 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
       if (e instanceof Error && e.message.includes('cancelled')) {
         // User cancelled, do nothing.
       } else {
-        showToast({ message: 'File upload failed.', duration: 3000, color: 'danger' });
+        toast.error('File upload failed.');
       }
     } finally {
       setIsUploading(false);
@@ -216,25 +205,26 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
   };
 
   return (
-    <IonPage>
-      <IonHeader>
-        <IonToolbar>
-          <IonButtons slot="start">
-            <IonBackButton defaultHref="/home" />
-          </IonButtons>
-          {userLoading ? <IonSpinner slot="start" /> : (
-            <>
-              <IonAvatar slot="start" className="chat-header-avatar">
-                <img src={otherUser?.photoURL} alt={otherUser?.displayName} />
-              </IonAvatar>
-              <IonTitle>{otherUser?.displayName || 'Chat'}</IonTitle>
-            </>
-          )}
-        </IonToolbar>
-      </IonHeader>
-      <IonContent ref={contentRef} className="ion-padding" scrollEvents={true}>
+    <div className="flex flex-col h-screen bg-background text-foreground">
+      <header className="flex items-center p-2 border-b border-border shadow-sm">
+        <Link to="/home">
+          <Button variant="ghost" size="icon">
+            <ArrowLeft className="h-6 w-6" />
+          </Button>
+        </Link>
+        {userLoading ? <Loader2 className="animate-spin ml-2" /> : (
+          <>
+            <Avatar className="h-9 w-9 ml-2">
+              <AvatarImage src={otherUser?.photoURL} alt={otherUser?.displayName} />
+              <AvatarFallback>{otherUser?.displayName?.[0]}</AvatarFallback>
+            </Avatar>
+            <h2 className="text-lg font-semibold ml-3">{otherUser?.displayName || 'Chat'}</h2>
+          </>
+        )}
+      </header>
+      <main ref={contentRef} className="flex-grow overflow-y-auto p-4 space-y-4">
         {activeWatchSession && convoId && <WatchTogetherPlayer convoId={convoId} />}
-        <div className="chat-messages-container">
+        <div>
           {messages.map((msg) => (
             <ChatMessageItem 
               key={msg.id} 
@@ -245,59 +235,56 @@ const ChatPage: React.FC<ChatProps> = ({ match }) => {
             />
           ))}
         </div>
-        <IonActionSheet
-          isOpen={showAttachSheet}
-          onDidDismiss={() => setShowAttachSheet(false)}
-          header="Attach Media"
-          buttons={[
-            {
-              text: 'Take Photo/Video',
-              handler: () => selectAndUploadFile(CameraSource.Camera),
-            },
-            {
-              text: 'Choose from Gallery',
-              handler: () => selectAndUploadFile(CameraSource.Photos),
-            },
-            {
-              text: 'Cancel',
-              role: 'cancel',
-            },
-          ]}
-        />
-      </IonContent>
-      <IonFooter>
-        <IonToolbar className="chat-input-toolbar">
-          <div className="chat-footer-wrapper">
-            {replyingTo && (
-              <div className="reply-preview-container">
-                <div className="reply-preview-content">
-                  <p className="reply-preview-sender">Replying to {replyingTo.senderId === user?.uid ? 'yourself' : otherUser?.displayName}</p>
-                  <p className="reply-preview-text">{replyingTo.text}</p>
-                </div>
-                <IonButton fill="clear" onClick={() => setReplyingTo(null)} className="reply-preview-close">
-                  <IonIcon icon={closeCircleOutline} />
-                </IonButton>
-              </div>
-            )}
-            <form className="chat-form" onSubmit={handleSendMessage}>
-              <IonButton fill="clear" slot="start" onClick={() => setShowAttachSheet(true)} disabled={isUploading}>
-                <IonIcon icon={attachOutline} />
-              </IonButton>
-              <IonInput
-                value={newMessage}
-                onIonChange={(e) => setNewMessage(e.detail.value!)}
-                placeholder="Type a message..."
-                className="chat-input"
-                disabled={!convoId || isUploading}
-              />
-              <IonButton type="submit" fill="clear" slot="end" disabled={newMessage.trim() === '' || !convoId || isUploading}>
-                {isUploading ? <IonSpinner name="crescent" /> : <IonIcon icon={sendOutline} />}
-              </IonButton>
-            </form>
+      </main>
+      <footer className="p-2 border-t border-border">
+        {replyingTo && (
+          <div className="flex items-center justify-between bg-muted p-2 rounded-t-lg">
+            <div className="text-sm border-l-2 border-primary pl-2">
+              <p className="font-bold">Replying to {replyingTo.senderId === user?.uid ? 'yourself' : otherUser?.displayName}</p>
+              <p className="truncate">{replyingTo.text}</p>
+            </div>
+            <Button variant="ghost" size="icon" onClick={() => setReplyingTo(null)}>
+              <X className="h-5 w-5" />
+            </Button>
           </div>
-        </IonToolbar>
-      </IonFooter>
-    </IonPage>
+        )}
+        <form className="flex items-center gap-2" onSubmit={handleSendMessage}>
+          <Sheet open={showAttachSheet} onOpenChange={setShowAttachSheet}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" disabled={isUploading}>
+                <Paperclip className="h-6 w-6" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="bottom">
+              <SheetHeader>
+                <SheetTitle>Attach Media</SheetTitle>
+              </SheetHeader>
+              <div className="grid gap-4 py-4">
+                <Button variant="outline" className="justify-start gap-2" onClick={() => { selectAndUploadFile(CameraSource.Camera); setShowAttachSheet(false); }}>
+                  <CameraIcon className="h-5 w-5" />
+                  Take Photo/Video
+                </Button>
+                <Button variant="outline" className="justify-start gap-2" onClick={() => { selectAndUploadFile(CameraSource.Photos); setShowAttachSheet(false); }}>
+                  <ImageIcon className="h-5 w-5" />
+                  Choose from Gallery
+                </Button>
+              </div>
+            </SheetContent>
+          </Sheet>
+
+          <Input
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            placeholder="Type a message..."
+            className="flex-grow"
+            disabled={!convoId || isUploading}
+          />
+          <Button type="submit" size="icon" disabled={newMessage.trim() === '' || !convoId || isUploading}>
+            {isUploading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
+          </Button>
+        </form>
+      </footer>
+    </div>
   );
 };
 
