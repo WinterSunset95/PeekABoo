@@ -7,8 +7,7 @@
 	},
 	"server": {
 		"androidScheme": "http",
-		"cleartext": true,
-		"url": "http://192.168.214.210:8100"
+		"cleartext": true
 	},
 	"plugins": {
 		"CapacitorHttp": {
