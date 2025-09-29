@@ -17,6 +17,7 @@ const WatchTogetherPlayer: React.FC<WatchTogetherPlayerProps> = ({ convoId }) =>
   const [playbackState, setPlaybackState] = useState<PlaybackState | null>(null);
   const playerRef = useRef<ReactPlayer>(null);
   const isUpdatingFromRemote = useRef(false);
+  const isSeekingLocally = useRef(false);
   const lastTimeUpdateSent = useRef(0);
   const sessionRef = ref(database, `playback_sessions/${convoId}`);
 
@@ -59,7 +60,7 @@ const WatchTogetherPlayer: React.FC<WatchTogetherPlayerProps> = ({ convoId }) =>
   const handlePlay = () => !isUpdatingFromRemote.current && updateRtdbState({ isPlaying: true });
   const handlePause = () => !isUpdatingFromRemote.current && updateRtdbState({ isPlaying: false });
   const handleProgress = (state: { played: number; playedSeconds: number; loaded: number; loadedSeconds: number; }) => {
-    if (playerRef.current && !isUpdatingFromRemote.current) {
+    if (playerRef.current && !isUpdatingFromRemote.current && !isSeekingLocally.current) {
       const currentTime = state.playedSeconds;
       const now = Date.now();
       // Throttle updates to every 1 second
@@ -67,6 +68,19 @@ const WatchTogetherPlayer: React.FC<WatchTogetherPlayerProps> = ({ convoId }) =>
         lastTimeUpdateSent.current = now;
         updateRtdbState({ progress: currentTime });
       }
+    }
+  };
+
+  const handleSeek = (seconds: number) => {
+    if (!isUpdatingFromRemote.current) {
+      updateRtdbState({ progress: seconds });
+      lastTimeUpdateSent.current = Date.now();
+    }
+  };
+
+  const handleSeeking = (seeking: boolean) => {
+    if (!isUpdatingFromRemote.current) {
+      isSeekingLocally.current = seeking;
     }
   };
   
@@ -97,6 +111,8 @@ const WatchTogetherPlayer: React.FC<WatchTogetherPlayerProps> = ({ convoId }) =>
           onPlay={handlePlay}
           onPause={handlePause}
           onProgress={handleProgress}
+          onSeek={handleSeek}
+          onSeeking={handleSeeking}
           className="react-player"
           width="100%"
           height="100%"
